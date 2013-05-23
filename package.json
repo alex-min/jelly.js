@@ -1,0 +1,20 @@
+{
+  "name": "jellyjs",
+  "version": "0.0.1",
+  "description": "Jelly.js Framework",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha tests/*"
+  },
+  "repository": "",
+  "keywords": [
+    "famework",
+    "web"
+  ],
+  "author": "alex-min",
+  "license": "BSD",
+  "dependencies": {
+  },
+  "devDependencies": {
+  }
+}
