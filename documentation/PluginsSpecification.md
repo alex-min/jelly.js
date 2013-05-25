@@ -5,6 +5,7 @@
 Plugins are one on the only way to customize the framework and to modify files on the fly.
 
 All plugins have to be under the plugins directory of the project folder.
+All plugins in this folder will be loaded when starting the framework.
 
 Example :
 
