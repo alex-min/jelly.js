@@ -63,14 +63,10 @@ Because some plugins might require additional parameters to work, this entry is 
 Example with a plugin processing all templates files to transform any ```<script type="text/coffeescript">...</script>``` into plain javascript :
 
 ```json
-  [...]
-
   pluginParameters: {
     'templateCoffeeMiddleware' : {
       'bare':true
     }
-
-  [...]
 ```
 Where 'bare' is the bare parameter (closure) for coffeescript.
 
