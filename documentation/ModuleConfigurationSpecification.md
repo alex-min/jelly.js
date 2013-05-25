@@ -8,7 +8,7 @@ The name of the module configuration file is specified from the general configur
 Example :
 
 ```
-config/
+conf/
 app/
  menu/
   assets.json

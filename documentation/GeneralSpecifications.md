@@ -38,7 +38,7 @@ This architecture is one of the most popular in web development, however, this c
 instead, Jelly.js should bring this architecture :
 
 ```
-config/
+conf/
 app/
  menu/
  newsletter/
