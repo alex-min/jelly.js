@@ -1,4 +1,4 @@
-# Jelly.js Configuration
+# Jelly.js Configuration Specification
 
 ## General Guidelines
 
