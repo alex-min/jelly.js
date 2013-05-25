@@ -74,8 +74,24 @@ Example with a plugin processing all templates files to transform any ```<script
 ```
 Where 'bare' is the bare parameter (closure) for coffeescript.
 
+(more details on the PluginsSpecification Documentation)
 
 
+#### loadedModules
 
+This entry should contain an list of Objects representing the loaded modules.
+If this entry is not specified, en empty array (```[]```) will be used instead.
+
+Example :
+
+```json
+loadedModules: [
+      {name:"menu",params:{}},
+      {name:"newsletter",params:{}}
+]
+```
+
+The name section for each module is also the directory name of the module.
+There is no parameters available at the moment, the ```params``` entry should be empty.
 
 
