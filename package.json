@@ -14,7 +14,8 @@
   "author": "alex-min",
   "license": "BSD",
   "dependencies": {
+    "chai": "~1.6.0",
+    "mocha": "~1.10.0"
   },
-  "devDependencies": {
-  }
+  "devDependencies": {}
 }
