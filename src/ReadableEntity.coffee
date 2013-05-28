@@ -1,3 +1,6 @@
+fs = require('fs')
+path = require('path')
+
 ###*
  * RedeableEntity is an (almost) abstract class to deal with general content
  * The main goal of this class is to provide a way to retreive multiple versions of the same content (which was processed)
@@ -53,5 +56,27 @@ class ReadableEntity
    * @method updateContent
   ###
   updateContent: (content) -> @_entityContentList.push(content)
+
+  ###*
+   * Update the content from a given file
+   *
+   * @for ReadableEntity
+   * @method updateContent
+  ###
+  updateContentFromFile: (filename, encoding="utf8",cb) ->
+    self = @
+    fs.readFile(filename,encoding, (err,content) ->
+      if err
+        cb(err, null)
+        return
+      extension = path.extname(filename).replace('.','')
+      self.updateContent(
+        {
+          filename:filename,
+          content:content,
+          extension:extension
+        })
+    )
+
 
 module.exports = ReadableEntity # export the class
