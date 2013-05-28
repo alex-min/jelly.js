@@ -14,7 +14,7 @@ describe('ReadableEntity', function() {
       return readableEntity = new ReadableEntity();
     });
   });
-  return describe('#getCurrentContent', function() {
+  describe('#getCurrentContent', function() {
     it('Should be a callable function', function() {
       return assert.typeOf(new ReadableEntity().getCurrentContent, "function");
     });
@@ -50,6 +50,126 @@ describe('ReadableEntity', function() {
       assert.typeOf(lastContent, "object", "updateContent did not return a valid content");
       assert.typeOf(lastContent.content, "string", "updateContent returned the wrong content");
       return assert.equal(lastContent.content, "Test3", "updateContent returned the wrong content");
+    });
+  });
+  describe('#eraseContent', function() {
+    it('Should be a callable function', function() {
+      return assert.typeOf(new ReadableEntity().eraseContent, "function");
+    });
+    it('Should do nothing if nothing is set', function() {
+      var readableEntity;
+
+      readableEntity = new ReadableEntity();
+      assert.typeOf(readableEntity.updateContent, "function", "updateContent is not callable");
+      readableEntity.eraseContent();
+      return assert.equal(JSON.stringify(readableEntity.getCurrentContent()), "{}");
+    });
+    return it('Should erase content when called', function() {
+      var lastContent, readableEntity;
+
+      readableEntity = new ReadableEntity();
+      assert.typeOf(readableEntity.updateContent, "function", "updateContent is not callable");
+      readableEntity.updateContent({
+        content: "Test1"
+      });
+      readableEntity.updateContent({
+        content: "Test2"
+      });
+      lastContent = readableEntity.getCurrentContent();
+      assert.equal(lastContent.content, "Test2", "updateContent returned the wrong content");
+      readableEntity.eraseContent();
+      lastContent = readableEntity.getCurrentContent();
+      return assert.equal(JSON.stringify(lastContent), "{}", "content is not erased");
+    });
+  });
+  describe('#getFirstContent', function() {
+    it('Should be a callable function', function() {
+      return assert.typeOf(new ReadableEntity().getFirstContent, "function");
+    });
+    it('Should return an empty object when nothing is set', function() {
+      var readableEntity;
+
+      readableEntity = new ReadableEntity();
+      return assert.equal(JSON.stringify(readableEntity.getFirstContent()), "{}");
+    });
+    return it('Should get the first content pushed', function() {
+      var lastContent, readableEntity;
+
+      readableEntity = new ReadableEntity();
+      assert.typeOf(readableEntity.updateContent, "function", "updateContent is not callable");
+      readableEntity.updateContent({
+        content: "Test1"
+      });
+      lastContent = readableEntity.getFirstContent();
+      assert.typeOf(lastContent, "object", "updateContent did not return a valid content");
+      assert.typeOf(lastContent.content, "string", "updateContent returned the wrong content");
+      assert.equal(lastContent.content, "Test1", "updateContent returned the wrong content");
+      readableEntity.updateContent({
+        content: "Test2"
+      });
+      lastContent = readableEntity.getFirstContent();
+      assert.typeOf(lastContent, "object", "updateContent did not return a valid content");
+      assert.typeOf(lastContent.content, "string", "updateContent returned the wrong content");
+      assert.equal(lastContent.content, "Test1", "updateContent returned the wrong content");
+      readableEntity.updateContent({
+        content: "Test3"
+      });
+      lastContent = readableEntity.getFirstContent();
+      assert.typeOf(lastContent, "object", "updateContent did not return a valid content");
+      assert.typeOf(lastContent.content, "string", "updateContent returned the wrong content");
+      return assert.equal(lastContent.content, "Test1", "updateContent returned the wrong content");
+    });
+  });
+  describe('#getContentList', function() {
+    it('Should be a callable function', function() {
+      return assert.typeOf(new ReadableEntity().getContentList, "function");
+    });
+    it('Should return an empty array when nothing is set', function() {
+      var readableEntity;
+
+      readableEntity = new ReadableEntity();
+      return assert.equal(JSON.stringify(readableEntity.getContentList()), "[]");
+    });
+    return it('Should get the list of content pushed', function() {
+      var contentList, readableEntity;
+
+      readableEntity = new ReadableEntity();
+      assert.typeOf(readableEntity.updateContent, "function", "updateContent is not callable");
+      readableEntity.updateContent({
+        content: "Test1"
+      });
+      contentList = readableEntity.getContentList();
+      assert.isArray(contentList, "getContentList() should return an array");
+      assert.equal(contentList.length, 1, "The array returned is incorrect");
+      assert.typeOf(contentList[0].content, "string", "returned the wrong content");
+      assert.equal(contentList[0].content, "Test1", "The content of the array returned is incorrect");
+      readableEntity.updateContent({
+        content: "Test2"
+      });
+      contentList = readableEntity.getContentList();
+      assert.isArray(contentList, "getContentList() should return an array");
+      assert.equal(contentList.length, 2, "The array returned is incorrect");
+      assert.typeOf(contentList[0].content, "string", "returned the wrong content");
+      assert.equal(contentList[0].content, "Test1", "The content of the array returned is incorrect");
+      assert.typeOf(contentList[1].content, "string", "returned the wrong content");
+      assert.equal(contentList[1].content, "Test2", "The content of the array returned is incorrect");
+      readableEntity.updateContent({
+        content: "Test3"
+      });
+      contentList = readableEntity.getContentList();
+      assert.isArray(contentList, "getContentList() should return an array");
+      assert.equal(contentList.length, 3, "The array returned is incorrect");
+      assert.typeOf(contentList[0].content, "string", "returned the wrong content");
+      assert.equal(contentList[0].content, "Test1", "The content of the array returned is incorrect");
+      assert.typeOf(contentList[1].content, "string", "returned the wrong content");
+      assert.equal(contentList[1].content, "Test2", "The content of the array returned is incorrect");
+      assert.typeOf(contentList[2].content, "string", "returned the wrong content");
+      return assert.equal(contentList[2].content, "Test3", "The content of the array returned is incorrect");
+    });
+  });
+  return describe('#updateContent', function() {
+    return it('Should be a callable function', function() {
+      return assert.typeOf(new ReadableEntity().updateContent, "function");
     });
   });
 });
