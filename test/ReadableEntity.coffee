@@ -1,4 +1,5 @@
 assert = require('chai').assert
+async = require('async')
 
 describe('ReadableEntity', ->
   ReadableEntity = require('../src/ReadableEntity');
@@ -164,5 +165,45 @@ describe('ReadableEntity', ->
       assert.typeOf(new ReadableEntity().updateContent,"function")
     )
     ## all other methods are using it into their test so I guess it should be enougth
+  )
+#------------------------------------------------------------------------------------------
+  describe('ReadableEntity', ->
+    it('Should be an instance of ReadableEntity', ->
+      assert.equal(new ReadableEntity().ReadableEntity, true)
+    )
+  )
+#------------------------------------------------------------------------------------------
+  describe('#updateContentFromFile', ->
+    it('Should be a callable function', ->
+      assert.typeOf(new ReadableEntity().updateContentFromFile,"function")
+    )
+    it('Should gather the content from a file', (cb) ->
+      readableEntity = new ReadableEntity()
+      readableEntity.updateContentFromFile("#{__dirname}/testFiles/dummyFile.txt", (err,dt) ->
+        assert.equal(err, null, "updateContentFromFile throws an error");
+        assert.equal(''+dt.content, "DUMMYCONTENT", "the content of the file read is invalid");
+        assert.typeOf(dt.filename,"string")
+        assert.equal(dt.extension,"txt")
+        cb()
+      )
+    )
+    toType = (obj) -> ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase()  
+    it('Should return an error when the file cannot be read', (cb) ->
+      readableEntity = new ReadableEntity()
+      readableEntity.updateContentFromFile("This/file/do/not/exist", (err,dt) ->
+        assert.equal(toType(err),"error", "the function returned an invalid error");
+        assert.equal(dt,null,"the function should return null")
+        cb()
+      )
+    )
+
+    it('Should call updateContent', (cb) ->
+      readableEntity = new ReadableEntity()
+      readableEntity.updateContent({content:'A'})
+      readableEntity.updateContentFromFile("#{__dirname}/testFiles/dummyFile.txt", (err,dt) ->
+        assert.equal(""+(readableEntity.getCurrentContent().content),"DUMMYCONTENT", "the content was not updated");
+        cb()
+      )
+    )
   )
 )

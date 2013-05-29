@@ -15,7 +15,8 @@
   "license": "BSD",
   "dependencies": {
     "chai": "~1.6.0",
-    "mocha": "~1.10.0"
+    "mocha": "~1.10.0",
+    "async": "~0.2.9"
   },
   "devDependencies": {}
 }

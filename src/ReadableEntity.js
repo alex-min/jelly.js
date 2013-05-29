@@ -18,6 +18,8 @@ ReadableEntity = (function() {
     this._entityContentList = [];
   }
 
+  ReadableEntity.prototype.ReadableEntity = true;
+
   /**
    * Get the current state of the content
    *
@@ -101,19 +103,34 @@ ReadableEntity = (function() {
       encoding = "utf8";
     }
     self = this;
-    return fs.readFile(filename, encoding, function(err, content) {
+    cb = cb || encoding;
+    if (typeof cb !== 'function') {
+      cb = function() {};
+    }
+    if (typeof encoding !== 'string') {
+      encoding = 'utf8';
+    }
+    return fs.readFile(filename, function(err, content) {
       var extension;
 
-      if (err) {
-        cb(err, null);
-        return;
+      try {
+        if (err) {
+          cb(err, null);
+          cb = function() {};
+          return;
+        }
+        extension = path.extname(filename).replace('.', '');
+        content = {
+          filename: filename,
+          content: content,
+          extension: extension
+        };
+        self.updateContent(content);
+        return cb(err, content);
+      } catch (_error) {
+        err = _error;
+        return cb(err, null);
       }
-      extension = path.extname(filename).replace('.', '');
-      return self.updateContent({
-        filename: filename,
-        content: content,
-        extension: extension
-      });
     });
   };
 

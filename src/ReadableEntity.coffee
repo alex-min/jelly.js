@@ -11,6 +11,8 @@ class ReadableEntity
   constructor: ->
     @_entityContentList = []
 
+  ReadableEntity: true
+
   ###*
    * Get the current state of the content
    *
@@ -65,17 +67,35 @@ class ReadableEntity
   ###
   updateContentFromFile: (filename, encoding="utf8",cb) ->
     self = @
-    fs.readFile(filename,encoding, (err,content) ->
-      if err
+
+    # handle additional parameters
+    # because encoding is optional and the callback also, we need some tests
+    cb = cb || encoding
+    if typeof cb != 'function'
+      cb = ->
+    if typeof encoding != 'string'
+      encoding = 'utf8'
+
+    # read the file
+    fs.readFile(filename, (err,content) ->
+      try
+        if err # we pass the error to the callback
+          cb(err, null) ; cb = -> # call only the callback once
+          return
+
+        # file.js -> .js -> js
+        extension = path.extname(filename).replace('.','')
+        content = {
+            filename:filename,
+            content:content,
+            extension:extension
+        }
+
+        # update the content (this is the purpose of the function)
+        self.updateContent(content)
+        cb(err,content) # callback
+      catch err
         cb(err, null)
-        return
-      extension = path.extname(filename).replace('.','')
-      self.updateContent(
-        {
-          filename:filename,
-          content:content,
-          extension:extension
-        })
     )
 
 
