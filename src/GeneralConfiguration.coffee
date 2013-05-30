@@ -4,7 +4,8 @@
  * 
  * @class ReadableEntity
 ###
-ReadableEntity = require('ReadableEntity')
+ReadableEntity = require('./ReadableEntity')
 
 class GeneralConfiguration extends ReadableEntity
   
+module.exports = GeneralConfiguration # export the class

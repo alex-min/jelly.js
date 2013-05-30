@@ -13,25 +13,29 @@ describe('Logger', ->
   it('Should be an instance of Logger', ->
       assert.equal(new Logger().Logger, true)
   )
-
+  describe('#getLogger()', ->
+    it('Should be a callable function', ->
+      assert.typeOf(new Logger().getLogger,"function")
+    )
+  )
   describe('#info', ->
     it('Should be a callable function', ->
-      assert.typeOf(new Logger().info,"function")
+      assert.typeOf(new Logger().getLogger().info,"function")
     )
   )
   describe('#log', ->
     it('Should be a callable function', ->
-      assert.typeOf(new Logger().log,"function")
+      assert.typeOf(new Logger().getLogger().log,"function")
     )
   )
   describe('#error', ->
     it('Should be a callable function', ->
-      assert.typeOf(new Logger().error,"function")
+      assert.typeOf(new Logger().getLogger().error,"function")
     )
   )
   describe('#warn', ->
     it('Should be a callable function', ->
-      assert.typeOf(new Logger().warn,"function")
+      assert.typeOf(new Logger().getLogger().warn,"function")
     )
   )
 )
