@@ -19,4 +19,19 @@ describe('Logger', ->
       assert.typeOf(new Logger().info,"function")
     )
   )
+  describe('#log', ->
+    it('Should be a callable function', ->
+      assert.typeOf(new Logger().log,"function")
+    )
+  )
+  describe('#error', ->
+    it('Should be a callable function', ->
+      assert.typeOf(new Logger().error,"function")
+    )
+  )
+  describe('#warn', ->
+    it('Should be a callable function', ->
+      assert.typeOf(new Logger().warn,"function")
+    )
+  )
 )

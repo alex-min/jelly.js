@@ -19,9 +19,24 @@ describe('Logger', function() {
   it('Should be an instance of Logger', function() {
     return assert.equal(new Logger().Logger, true);
   });
-  return describe('#info', function() {
+  describe('#info', function() {
     return it('Should be a callable function', function() {
       return assert.typeOf(new Logger().info, "function");
+    });
+  });
+  describe('#log', function() {
+    return it('Should be a callable function', function() {
+      return assert.typeOf(new Logger().log, "function");
+    });
+  });
+  describe('#error', function() {
+    return it('Should be a callable function', function() {
+      return assert.typeOf(new Logger().error, "function");
+    });
+  });
+  return describe('#warn', function() {
+    return it('Should be a callable function', function() {
+      return assert.typeOf(new Logger().warn, "function");
     });
   });
 });
