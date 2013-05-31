@@ -1,4 +1,5 @@
-ReadableEntity = require('./src/ReadableEntity');
+require('longjohn')
+ = require('./src/ReadableEntity');
 
 r = new ReadableEntity();
 

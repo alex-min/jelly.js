@@ -14,8 +14,15 @@ path = require('path');
 
 
 ReadableEntity = (function() {
+  ReadableEntity.prototype.ReadableEntityCs = function() {
+    if (!this._cs) {
+      this._cs = true;
+      return this._entityContentList = [];
+    }
+  };
+
   function ReadableEntity() {
-    this._entityContentList = [];
+    this.ReadableEntityCs();
   }
 
   ReadableEntity.prototype.ReadableEntity = true;
@@ -30,6 +37,7 @@ ReadableEntity = (function() {
 
 
   ReadableEntity.prototype.getCurrentContent = function() {
+    this.ReadableEntityCs();
     return this._entityContentList.slice(-1)[0] || {};
   };
 
@@ -44,6 +52,7 @@ ReadableEntity = (function() {
   ReadableEntity.prototype.eraseContent = function() {
     var _ref;
 
+    this.ReadableEntityCs();
     if ((_ref = this._entityContentList) == null) {
       this._entityContentList = [];
     }
@@ -60,6 +69,7 @@ ReadableEntity = (function() {
 
 
   ReadableEntity.prototype.getFirstContent = function() {
+    this.ReadableEntityCs();
     return this._entityContentList[0] || {};
   };
 
@@ -73,6 +83,7 @@ ReadableEntity = (function() {
 
 
   ReadableEntity.prototype.getContentList = function() {
+    this.ReadableEntityCs();
     return this._entityContentList;
   };
 
@@ -85,6 +96,7 @@ ReadableEntity = (function() {
 
 
   ReadableEntity.prototype.updateContent = function(content) {
+    this.ReadableEntityCs();
     return this._entityContentList.push(content);
   };
 
@@ -102,6 +114,7 @@ ReadableEntity = (function() {
     if (encoding == null) {
       encoding = "utf8";
     }
+    this.ReadableEntityCs();
     self = this;
     cb = cb || encoding;
     if (typeof cb !== 'function') {
@@ -122,11 +135,12 @@ ReadableEntity = (function() {
         extension = path.extname(filename).replace('.', '');
         content = {
           filename: filename,
-          content: content,
+          content: content + '',
           extension: extension
         };
         self.updateContent(content);
-        return cb(err, content);
+        cb(err, content);
+        return cb = function() {};
       } catch (_error) {
         err = _error;
         return cb(err, null);

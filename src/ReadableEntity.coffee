@@ -8,8 +8,12 @@ path = require('path')
  * @class ReadableEntity
 ###
 class ReadableEntity
-  constructor: ->
-    @_entityContentList = []
+  ReadableEntityCs: ->
+    if !(@_cs)
+      @_cs = true
+      @_entityContentList = []
+
+  constructor: -> @ReadableEntityCs()
 
   ReadableEntity: true
 
@@ -20,7 +24,10 @@ class ReadableEntity
    * @method getCurrentContent
    * @return {String} Current state of the content
   ###
-  getCurrentContent: -> @_entityContentList.slice(-1)[0] || {}
+  getCurrentContent: ->
+    @ReadableEntityCs()
+
+    @_entityContentList.slice(-1)[0] || {}
 
   ###*
    * Erase all the contents
@@ -29,6 +36,8 @@ class ReadableEntity
    * @method eraseContent
   ###
   eraseContent: ->
+    @ReadableEntityCs()
+
     @_entityContentList ?= []
     @_entityContentList.length = 0
 
@@ -40,7 +49,10 @@ class ReadableEntity
    * @method getFirstContent
    * @return first content registred
   ###
-  getFirstContent: -> @_entityContentList[0] || {}
+  getFirstContent: ->
+    @ReadableEntityCs()
+
+    @_entityContentList[0] || {}
   
   ###*
    * Get the list of content registred
@@ -49,7 +61,10 @@ class ReadableEntity
    * @method getContentList
    * @return list of content registred
   ###
-  getContentList: -> @_entityContentList
+  getContentList: ->
+    @ReadableEntityCs()
+
+    @_entityContentList
 
   ###*
    * Update the content stored
@@ -57,7 +72,10 @@ class ReadableEntity
    * @for ReadableEntity
    * @method updateContent
   ###
-  updateContent: (content) -> @_entityContentList.push(content)
+  updateContent: (content) ->
+    @ReadableEntityCs()
+
+    @_entityContentList.push(content)
 
   ###*
    * Update the content from a given file
@@ -66,6 +84,7 @@ class ReadableEntity
    * @method updateContent
   ###
   updateContentFromFile: (filename, encoding="utf8",cb) ->
+    @ReadableEntityCs()
     self = @
 
     # handle additional parameters
@@ -87,13 +106,14 @@ class ReadableEntity
         extension = path.extname(filename).replace('.','')
         content = {
             filename:filename,
-            content:content,
+            content:content+'',
             extension:extension
         }
 
         # update the content (this is the purpose of the function)
         self.updateContent(content)
         cb(err,content) # callback
+        cb = ->
       catch err
         cb(err, null)
     )

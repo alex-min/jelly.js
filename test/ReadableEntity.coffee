@@ -1,5 +1,6 @@
 assert = require('chai').assert
 async = require('async')
+toType = (obj) -> ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase()  
 
 describe('ReadableEntity', ->
   ReadableEntity = require('../src/ReadableEntity');
@@ -187,7 +188,6 @@ describe('ReadableEntity', ->
         cb()
       )
     )
-    toType = (obj) -> ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase()  
     it('Should return an error when the file cannot be read', (cb) ->
       readableEntity = new ReadableEntity()
       readableEntity.updateContentFromFile("This/file/do/not/exist", (err,dt) ->

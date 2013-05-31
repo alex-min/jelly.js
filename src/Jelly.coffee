@@ -1,12 +1,17 @@
 GeneralConfiguration = require('./GeneralConfiguration')
 Logger = require('./Logger')
+fs = require('fs')
+Tools = require('./Tools')
+ReadableEntity = require('./ReadableEntity')
 
 ###*
  * Jelly is the main class of the framework
  * 
  * @class Jelly
 ###
-class Jelly extends Logger
+# inherits from Logger and ReadableEntity
+Jelly = Tools.implementing Logger, ReadableEntity, class _Jelly
+class Jelly
   constructor: ->
     @getLogger().info('Jelly: Creating a new instance.')
     @_rootDirectory = __dirname
@@ -32,8 +37,68 @@ class Jelly extends Logger
     @getLogger().info("Jelly: the root directory is now set to #{dir}")
     @_rootDirectory = dir
 
-  readAllGeneralConfigurationFiles: ->
+  ###*
+   * Checks if the rootDirectory is valid
+   *
+   * @for Jelly
+   * @method checkRootDirectory
+   * @param {cb} Callback to fire, parameters : (err)
+   * @return {String} Root directory
+  ### 
+  checkRootDirectory: (cb) ->
+    fs.stat(confDir, (err,st) ->
+            try
+              if err
+                cb(new Error(err), null); cb = -> # do not call the callback twice
+                return
+              if !(st.isDirectory())
+                # do not call the callback twice
+                cb(new Error("#{confDir} is not a valid directory"), null); cb = ->
+                return
+              cb(null) # the directory is valid
+            catch e
+              cb(e, null); cb = ->
+    )    
+
+  ###*
+   * read the main configuration file (/conf/JellyConf.json), the is no interpretation yet
+   *
+   * @for Jelly
+   * @method setRootDirectory
+   * @return {String} Root directory
+  ### 
+  readJellyConfigurationFile: (cb) ->
+    self = @
+    cb = cb || ->
+    try # handle unknown errors
+      rootdir = @getRootDirectory()
+      confDir = "#{rootdir}/conf"
+      ## check if /conf is a good directory
+      fs.stat(confDir, (err,st) ->
+        try
+          if err
+            cb(new Error(err), null); cb = -> # do not call the callback twice
+            return
+          if !(st.isDirectory())
+            # do not call the callback twice
+            cb(new Error("#{confDir} is not a valid directory"), null); cb = ->
+            return
+          # read the configuration file
+          self.updateContentFromFile("#{confDir}/JellyConf.json", 'utf8', (err, res) ->
+            if err?
+              cb(err, null); cb = ->
+              return
+            cb(null, res); cb = ->;
+          )
+        catch e
+          cb(e, null); cb = ->
+      )
+    catch e
+      cb(e, null); cb = ->
+
+  readAllGeneralConfigurationFiles: (cb) ->
     ## TODO : This method will read all the general configuration files
 
+Tools.include(Jelly, ReadableEntity)
 
 module.exports = Jelly # export the class
