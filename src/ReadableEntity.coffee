@@ -27,7 +27,19 @@ class ReadableEntity
   getCurrentContent: ->
     @ReadableEntityCs()
 
-    @_entityContentList.slice(-1)[0] || {}
+    return @_entityContentList.slice(-1)[0] || {}
+
+  ###*
+   * Get the current state of the content as string
+   * This is the same thing as calling this.getCurrentContent().content
+   *
+   * @for ReadableEntity
+   * @method getCurrentStringContent
+   * @return {String} Current state of the content (only the string part)
+  ###
+  getCurrentStringContent: ->
+    @ReadableEntityCs()
+    return @getCurrentContent().content
 
   ###*
    * Erase all the contents

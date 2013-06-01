@@ -52,6 +52,35 @@ describe('ReadableEntity', ->
   )
 
 #------------------------------------------------------------------------------------------
+  describe('#getCurrentStringContent', ->
+    it('Should be a callable function', ->
+      assert.typeOf(ReadableEntity.prototype.getCurrentStringContent,"function")
+    )
+    it('Should return an null when nothing is set', ->
+      readableEntity = new ReadableEntity()
+      assert.equal(readableEntity.getCurrentStringContent(),null)
+    )
+    it('Should get the last string content pushed', ->
+      ## test with three contents
+      readableEntity = new ReadableEntity()
+      assert.typeOf(readableEntity.updateContent,"function","updateContent is not callable")
+      readableEntity.updateContent({content:"Test1"})
+
+      lastContent = readableEntity.getCurrentStringContent()
+      assert.equal(lastContent, "Test1","updateContent returned the wrong content")
+
+      readableEntity.updateContent({content:"Test2"})
+
+      lastContent = readableEntity.getCurrentStringContent()
+      assert.equal(lastContent, "Test2","updateContent returned the wrong content")
+     
+      readableEntity.updateContent({content:"Test3"})
+
+      lastContent = readableEntity.getCurrentStringContent()
+      assert.equal(lastContent, "Test3","updateContent returned the wrong content")     
+    )
+  )
+#------------------------------------------------------------------------------------------
   # eraseContent method
   describe('#eraseContent', ->
     it('Should be a callable function', ->

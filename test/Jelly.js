@@ -54,6 +54,59 @@ describe('Jelly', function() {
       return assert.typeOf(Jelly.prototype.getRootDirectory, "function");
     });
   });
+  describe('#checkRootDirectory', function() {
+    it('Should be a callable function', function() {
+      return assert.typeOf(Jelly.prototype.checkRootDirectory, 'function');
+    });
+    it('Should return an error if the root directory do not exist', function(cb) {
+      var jelly;
+
+      jelly = new Jelly();
+      jelly.setRootDirectory("/a/b/c/d");
+      return jelly.checkRootDirectory(function(err) {
+        assert.equal(toType(err), 'error');
+        return cb();
+      });
+    });
+    it('Should return an error if  the root directory is not a directory', function(cb) {
+      var jelly;
+
+      jelly = new Jelly();
+      jelly.setRootDirectory("" + __dirname + "/testFiles/dummyFile.txt");
+      return jelly.checkRootDirectory(function(err) {
+        var e;
+
+        try {
+          assert.equal(toType(err), 'error');
+          cb();
+          return cb = function() {};
+        } catch (_error) {
+          e = _error;
+          cb(e);
+          return cb = function() {};
+        }
+      });
+    });
+    return it('Should not throw errors on a valid root directory', function(cb) {
+      var jelly;
+
+      jelly = new Jelly();
+      jelly.setRootDirectory("" + __dirname + "/testFiles/validJellyConfFile");
+      return jelly.checkRootDirectory(function(err) {
+        var e;
+
+        try {
+          assert.equal(err, null);
+          cb();
+          return cb = function() {};
+        } catch (_error) {
+          e = _error;
+          cb(e);
+          return cb = function() {};
+        }
+      });
+    });
+  });
   return describe('#readJellyConfigurationFile', function() {
     it('Should be a callable function', function() {
       return assert.typeOf(Jelly.prototype.readJellyConfigurationFile, 'function');
@@ -62,10 +115,20 @@ describe('Jelly', function() {
       var jelly;
 
       jelly = new Jelly();
+      jelly.setRootDirectory("/a/b/c/d");
       return jelly.readJellyConfigurationFile(function(err, content) {
-        assert.equal(toType(err), 'error');
-        assert.equal(content, null);
-        return cb();
+        var e;
+
+        try {
+          assert.equal(toType(err), 'error');
+          assert.equal(content, null);
+          cb();
+          return cb = function() {};
+        } catch (_error) {
+          e = _error;
+          cb(e);
+          return cb = function() {};
+        }
       });
     });
     it('Should return an error if  /conf is not a directory', function(cb) {
@@ -74,9 +137,18 @@ describe('Jelly', function() {
       jelly = new Jelly();
       jelly.setRootDirectory("" + __dirname + "/testFiles/emptyConfFile");
       return jelly.readJellyConfigurationFile(function(err, content) {
-        assert.equal(toType(err), 'error');
-        assert.equal(content, null);
-        return cb();
+        var e;
+
+        try {
+          assert.equal(toType(err), 'error');
+          assert.equal(content, null);
+          cb();
+          return cb = function() {};
+        } catch (_error) {
+          e = _error;
+          cb(e);
+          return cb = function() {};
+        }
       });
     });
     it('Should return an error if /conf/JellyConf.json do not exist', function(cb) {
@@ -85,9 +157,18 @@ describe('Jelly', function() {
       jelly = new Jelly();
       jelly.setRootDirectory("" + __dirname + "/testFiles/emptyConfFolder");
       return jelly.readJellyConfigurationFile(function(err, content) {
-        assert.equal(toType(err), 'error');
-        assert.equal(content, null);
-        return cb();
+        var e;
+
+        try {
+          assert.equal(toType(err), 'error');
+          assert.equal(content, null);
+          cb();
+          return cb = function() {};
+        } catch (_error) {
+          e = _error;
+          cb(e);
+          return cb = function() {};
+        }
       });
     });
     return it('Should push JellyConf content into the ReadableEntity methods', function(cb) {
@@ -96,11 +177,18 @@ describe('Jelly', function() {
       jelly = new Jelly();
       jelly.setRootDirectory("" + __dirname + "/testFiles/validJellyConfFile");
       return jelly.readJellyConfigurationFile(function(e, content) {
-        assert.equal(e, null);
-        assert.typeOf(content, 'object');
-        assert.equal(content.content, '{}');
-        assert.equal(content.extension, 'json');
-        return cb();
+        try {
+          assert.equal(e, null);
+          assert.typeOf(content, 'object');
+          assert.equal(content.content, '{}');
+          assert.equal(content.extension, 'json');
+          cb();
+          return cb = function() {};
+        } catch (_error) {
+          e = _error;
+          cb(e);
+          return cb = function() {};
+        }
       });
     });
   });

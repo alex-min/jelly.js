@@ -42,6 +42,21 @@ ReadableEntity = (function() {
   };
 
   /**
+   * Get the current state of the content as string
+   * This is the same thing as calling this.getCurrentContent().content
+   *
+   * @for ReadableEntity
+   * @method getCurrentStringContent
+   * @return {String} Current state of the content (only the string part)
+  */
+
+
+  ReadableEntity.prototype.getCurrentStringContent = function() {
+    this.ReadableEntityCs();
+    return this.getCurrentContent().content;
+  };
+
+  /**
    * Erase all the contents
    *
    * @for ReadableEntity

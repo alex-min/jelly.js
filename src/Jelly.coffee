@@ -1,6 +1,8 @@
+fs = require('fs')
+async = require('async')
+
 GeneralConfiguration = require('./GeneralConfiguration')
 Logger = require('./Logger')
-fs = require('fs')
 Tools = require('./Tools')
 ReadableEntity = require('./ReadableEntity')
 
@@ -38,26 +40,32 @@ class Jelly
     @_rootDirectory = dir
 
   ###*
-   * Checks if the rootDirectory is valid
+   * Checks if the rootDirectory is valid (and all their subfolders)
    *
    * @for Jelly
    * @method checkRootDirectory
-   * @param {cb} Callback to fire, parameters : (err)
+   * @param {cb} Callback to fire, parameters : (err), if there is no error, err is null
    * @return {String} Root directory
   ### 
   checkRootDirectory: (cb) ->
-    fs.stat(confDir, (err,st) ->
-            try
-              if err
-                cb(new Error(err), null); cb = -> # do not call the callback twice
-                return
-              if !(st.isDirectory())
-                # do not call the callback twice
-                cb(new Error("#{confDir} is not a valid directory"), null); cb = ->
-                return
-              cb(null) # the directory is valid
-            catch e
-              cb(e, null); cb = ->
+    cb = cb || ->
+    root = @_rootDirectory
+    async.each([root, "#{root}/conf","#{root}/app"], (dir,cb) ->
+        fs.stat(dir, (err,st) ->
+                try
+                  if err
+                    cb(new Error(err), null); cb = -> # do not call the callback twice
+                    return
+                  if !(st.isDirectory())
+                    # do not call the callback twice
+                    cb(new Error("#{dir} is not a valid directory"), null); cb = ->
+                    return
+                  cb(null) # the directory is valid
+                catch e
+                  cb(e, null); cb = ->
+        )
+    , (err) ->
+      cb(err); cb = ->
     )    
 
   ###*
@@ -74,19 +82,15 @@ class Jelly
       rootdir = @getRootDirectory()
       confDir = "#{rootdir}/conf"
       ## check if /conf is a good directory
-      fs.stat(confDir, (err,st) ->
+      @checkRootDirectory((err) ->
         try
           if err
             cb(new Error(err), null); cb = -> # do not call the callback twice
             return
-          if !(st.isDirectory())
-            # do not call the callback twice
-            cb(new Error("#{confDir} is not a valid directory"), null); cb = ->
-            return
-          # read the configuration file
+            # read the configuration file
           self.updateContentFromFile("#{confDir}/JellyConf.json", 'utf8', (err, res) ->
             if err?
-              cb(err, null); cb = ->
+              cb(new Error(err), null); cb = ->
               return
             cb(null, res); cb = ->;
           )

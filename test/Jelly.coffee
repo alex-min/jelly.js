@@ -47,47 +47,96 @@ describe('Jelly', ->
     ## enough tests were done in getRootDirectory, no need to add others
   )
 
+#------------------------------------------------------------------------------------------
+  describe('#checkRootDirectory', ->
+    it('Should be a callable function', ->
+      assert.typeOf(Jelly.prototype.checkRootDirectory, 'function')
+    )
+    it('Should return an error if the root directory do not exist', (cb) ->
+      jelly = new Jelly()
+      jelly.setRootDirectory("/a/b/c/d")
+      jelly.checkRootDirectory( (err) ->
+        assert.equal(toType(err), 'error')
+        cb()
+      )      
+    )
+    it('Should return an error if  the root directory is not a directory', (cb) ->
+      jelly = new Jelly()
+      jelly.setRootDirectory("#{__dirname}/testFiles/dummyFile.txt")
+      jelly.checkRootDirectory( (err) ->
+        try
+          assert.equal(toType(err), 'error')
+          cb(); cb = ->
+        catch e
+          cb(e); cb = ->
+      )
+    )
+    it('Should not throw errors on a valid root directory', (cb) ->
+      jelly = new Jelly()
+      jelly.setRootDirectory("#{__dirname}/testFiles/validJellyConfFile")
+      jelly.checkRootDirectory( (err) ->
+        try
+          assert.equal(err, null);
+          cb(); cb = ->      
+        catch e
+          cb(e); cb = ->
+      )
+    )    
+  )
+
+#------------------------------------------------------------------------------------------
   describe('#readJellyConfigurationFile', ->
     it('Should be a callable function', ->
       assert.typeOf(Jelly.prototype.readJellyConfigurationFile, 'function')
     )
     it('Should return an error if the /conf directory do not exist', (cb) ->
       jelly = new Jelly()
+      jelly.setRootDirectory("/a/b/c/d")
       jelly.readJellyConfigurationFile( (err, content) ->
-        assert.equal(toType(err), 'error')
-        assert.equal(content, null)
-        cb()
+        try
+          assert.equal(toType(err), 'error')
+          assert.equal(content, null)
+          cb(); cb = ->
+        catch e
+          cb(e); cb = ->
       )
     )
     it('Should return an error if  /conf is not a directory', (cb) ->
       jelly = new Jelly()
       jelly.setRootDirectory("#{__dirname}/testFiles/emptyConfFile")
       jelly.readJellyConfigurationFile( (err, content) ->
-        assert.equal(toType(err), 'error')
-        assert.equal(content, null)
-        cb()
+        try
+          assert.equal(toType(err), 'error')
+          assert.equal(content, null)
+          cb(); cb = ->
+        catch e
+          cb(e); cb = ->
       )
     )
     it('Should return an error if /conf/JellyConf.json do not exist', (cb) ->
       jelly = new Jelly()
       jelly.setRootDirectory("#{__dirname}/testFiles/emptyConfFolder")
       jelly.readJellyConfigurationFile( (err, content) ->
-        assert.equal(toType(err), 'error')
-        assert.equal(content, null)
-        cb()
+        try
+          assert.equal(toType(err), 'error')
+          assert.equal(content, null)
+          cb(); cb = ->
+        catch e
+          cb(e); cb = ->
       )
     )
     it('Should push JellyConf content into the ReadableEntity methods', (cb) ->
       jelly = new Jelly()
       jelly.setRootDirectory("#{__dirname}/testFiles/validJellyConfFile")
       jelly.readJellyConfigurationFile( (e, content) ->
-        assert.equal(e, null)
-        assert.typeOf(content, 'object')
-        assert.equal(content.content, '{}')
-        assert.equal(content.extension, 'json')
-        cb()
-        # if a strange error is showing up on mocha, that means that a test is wrong
-        # the callback can be fired twice due to this bug (there is no way to do a better catch)
+        try
+          assert.equal(e, null)
+          assert.typeOf(content, 'object')
+          assert.equal(content.content, '{}')
+          assert.equal(content.extension, 'json')
+          cb(); cb = ->
+        catch e
+          cb(e); cb = ->
       )
     )
   )

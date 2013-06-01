@@ -58,6 +58,38 @@ describe('ReadableEntity', function() {
       return assert.equal(lastContent.content, "Test3", "updateContent returned the wrong content");
     });
   });
+  describe('#getCurrentStringContent', function() {
+    it('Should be a callable function', function() {
+      return assert.typeOf(ReadableEntity.prototype.getCurrentStringContent, "function");
+    });
+    it('Should return an null when nothing is set', function() {
+      var readableEntity;
+
+      readableEntity = new ReadableEntity();
+      return assert.equal(readableEntity.getCurrentStringContent(), null);
+    });
+    return it('Should get the last string content pushed', function() {
+      var lastContent, readableEntity;
+
+      readableEntity = new ReadableEntity();
+      assert.typeOf(readableEntity.updateContent, "function", "updateContent is not callable");
+      readableEntity.updateContent({
+        content: "Test1"
+      });
+      lastContent = readableEntity.getCurrentStringContent();
+      assert.equal(lastContent, "Test1", "updateContent returned the wrong content");
+      readableEntity.updateContent({
+        content: "Test2"
+      });
+      lastContent = readableEntity.getCurrentStringContent();
+      assert.equal(lastContent, "Test2", "updateContent returned the wrong content");
+      readableEntity.updateContent({
+        content: "Test3"
+      });
+      lastContent = readableEntity.getCurrentStringContent();
+      return assert.equal(lastContent, "Test3", "updateContent returned the wrong content");
+    });
+  });
   describe('#eraseContent', function() {
     it('Should be a callable function', function() {
       return assert.typeOf(new ReadableEntity().eraseContent, "function");
