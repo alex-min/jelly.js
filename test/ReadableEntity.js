@@ -335,11 +335,19 @@ describe('ReadableEntity', function() {
 
       readableEntity = new ReadableEntity();
       return readableEntity.updateContentFromFile("" + __dirname + "/testFiles/dummyFile.txt", function(err, dt) {
-        assert.equal(err, null, "updateContentFromFile throws an error");
-        assert.equal('' + dt.content, "DUMMYCONTENT", "the content of the file read is invalid");
-        assert.typeOf(dt.filename, "string");
-        assert.equal(dt.extension, "txt");
-        return cb();
+        var e;
+
+        try {
+          assert.equal(err, null, "updateContentFromFile throws an error");
+          assert.equal(dt.content, "DUMMYCONTENT", "the content of the file read is invalid");
+          assert.typeOf(dt.filename, "string");
+          assert.typeOf(dt.content, "string");
+          assert.equal(dt.extension, "txt");
+          return cb();
+        } catch (_error) {
+          e = _error;
+          return cb(e);
+        }
       });
     });
     it('Should return an error when the file cannot be read', function(cb) {
@@ -347,22 +355,41 @@ describe('ReadableEntity', function() {
 
       readableEntity = new ReadableEntity();
       return readableEntity.updateContentFromFile("This/file/do/not/exist", function(err, dt) {
-        assert.equal(toType(err), "error", "the function returned an invalid error");
-        assert.equal(dt, null, "the function should return null");
-        return cb();
+        var e;
+
+        try {
+          assert.equal(toType(err), "error", "the function returned an invalid error");
+          assert.equal(dt, null, "the function should return null");
+          return cb();
+        } catch (_error) {
+          e = _error;
+          return cb(e);
+        }
       });
     });
     return it('Should call updateContent', function(cb) {
-      var readableEntity;
+      var e, readableEntity;
 
-      readableEntity = new ReadableEntity();
-      readableEntity.updateContent({
-        content: 'A'
-      });
-      return readableEntity.updateContentFromFile("" + __dirname + "/testFiles/dummyFile.txt", function(err, dt) {
-        assert.equal("" + (readableEntity.getCurrentContent().content), "DUMMYCONTENT", "the content was not updated");
-        return cb();
-      });
+      try {
+        readableEntity = new ReadableEntity();
+        readableEntity.updateContent({
+          content: 'A'
+        });
+        return readableEntity.updateContentFromFile("" + __dirname + "/testFiles/dummyFile.txt", function(err, dt) {
+          var e;
+
+          try {
+            assert.equal("" + (readableEntity.getCurrentContent().content), "DUMMYCONTENT", "the content was not updated");
+            return cb();
+          } catch (_error) {
+            e = _error;
+            return cb(e);
+          }
+        });
+      } catch (_error) {
+        e = _error;
+        return cb(e);
+      }
     });
   });
 });

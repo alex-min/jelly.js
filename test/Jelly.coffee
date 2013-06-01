@@ -56,8 +56,11 @@ describe('Jelly', ->
       jelly = new Jelly()
       jelly.setRootDirectory("/a/b/c/d")
       jelly.checkRootDirectory( (err) ->
-        assert.equal(toType(err), 'error')
-        cb()
+        try
+          assert.equal(toType(err), 'error')
+          cb()
+        catch e
+          cb(e)
       )      
     )
     it('Should return an error if  the root directory is not a directory', (cb) ->

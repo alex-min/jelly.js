@@ -64,8 +64,15 @@ describe('Jelly', function() {
       jelly = new Jelly();
       jelly.setRootDirectory("/a/b/c/d");
       return jelly.checkRootDirectory(function(err) {
-        assert.equal(toType(err), 'error');
-        return cb();
+        var e;
+
+        try {
+          assert.equal(toType(err), 'error');
+          return cb();
+        } catch (_error) {
+          e = _error;
+          return cb(e);
+        }
       });
     });
     it('Should return an error if  the root directory is not a directory', function(cb) {

@@ -95,23 +95,24 @@ class ReadableEntity
       @ReadableEntityCs()    
       cb = cb || ->
 
-      curContent = @getCurrentContent()
+      curContent = @getCurrentContent() # get the current content to execute it
 
-      # check if there is a content on the stack to execute
+      # There is no content
       if typeof curContent.content == 'undefined' || curContent.content == null
         cb(new Error("There is no content on the stack to execute"), null); cb = ->;
         return
-
+      # There is no extension for the content
       if typeof curContent.extension == 'undefined' || curContent.extension == null
         cb(new Error('The last content on the stack do not have any' + \ 
         ' extension associated, it might not be executable')); cb = ->;
         return
-
+      # The extension cannot be executed in a javascript environment
       if curContent.extension != 'json' && curContent.extension != 'js'
         cb(new Error("Only 'json' and 'js' content can be executed" + \
           ", the current stack has an extension of #{curContent.extension}"), null); cb = ->
         return
 
+      # executing the content according to the extension
       execContent = null
       try
         switch curContent.extension
@@ -120,10 +121,14 @@ class ReadableEntity
       catch e
         cb(new Error("Unable to parse content #{curContent.content}, #{e}"), null); cb = ->
         return
+
+      # the executable extension is __exec
       content = {
         extension:'__exec',
         content: execContent
       }
+
+      # we update the content to what we have interpreted
       @updateContent(content)
       cb(null, content); cb = ->
     catch e
@@ -171,7 +176,7 @@ class ReadableEntity
         extension = path.extname(filename).replace('.','')
         content = {
             filename:filename,
-            content:content+'',
+            content:content+'', # transform a Nodejs Buffer object into a string
             extension:extension
         }
 
