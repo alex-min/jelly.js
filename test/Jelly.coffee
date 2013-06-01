@@ -83,7 +83,6 @@ describe('Jelly', ->
       )
     )    
   )
-
 #------------------------------------------------------------------------------------------
   describe('#readJellyConfigurationFile', ->
     it('Should be a callable function', ->

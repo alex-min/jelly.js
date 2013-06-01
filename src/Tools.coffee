@@ -11,3 +11,4 @@ extend = (obj, mixin) ->
 exports.include = (klass, mixin) ->
   extend klass.prototype, mixin
 
+ 

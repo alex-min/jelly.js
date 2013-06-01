@@ -119,29 +119,23 @@ Jelly = Tools.implementing(Logger, ReadableEntity, _Jelly = (function() {
     try {
       rootdir = this.getRootDirectory();
       confDir = "" + rootdir + "/conf";
-      return this.checkRootDirectory(function(err) {
-        var e;
-
-        try {
-          if (err) {
-            cb(new Error(err), null);
-            cb = function() {};
-            return;
-          }
-          return self.updateContentFromFile("" + confDir + "/JellyConf.json", 'utf8', function(err, res) {
-            if (err != null) {
-              cb(new Error(err), null);
-              cb = function() {};
-              return;
-            }
-            cb(null, res);
-            return cb = function() {};
+      return async.series([
+        function(cb) {
+          return self.checkRootDirectory(function(err) {
+            return cb(err, null);
           });
-        } catch (_error) {
-          e = _error;
-          cb(e, null);
-          return cb = function() {};
+        }, function(cb) {
+          return self.updateContentFromFile("" + confDir + "/JellyConf.json", 'utf8', function(err, res) {
+            return cb(err, res);
+          });
+        }, function(cb) {
+          return self.updateAndExecuteCurrentContent(function(err) {
+            return cb(err);
+          });
         }
+      ], function(err, res) {
+        res = res.length >= 2 ? res[1] : null;
+        return cb(err, res);
       });
     } catch (_error) {
       e = _error;

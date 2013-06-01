@@ -42,16 +42,16 @@ ReadableEntity = (function() {
   };
 
   /**
-   * Get the current state of the content as string
+   * Get the current state of the content as an entity
    * This is the same thing as calling this.getCurrentContent().content
    *
    * @for ReadableEntity
-   * @method getCurrentStringContent
-   * @return {String} Current state of the content (only the string part)
+   * @method getCurrentContentEntity
+   * @return {String} Current state of the content (only the entity part)
   */
 
 
-  ReadableEntity.prototype.getCurrentStringContent = function() {
+  ReadableEntity.prototype.getCurrentContentEntity = function() {
     this.ReadableEntityCs();
     return this.getCurrentContent().content;
   };
@@ -76,6 +76,7 @@ ReadableEntity = (function() {
 
   /**
    * Get the first content registred
+   * -> Should return an empty object if nothing is set
    *
    * @for ReadableEntity
    * @method getFirstContent
@@ -100,6 +101,69 @@ ReadableEntity = (function() {
   ReadableEntity.prototype.getContentList = function() {
     this.ReadableEntityCs();
     return this._entityContentList;
+  };
+
+  /**
+   * Get the current content and try to eval it to execute it
+   * This function can only handle 'json' or 'js' extensions and will return errors for everything else 
+   * The content will be pushed as the currentContent.
+   * Eval will be called for 'js' content and 'JSON.parse' for 'json' content  
+   *
+   * @for ReadableEntity
+   * @method updateAndExecuteCurrentContent
+   * @param {Function} callback to call when the work is done, params : (err : errors, content)
+  */
+
+
+  ReadableEntity.prototype.updateAndExecuteCurrentContent = function(cb) {
+    var content, curContent, e, execContent;
+
+    try {
+      this.ReadableEntityCs();
+      cb = cb || function() {};
+      curContent = this.getCurrentContent();
+      if (typeof curContent.content === 'undefined' || curContent.content === null) {
+        cb(new Error("There is no content on the stack to execute"), null);
+        cb = function() {};
+        return;
+      }
+      if (typeof curContent.extension === 'undefined' || curContent.extension === null) {
+        cb(new Error('The last content on the stack do not have any' + ' extension associated, it might not be executable'));
+        cb = function() {};
+        return;
+      }
+      if (curContent.extension !== 'json' && curContent.extension !== 'js') {
+        cb(new Error("Only 'json' and 'js' content can be executed" + (", the current stack has an extension of " + curContent.extension)), null);
+        cb = function() {};
+        return;
+      }
+      execContent = null;
+      try {
+        switch (curContent.extension) {
+          case 'json':
+            execContent = JSON.parse(curContent.content);
+            break;
+          case 'js':
+            execContent = eval(curContent.content);
+        }
+      } catch (_error) {
+        e = _error;
+        cb(new Error("Unable to parse content " + curContent.content + ", " + e), null);
+        cb = function() {};
+        return;
+      }
+      content = {
+        extension: '__exec',
+        content: execContent
+      };
+      this.updateContent(content);
+      cb(null, content);
+      return cb = function() {};
+    } catch (_error) {
+      e = _error;
+      cb(e, null);
+      return cb = function() {};
+    }
   };
 
   /**

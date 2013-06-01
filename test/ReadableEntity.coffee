@@ -12,7 +12,76 @@ describe('ReadableEntity', ->
       readableEntity = new ReadableEntity()
     )
   )
-
+#------------------------------------------------------------------------------------------
+  describe('#updateAndExecuteCurrentContent', ->
+    it('Should be a callable function', ->
+      assert.typeOf(ReadableEntity.prototype.updateAndExecuteCurrentContent, 'function')
+    )
+    it('Should return an error if there is no content', (cb) ->
+      readableEntity = new ReadableEntity()
+      readableEntity.updateAndExecuteCurrentContent((err) ->
+        try
+          assert.equal(toType(err), 'error')
+          cb()
+        catch e
+          cb(e)
+      )  
+    )
+    it('Should return an error if the current content has no extension', (cb) ->
+      readableEntity = new ReadableEntity()
+      readableEntity.updateContent({content:'A'})
+      readableEntity.updateAndExecuteCurrentContent((err) ->
+        try
+          assert.equal(toType(err), 'error')
+          cb()
+        catch e
+          cb(e)
+      )  
+    )
+    it('Should return an error if the current content has an extension which does not allow execution', (cb) ->
+      readableEntity = new ReadableEntity()
+      readableEntity.updateContent({content:'A', extension:'invalid'})
+      readableEntity.updateAndExecuteCurrentContent((err, content) ->
+        try
+          assert.equal(toType(err), 'error')
+          assert.equal(content, null)
+          cb()
+        catch e
+          cb(e)
+      )  
+    )
+    it('Should throw an error with an invalid json', (cb) ->
+      readableEntity = new ReadableEntity()
+      readableEntity.updateContent({content:'INVALID JSON', extension:'json'})
+      readableEntity.updateAndExecuteCurrentContent((err, content) ->
+        try
+          assert.equal(toType(err), 'error')
+          assert.equal(content, null)
+          cb()
+        catch e
+          cb(e)
+      )  
+    )
+    it('Should push a content with and __exec extension if everything is valid', (cb) ->
+      readableEntity = new ReadableEntity()
+      readableEntity.updateContent({content:'{"valid":true}', extension:'json'})
+      readableEntity.updateAndExecuteCurrentContent((err, content) ->
+        try
+          contentCheck = (content) ->
+            assert.equal(toType(err), 'null')
+            assert.equal(toType(content), 'object')
+            assert.equal(content.extension, '__exec')
+            assert.typeOf(content.content, 'object')
+            assert.equal(content.content.valid, true)
+          contentCheck(content)
+          contentPushed = readableEntity.getCurrentContent()
+          contentCheck(contentPushed)
+          cb()
+        catch e
+          cb(e)
+      )  
+    )
+  )
 #------------------------------------------------------------------------------------------
   ## getCurrentContent method
   describe('#getCurrentContent', ->
@@ -52,13 +121,13 @@ describe('ReadableEntity', ->
   )
 
 #------------------------------------------------------------------------------------------
-  describe('#getCurrentStringContent', ->
+  describe('#getCurrentContentEntity', ->
     it('Should be a callable function', ->
-      assert.typeOf(ReadableEntity.prototype.getCurrentStringContent,"function")
+      assert.typeOf(ReadableEntity.prototype.getCurrentContentEntity,"function")
     )
     it('Should return an null when nothing is set', ->
       readableEntity = new ReadableEntity()
-      assert.equal(readableEntity.getCurrentStringContent(),null)
+      assert.equal(readableEntity.getCurrentContentEntity(),null)
     )
     it('Should get the last string content pushed', ->
       ## test with three contents
@@ -66,17 +135,17 @@ describe('ReadableEntity', ->
       assert.typeOf(readableEntity.updateContent,"function","updateContent is not callable")
       readableEntity.updateContent({content:"Test1"})
 
-      lastContent = readableEntity.getCurrentStringContent()
+      lastContent = readableEntity.getCurrentContentEntity()
       assert.equal(lastContent, "Test1","updateContent returned the wrong content")
 
       readableEntity.updateContent({content:"Test2"})
 
-      lastContent = readableEntity.getCurrentStringContent()
+      lastContent = readableEntity.getCurrentContentEntity()
       assert.equal(lastContent, "Test2","updateContent returned the wrong content")
      
       readableEntity.updateContent({content:"Test3"})
 
-      lastContent = readableEntity.getCurrentStringContent()
+      lastContent = readableEntity.getCurrentContentEntity()
       assert.equal(lastContent, "Test3","updateContent returned the wrong content")     
     )
   )

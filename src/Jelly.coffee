@@ -81,21 +81,22 @@ class Jelly
     try # handle unknown errors
       rootdir = @getRootDirectory()
       confDir = "#{rootdir}/conf"
-      ## check if /conf is a good directory
-      @checkRootDirectory((err) ->
-        try
-          if err
-            cb(new Error(err), null); cb = -> # do not call the callback twice
-            return
-            # read the configuration file
+      
+      async.series([
+        ## check the root directory
+        (cb) -> self.checkRootDirectory((err) -> cb(err,null)),
+        ## then read the file
+        (cb) ->
           self.updateContentFromFile("#{confDir}/JellyConf.json", 'utf8', (err, res) ->
-            if err?
-              cb(new Error(err), null); cb = ->
-              return
-            cb(null, res); cb = ->;
+            cb(err, res)
           )
-        catch e
-          cb(e, null); cb = ->
+        ## then interpret the file
+        (cb) -> self.updateAndExecuteCurrentContent((err) -> cb(err))
+      ], (err, res) ->
+        # because the async function is returning an array of results
+        # and only updateContentFromFile should return a result 
+        res = if res.length >= 2 then res[1] else null
+        cb(err,res)
       )
     catch e
       cb(e, null); cb = ->

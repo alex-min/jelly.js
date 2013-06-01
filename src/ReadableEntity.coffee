@@ -30,14 +30,14 @@ class ReadableEntity
     return @_entityContentList.slice(-1)[0] || {}
 
   ###*
-   * Get the current state of the content as string
+   * Get the current state of the content as an entity
    * This is the same thing as calling this.getCurrentContent().content
    *
    * @for ReadableEntity
-   * @method getCurrentStringContent
-   * @return {String} Current state of the content (only the string part)
+   * @method getCurrentContentEntity
+   * @return {String} Current state of the content (only the entity part)
   ###
-  getCurrentStringContent: ->
+  getCurrentContentEntity: ->
     @ReadableEntityCs()
     return @getCurrentContent().content
 
@@ -56,6 +56,7 @@ class ReadableEntity
 
   ###*
    * Get the first content registred
+   * -> Should return an empty object if nothing is set
    *
    * @for ReadableEntity
    * @method getFirstContent
@@ -64,7 +65,8 @@ class ReadableEntity
   getFirstContent: ->
     @ReadableEntityCs()
 
-    @_entityContentList[0] || {}
+    # should return an empty object if nothing is set
+    return @_entityContentList[0] || {}
   
   ###*
    * Get the list of content registred
@@ -76,7 +78,58 @@ class ReadableEntity
   getContentList: ->
     @ReadableEntityCs()
 
-    @_entityContentList
+    return @_entityContentList
+
+  ###*
+   * Get the current content and try to eval it to execute it
+   * This function can only handle 'json' or 'js' extensions and will return errors for everything else 
+   * The content will be pushed as the currentContent.
+   * Eval will be called for 'js' content and 'JSON.parse' for 'json' content  
+   *
+   * @for ReadableEntity
+   * @method updateAndExecuteCurrentContent
+   * @param {Function} callback to call when the work is done, params : (err : errors, content)
+  ###
+  updateAndExecuteCurrentContent: (cb) ->
+    try
+      @ReadableEntityCs()    
+      cb = cb || ->
+
+      curContent = @getCurrentContent()
+
+      # check if there is a content on the stack to execute
+      if typeof curContent.content == 'undefined' || curContent.content == null
+        cb(new Error("There is no content on the stack to execute"), null); cb = ->;
+        return
+
+      if typeof curContent.extension == 'undefined' || curContent.extension == null
+        cb(new Error('The last content on the stack do not have any' + \ 
+        ' extension associated, it might not be executable')); cb = ->;
+        return
+
+      if curContent.extension != 'json' && curContent.extension != 'js'
+        cb(new Error("Only 'json' and 'js' content can be executed" + \
+          ", the current stack has an extension of #{curContent.extension}"), null); cb = ->
+        return
+
+      execContent = null
+      try
+        switch curContent.extension
+          when 'json' then execContent = JSON.parse(curContent.content)
+          when 'js' then execContent = eval(curContent.content)
+      catch e
+        cb(new Error("Unable to parse content #{curContent.content}, #{e}"), null); cb = ->
+        return
+      content = {
+        extension:'__exec',
+        content: execContent
+      }
+      @updateContent(content)
+      cb(null, content); cb = ->
+    catch e
+      cb(e, null); cb = ->
+
+
 
   ###*
    * Update the content stored

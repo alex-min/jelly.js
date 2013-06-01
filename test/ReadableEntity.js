@@ -20,6 +20,117 @@ describe('ReadableEntity', function() {
       return readableEntity = new ReadableEntity();
     });
   });
+  describe('#updateAndExecuteCurrentContent', function() {
+    it('Should be a callable function', function() {
+      return assert.typeOf(ReadableEntity.prototype.updateAndExecuteCurrentContent, 'function');
+    });
+    it('Should return an error if there is no content', function(cb) {
+      var readableEntity;
+
+      readableEntity = new ReadableEntity();
+      return readableEntity.updateAndExecuteCurrentContent(function(err) {
+        var e;
+
+        try {
+          assert.equal(toType(err), 'error');
+          return cb();
+        } catch (_error) {
+          e = _error;
+          return cb(e);
+        }
+      });
+    });
+    it('Should return an error if the current content has no extension', function(cb) {
+      var readableEntity;
+
+      readableEntity = new ReadableEntity();
+      readableEntity.updateContent({
+        content: 'A'
+      });
+      return readableEntity.updateAndExecuteCurrentContent(function(err) {
+        var e;
+
+        try {
+          assert.equal(toType(err), 'error');
+          return cb();
+        } catch (_error) {
+          e = _error;
+          return cb(e);
+        }
+      });
+    });
+    it('Should return an error if the current content has an extension which does not allow execution', function(cb) {
+      var readableEntity;
+
+      readableEntity = new ReadableEntity();
+      readableEntity.updateContent({
+        content: 'A',
+        extension: 'invalid'
+      });
+      return readableEntity.updateAndExecuteCurrentContent(function(err, content) {
+        var e;
+
+        try {
+          assert.equal(toType(err), 'error');
+          assert.equal(content, null);
+          return cb();
+        } catch (_error) {
+          e = _error;
+          return cb(e);
+        }
+      });
+    });
+    it('Should throw an error with an invalid json', function(cb) {
+      var readableEntity;
+
+      readableEntity = new ReadableEntity();
+      readableEntity.updateContent({
+        content: 'INVALID JSON',
+        extension: 'json'
+      });
+      return readableEntity.updateAndExecuteCurrentContent(function(err, content) {
+        var e;
+
+        try {
+          assert.equal(toType(err), 'error');
+          assert.equal(content, null);
+          return cb();
+        } catch (_error) {
+          e = _error;
+          return cb(e);
+        }
+      });
+    });
+    return it('Should push a content with and __exec extension if everything is valid', function(cb) {
+      var readableEntity;
+
+      readableEntity = new ReadableEntity();
+      readableEntity.updateContent({
+        content: '{"valid":true}',
+        extension: 'json'
+      });
+      return readableEntity.updateAndExecuteCurrentContent(function(err, content) {
+        var contentCheck, contentPushed, e;
+
+        try {
+          contentCheck = function(content) {
+            assert.equal(toType(err), 'null');
+            assert.equal(toType(content), 'object');
+            assert.equal(content.extension, '__exec');
+            assert.typeOf(content.content, 'object');
+            return assert.equal(content.content.valid, true);
+          };
+          contentCheck(content);
+          contentPushed = readableEntity.getCurrentContent();
+          contentCheck(contentPushed);
+          return cb();
+        } catch (_error) {
+          e = _error;
+          return cb(e);
+        }
+      });
+    });
+  });
   describe('#getCurrentContent', function() {
     it('Should be a callable function', function() {
       return assert.typeOf(new ReadableEntity().getCurrentContent, "function");
@@ -58,15 +169,15 @@ describe('ReadableEntity', function() {
       return assert.equal(lastContent.content, "Test3", "updateContent returned the wrong content");
     });
   });
-  describe('#getCurrentStringContent', function() {
+  describe('#getCurrentContentEntity', function() {
     it('Should be a callable function', function() {
-      return assert.typeOf(ReadableEntity.prototype.getCurrentStringContent, "function");
+      return assert.typeOf(ReadableEntity.prototype.getCurrentContentEntity, "function");
     });
     it('Should return an null when nothing is set', function() {
       var readableEntity;
 
       readableEntity = new ReadableEntity();
-      return assert.equal(readableEntity.getCurrentStringContent(), null);
+      return assert.equal(readableEntity.getCurrentContentEntity(), null);
     });
     return it('Should get the last string content pushed', function() {
       var lastContent, readableEntity;
@@ -76,17 +187,17 @@ describe('ReadableEntity', function() {
       readableEntity.updateContent({
         content: "Test1"
       });
-      lastContent = readableEntity.getCurrentStringContent();
+      lastContent = readableEntity.getCurrentContentEntity();
       assert.equal(lastContent, "Test1", "updateContent returned the wrong content");
       readableEntity.updateContent({
         content: "Test2"
       });
-      lastContent = readableEntity.getCurrentStringContent();
+      lastContent = readableEntity.getCurrentContentEntity();
       assert.equal(lastContent, "Test2", "updateContent returned the wrong content");
       readableEntity.updateContent({
         content: "Test3"
       });
-      lastContent = readableEntity.getCurrentStringContent();
+      lastContent = readableEntity.getCurrentContentEntity();
       return assert.equal(lastContent, "Test3", "updateContent returned the wrong content");
     });
   });
