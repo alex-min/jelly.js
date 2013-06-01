@@ -104,6 +104,51 @@ ReadableEntity = (function() {
   };
 
   /**
+   * Get the last content of a given extension
+   * Returns null if no content is found
+   *
+   * @for ReadableEntity
+   * @method getLastContentOfExtension
+   * @param {String} extension
+   * @return last content of the given extension
+  */
+
+
+  ReadableEntity.prototype.getLastContentOfExtension = function(ext) {
+    var content, _i, _ref;
+
+    this.ReadableEntityCs();
+    if (typeof ext === 'undefined' || ext === null) {
+      return null;
+    }
+    _ref = this._entityContentList;
+    for (_i = _ref.length - 1; _i >= 0; _i += -1) {
+      content = _ref[_i];
+      if (content.extension === ext) {
+        return content;
+      }
+    }
+    return null;
+  };
+
+  /**
+   * Get last executableContent
+   * Equivalent to this.getLastContentOfExtension('__exec')
+   * (__exec is the extension for executable js code)
+   *
+   * @for ReadableEntity
+   * @method getLastExecutableContent
+   * @param {String} extension
+   * @return last content of the given extension
+  */
+
+
+  ReadableEntity.prototype.getLastExecutableContent = function() {
+    this.ReadableEntityCs();
+    return this.getLastContentOfExtension('__exec');
+  };
+
+  /**
    * Get the current content and try to eval it to execute it
    * This function can only handle 'json' or 'js' extensions and will return errors for everything else 
    * The content will be pushed as the currentContent.

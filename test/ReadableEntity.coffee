@@ -266,6 +266,49 @@ describe('ReadableEntity', ->
     ## all other methods are using it into their test so I guess it should be enougth
   )
 #------------------------------------------------------------------------------------------
+  describe('#getLastContentOfExtension', ->
+    it('Should be a callable function', ->
+      assert.typeOf(new ReadableEntity().getLastContentOfExtension,"function")
+    )
+
+    it('Should return null when there is no content available matching the extension', ->
+      assert.equal(new ReadableEntity().getLastContentOfExtension('ff'),null)
+    )
+
+    it('Should return the last content available matching the extension', ->
+      readableEntity = new ReadableEntity()
+      readableEntity.updateContent({content:'A',extension:'txt'})
+      readableEntity.updateContent({content:'B',extension:'txt'})
+      content = readableEntity.getLastContentOfExtension('txt')
+      assert.typeOf(content,'object', 'the function should return an object')
+      assert.equal(content.content, 'B', 'the function returned the wrong content')
+    )
+
+    it('Should return null when the extension is null', ->
+      readableEntity = new ReadableEntity()
+      readableEntity.updateContent({content:'A',extension:'txt'})
+      content = readableEntity.getLastContentOfExtension(null)
+      assert.equal(content, null)
+    )
+  )
+#------------------------------------------------------------------------------------------
+  describe('#getLastExecutableContent', ->
+    it('Should be a callable function', ->
+      assert.typeOf(new ReadableEntity().getLastExecutableContent,"function")
+    )
+    it('Should return the last executable content', ->
+      readableEntity = new ReadableEntity()
+      readableEntity.updateContent({content:'A',extension:'txt'})
+      readableEntity.updateContent({content:'B',extension:'__exec'})
+      readableEntity.updateContent({content:'C',extension:'__exec'})
+      readableEntity.updateContent({content:'D',extension:'txt'})
+
+      content = readableEntity.getLastExecutableContent()
+      assert.typeOf(content,'object', 'the function should return an object')
+      assert.equal(content.content, 'C', 'the function returned the wrong content')      
+    )    
+  )
+#------------------------------------------------------------------------------------------
   describe('ReadableEntity', ->
     it('Should be an instance of ReadableEntity', ->
       assert.equal(new ReadableEntity().ReadableEntity, true)

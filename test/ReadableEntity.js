@@ -321,6 +321,70 @@ describe('ReadableEntity', function() {
       return assert.typeOf(new ReadableEntity().updateContent, "function");
     });
   });
+  describe('#getLastContentOfExtension', function() {
+    it('Should be a callable function', function() {
+      return assert.typeOf(new ReadableEntity().getLastContentOfExtension, "function");
+    });
+    it('Should return null when there is no content available matching the extension', function() {
+      return assert.equal(new ReadableEntity().getLastContentOfExtension('ff'), null);
+    });
+    it('Should return the last content available matching the extension', function() {
+      var content, readableEntity;
+
+      readableEntity = new ReadableEntity();
+      readableEntity.updateContent({
+        content: 'A',
+        extension: 'txt'
+      });
+      readableEntity.updateContent({
+        content: 'B',
+        extension: 'txt'
+      });
+      content = readableEntity.getLastContentOfExtension('txt');
+      assert.typeOf(content, 'object', 'the function should return an object');
+      return assert.equal(content.content, 'B', 'the function returned the wrong content');
+    });
+    return it('Should return null when the extension is null', function() {
+      var content, readableEntity;
+
+      readableEntity = new ReadableEntity();
+      readableEntity.updateContent({
+        content: 'A',
+        extension: 'txt'
+      });
+      content = readableEntity.getLastContentOfExtension(null);
+      return assert.equal(content, null);
+    });
+  });
+  describe('#getLastExecutableContent', function() {
+    it('Should be a callable function', function() {
+      return assert.typeOf(new ReadableEntity().getLastExecutableContent, "function");
+    });
+    return it('Should return the last executable content', function() {
+      var content, readableEntity;
+
+      readableEntity = new ReadableEntity();
+      readableEntity.updateContent({
+        content: 'A',
+        extension: 'txt'
+      });
+      readableEntity.updateContent({
+        content: 'B',
+        extension: '__exec'
+      });
+      readableEntity.updateContent({
+        content: 'C',
+        extension: '__exec'
+      });
+      readableEntity.updateContent({
+        content: 'D',
+        extension: 'txt'
+      });
+      content = readableEntity.getLastExecutableContent();
+      assert.typeOf(content, 'object', 'the function should return an object');
+      return assert.equal(content.content, 'C', 'the function returned the wrong content');
+    });
+  });
   describe('ReadableEntity', function() {
     return it('Should be an instance of ReadableEntity', function() {
       return assert.equal(new ReadableEntity().ReadableEntity, true);

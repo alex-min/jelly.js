@@ -81,6 +81,43 @@ class ReadableEntity
     return @_entityContentList
 
   ###*
+   * Get the last content of a given extension
+   * Returns null if no content is found
+   *
+   * @for ReadableEntity
+   * @method getLastContentOfExtension
+   * @param {String} extension
+   * @return last content of the given extension
+  ###
+  getLastContentOfExtension : (ext) ->
+    @ReadableEntityCs()
+
+    # if the specified extension is invalid
+    if typeof ext == 'undefined' || ext == null
+      return null
+
+    # for each content (decreasing iteration)
+    for content in @_entityContentList by -1
+      if content.extension == ext # if it has the right extension
+        return content
+    return null
+
+  ###*
+   * Get last executableContent
+   * Equivalent to this.getLastContentOfExtension('__exec')
+   * (__exec is the extension for executable js code)
+   *
+   * @for ReadableEntity
+   * @method getLastExecutableContent
+   * @param {String} extension
+   * @return last content of the given extension
+  ###
+  getLastExecutableContent : ->
+    @ReadableEntityCs()
+    return @getLastContentOfExtension('__exec')
+
+
+  ###*
    * Get the current content and try to eval it to execute it
    * This function can only handle 'json' or 'js' extensions and will return errors for everything else 
    * The content will be pushed as the currentContent.
