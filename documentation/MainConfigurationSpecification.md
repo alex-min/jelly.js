@@ -26,4 +26,6 @@ Here is an example of all the features the file should support :
 Should return an Array of String containing the relative path of each configuration file to read.
 These configuration files are labelled under the term 'general configuration file' on the documentation.
 
+The default value is an empty Array if the entry do not exist. 
+
 Each configuration file will be processed independently.

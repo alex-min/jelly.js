@@ -14,9 +14,13 @@ ReadableEntity = require('./ReadableEntity')
 # inherits from Logger and ReadableEntity
 Jelly = Tools.implementing Logger, ReadableEntity, class _Jelly
 class Jelly
-  constructor: ->
+  _constructor_: () ->
+    @_parentConstructor_()
     @getLogger().info('Jelly: Creating a new instance.')
     @_rootDirectory = __dirname
+
+  constructor: -> @_constructor_()
+
   
   ###*
    * Returns the current root directory
@@ -67,7 +71,7 @@ class Jelly
     , (err) ->
       cb(err); cb = ->
     )    
-
+  
   ###*
    * read the main configuration file (/conf/JellyConf.json), the is no interpretation yet
    *
@@ -80,14 +84,14 @@ class Jelly
     cb = cb || ->
     try # handle unknown errors
       rootdir = @getRootDirectory()
-      confDir = "#{rootdir}/conf"
-      
+      fileLocation = "#{rootdir}/conf/JellyConf.json"
+
       async.series([
         ## check the root directory
         (cb) -> self.checkRootDirectory((err) -> cb(err,null)),
         ## then read the file
         (cb) ->
-          self.updateContentFromFile("#{confDir}/JellyConf.json", 'utf8', (err, res) ->
+          self.updateContentFromFile(fileLocation, 'utf8', (err, res) ->
             cb(err, res)
           )
         ## then interpret the file
@@ -102,6 +106,20 @@ class Jelly
       cb(e, null); cb = ->
 
   readAllGeneralConfigurationFiles: (cb) ->
+
+    # check if the file was read
+    content = @getLastExecutableContent()
+    if content == null
+      cb(new Error('There is no executable content pushed on the Jelly Class')); cb = ->;
+      return
+
+    # the default is an empty array
+    content.listOfConfigurationFiles ?= []
+
+    async.map(content.listOfConfigurationFiles, (config, cb) ->
+
+    )
+
     ## TODO : This method will read all the general configuration files
 
 Tools.include(Jelly, ReadableEntity)

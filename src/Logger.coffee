@@ -1,9 +1,11 @@
 winston = require('winston')
 
 class WinstonLoggerWrapper
-  constructor: ->
+  _constructor_:->
     @_logger = new (winston.Logger)() ## creating a logger instance
-    @_logger.add(winston.transports.Console) ## adding console display
+    @_logger.add(winston.transports.Console) ## adding console display  
+
+  constructor: -> @_constructor_()
   
   LoggerWrapper: true
 
@@ -28,8 +30,10 @@ class WinstonLoggerWrapper
  * @class Logger
 ###
 class Logger
-  constructor: ->
+  _constructor_: ->
     @_log = new WinstonLoggerWrapper()
+
+  constructor: -> @_constructor_()
 
   ###*
    * Get the logger class for external usage
@@ -38,11 +42,7 @@ class Logger
    * @method getLogger
    * @return {Logger} Logger class object
   ###
-  getLogger: ->
-    ## due to a bug in coffeescript sometimes, the constructor is not call with inheritance
-    if typeof @_log == 'undefined'
-      @_log = new WinstonLoggerWrapper()
-    @_log
+  getLogger: -> @_log
 
   Logger: true
 

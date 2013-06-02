@@ -381,8 +381,8 @@ describe('ReadableEntity', function() {
         extension: 'txt'
       });
       content = readableEntity.getLastExecutableContent();
-      assert.typeOf(content, 'object', 'the function should return an object');
-      return assert.equal(content.content, 'C', 'the function returned the wrong content');
+      assert.typeOf(content, 'string', 'the function should return the content pushed');
+      return assert.equal(content, 'C', 'the function should return the content pushed');
     });
   });
   describe('ReadableEntity', function() {

@@ -114,7 +114,7 @@ describe('Jelly', function() {
       });
     });
   });
-  return describe('#readJellyConfigurationFile', function() {
+  describe('#readJellyConfigurationFile', function() {
     it('Should be a callable function', function() {
       return assert.typeOf(Jelly.prototype.readJellyConfigurationFile, 'function');
     });
@@ -178,7 +178,7 @@ describe('Jelly', function() {
         }
       });
     });
-    return it('Should push JellyConf content into the ReadableEntity methods', function(cb) {
+    it('Should return the content read', function(cb) {
       var jelly;
 
       jelly = new Jelly();
@@ -187,8 +187,53 @@ describe('Jelly', function() {
         try {
           assert.equal(e, null);
           assert.typeOf(content, 'object');
-          assert.equal(content.content, '{}');
+          assert.equal(content.content, '{"test":true}');
           assert.equal(content.extension, 'json');
+          cb();
+          return cb = function() {};
+        } catch (_error) {
+          e = _error;
+          cb(e);
+          return cb = function() {};
+        }
+      });
+    });
+    return it('Should push a __exec content on the ReadableEntity object', function(cb) {
+      var jelly;
+
+      jelly = new Jelly();
+      jelly.setRootDirectory("" + __dirname + "/testFiles/validJellyConfFile");
+      return jelly.readJellyConfigurationFile(function(e, content) {
+        var ct;
+
+        try {
+          ct = jelly.getCurrentContent();
+          assert.equal(ct.extension, '__exec');
+          assert.typeOf(ct.content, 'object');
+          assert.equal(ct.content.test, true);
+          cb();
+          return cb = function() {};
+        } catch (_error) {
+          e = _error;
+          cb(e);
+          return cb = function() {};
+        }
+      });
+    });
+  });
+  return describe('#readAllGeneralConfigurationFiles', function() {
+    it('Should be a callable function', function() {
+      return assert.typeOf(Jelly.prototype.readAllGeneralConfigurationFiles, 'function');
+    });
+    return it('Should return an error when there is no executable content available', function(cb) {
+      var jelly;
+
+      jelly = new Jelly();
+      return jelly.readAllGeneralConfigurationFiles(function(err) {
+        var e;
+
+        try {
+          assert.equal(toType(err), 'error');
           cb();
           return cb = function() {};
         } catch (_error) {

@@ -14,7 +14,7 @@ path = require('path');
 
 
 ReadableEntity = (function() {
-  ReadableEntity.prototype.ReadableEntityCs = function() {
+  ReadableEntity.prototype._constructor_ = function() {
     if (!this._cs) {
       this._cs = true;
       return this._entityContentList = [];
@@ -22,7 +22,7 @@ ReadableEntity = (function() {
   };
 
   function ReadableEntity() {
-    this.ReadableEntityCs();
+    this._constructor_();
   }
 
   ReadableEntity.prototype.ReadableEntity = true;
@@ -37,7 +37,6 @@ ReadableEntity = (function() {
 
 
   ReadableEntity.prototype.getCurrentContent = function() {
-    this.ReadableEntityCs();
     return this._entityContentList.slice(-1)[0] || {};
   };
 
@@ -52,7 +51,6 @@ ReadableEntity = (function() {
 
 
   ReadableEntity.prototype.getCurrentContentEntity = function() {
-    this.ReadableEntityCs();
     return this.getCurrentContent().content;
   };
 
@@ -67,7 +65,6 @@ ReadableEntity = (function() {
   ReadableEntity.prototype.eraseContent = function() {
     var _ref;
 
-    this.ReadableEntityCs();
     if ((_ref = this._entityContentList) == null) {
       this._entityContentList = [];
     }
@@ -85,7 +82,6 @@ ReadableEntity = (function() {
 
 
   ReadableEntity.prototype.getFirstContent = function() {
-    this.ReadableEntityCs();
     return this._entityContentList[0] || {};
   };
 
@@ -99,7 +95,6 @@ ReadableEntity = (function() {
 
 
   ReadableEntity.prototype.getContentList = function() {
-    this.ReadableEntityCs();
     return this._entityContentList;
   };
 
@@ -117,7 +112,6 @@ ReadableEntity = (function() {
   ReadableEntity.prototype.getLastContentOfExtension = function(ext) {
     var content, _i, _ref;
 
-    this.ReadableEntityCs();
     if (typeof ext === 'undefined' || ext === null) {
       return null;
     }
@@ -144,8 +138,10 @@ ReadableEntity = (function() {
 
 
   ReadableEntity.prototype.getLastExecutableContent = function() {
-    this.ReadableEntityCs();
-    return this.getLastContentOfExtension('__exec');
+    var content;
+
+    content = this.getLastContentOfExtension('__exec') || {};
+    return content.content || null;
   };
 
   /**
@@ -164,7 +160,6 @@ ReadableEntity = (function() {
     var content, curContent, e, execContent;
 
     try {
-      this.ReadableEntityCs();
       cb = cb || function() {};
       curContent = this.getCurrentContent();
       if (typeof curContent.content === 'undefined' || curContent.content === null) {
@@ -220,7 +215,6 @@ ReadableEntity = (function() {
 
 
   ReadableEntity.prototype.updateContent = function(content) {
-    this.ReadableEntityCs();
     return this._entityContentList.push(content);
   };
 
@@ -238,7 +232,6 @@ ReadableEntity = (function() {
     if (encoding == null) {
       encoding = "utf8";
     }
-    this.ReadableEntityCs();
     self = this;
     cb = cb || encoding;
     if (typeof cb !== 'function') {

@@ -8,12 +8,12 @@ path = require('path')
  * @class ReadableEntity
 ###
 class ReadableEntity
-  ReadableEntityCs: ->
+  _constructor_: ->
     if !(@_cs)
       @_cs = true
       @_entityContentList = []
 
-  constructor: -> @ReadableEntityCs()
+  constructor: -> @_constructor_()
 
   ReadableEntity: true
 
@@ -25,7 +25,7 @@ class ReadableEntity
    * @return {String} Current state of the content
   ###
   getCurrentContent: ->
-    @ReadableEntityCs()
+    #@ReadableEntityCs()
 
     return @_entityContentList.slice(-1)[0] || {}
 
@@ -38,7 +38,7 @@ class ReadableEntity
    * @return {String} Current state of the content (only the entity part)
   ###
   getCurrentContentEntity: ->
-    @ReadableEntityCs()
+    #@ReadableEntityCs()
     return @getCurrentContent().content
 
   ###*
@@ -48,7 +48,7 @@ class ReadableEntity
    * @method eraseContent
   ###
   eraseContent: ->
-    @ReadableEntityCs()
+    #@ReadableEntityCs()
 
     @_entityContentList ?= []
     @_entityContentList.length = 0
@@ -63,7 +63,7 @@ class ReadableEntity
    * @return first content registred
   ###
   getFirstContent: ->
-    @ReadableEntityCs()
+    #@ReadableEntityCs()
 
     # should return an empty object if nothing is set
     return @_entityContentList[0] || {}
@@ -76,7 +76,7 @@ class ReadableEntity
    * @return list of content registred
   ###
   getContentList: ->
-    @ReadableEntityCs()
+    #@ReadableEntityCs()
 
     return @_entityContentList
 
@@ -90,7 +90,7 @@ class ReadableEntity
    * @return last content of the given extension
   ###
   getLastContentOfExtension : (ext) ->
-    @ReadableEntityCs()
+    #@ReadableEntityCs()
 
     # if the specified extension is invalid
     if typeof ext == 'undefined' || ext == null
@@ -113,8 +113,9 @@ class ReadableEntity
    * @return last content of the given extension
   ###
   getLastExecutableContent : ->
-    @ReadableEntityCs()
-    return @getLastContentOfExtension('__exec')
+    #@ReadableEntityCs()
+    content = @getLastContentOfExtension('__exec') || {}
+    return content.content || null
 
 
   ###*
@@ -129,7 +130,7 @@ class ReadableEntity
   ###
   updateAndExecuteCurrentContent: (cb) ->
     try
-      @ReadableEntityCs()    
+      #@ReadableEntityCs()    
       cb = cb || ->
 
       curContent = @getCurrentContent() # get the current content to execute it
@@ -180,7 +181,7 @@ class ReadableEntity
    * @method updateContent
   ###
   updateContent: (content) ->
-    @ReadableEntityCs()
+    #@ReadableEntityCs()
 
     @_entityContentList.push(content)
 
@@ -191,7 +192,7 @@ class ReadableEntity
    * @method updateContent
   ###
   updateContentFromFile: (filename, encoding="utf8",cb) ->
-    @ReadableEntityCs()
+    #@ReadableEntityCs()
     self = @
 
     # handle additional parameters

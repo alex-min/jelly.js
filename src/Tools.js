@@ -3,17 +3,42 @@ var extend,
   __slice = [].slice;
 
 exports.implementing = function() {
-  var classReference, key, mixin, mixins, value, _i, _j, _len, _ref;
+  var classReference, key, mixin, mixins, value, _base, _i, _j, _len, _ref, _ref1, _ref2;
 
   mixins = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), classReference = arguments[_i++];
+  if ((_ref = classReference.__super__) == null) {
+    classReference.__super__ = [];
+  }
   for (_j = 0, _len = mixins.length; _j < _len; _j++) {
     mixin = mixins[_j];
-    _ref = mixin.prototype;
-    for (key in _ref) {
-      value = _ref[key];
-      classReference.prototype[key] = value;
+    classReference.__super__.push(mixin);
+    _ref1 = mixin.prototype;
+    for (key in _ref1) {
+      value = _ref1[key];
+      if (key !== '_constructor_') {
+        classReference.prototype[key] = value;
+      } else {
+        if ((_ref2 = (_base = classReference.prototype)._ctorList) == null) {
+          _base._ctorList = [];
+        }
+        classReference.prototype._ctorList.push(value);
+      }
     }
   }
+  classReference.prototype._parentConstructor_ = function() {
+    var fct, _base1, _k, _len1, _ref3, _ref4, _results;
+
+    if ((_ref3 = (_base1 = classReference.prototype)._ctorList) == null) {
+      _base1._ctorList = [];
+    }
+    _ref4 = classReference.prototype._ctorList;
+    _results = [];
+    for (_k = 0, _len1 = _ref4.length; _k < _len1; _k++) {
+      fct = _ref4[_k];
+      _results.push(fct.call(this));
+    }
+    return _results;
+  };
   return classReference;
 };
 

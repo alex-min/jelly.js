@@ -5,7 +5,10 @@
  * @class ReadableEntity
 ###
 ReadableEntity = require('./ReadableEntity')
+Tools = require('./Tools')
 
-class GeneralConfiguration extends ReadableEntity
+GeneralConfiguration = Tools.implementing Logger, ReadableEntity, class _GeneralConfiguration
+class GeneralConfiguration
+  
   
 module.exports = GeneralConfiguration # export the class

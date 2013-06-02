@@ -26,9 +26,14 @@ Jelly = Tools.implementing(Logger, ReadableEntity, _Jelly = (function() {
   return _Jelly;
 
 })(), Jelly = (function() {
-  function Jelly() {
+  Jelly.prototype._constructor_ = function() {
+    this._parentConstructor_();
     this.getLogger().info('Jelly: Creating a new instance.');
-    this._rootDirectory = __dirname;
+    return this._rootDirectory = __dirname;
+  };
+
+  function Jelly() {
+    this._constructor_();
   }
 
   /**
@@ -112,20 +117,20 @@ Jelly = Tools.implementing(Logger, ReadableEntity, _Jelly = (function() {
 
 
   Jelly.prototype.readJellyConfigurationFile = function(cb) {
-    var confDir, e, rootdir, self;
+    var e, fileLocation, rootdir, self;
 
     self = this;
     cb = cb || function() {};
     try {
       rootdir = this.getRootDirectory();
-      confDir = "" + rootdir + "/conf";
+      fileLocation = "" + rootdir + "/conf/JellyConf.json";
       return async.series([
         function(cb) {
           return self.checkRootDirectory(function(err) {
             return cb(err, null);
           });
         }, function(cb) {
-          return self.updateContentFromFile("" + confDir + "/JellyConf.json", 'utf8', function(err, res) {
+          return self.updateContentFromFile(fileLocation, 'utf8', function(err, res) {
             return cb(err, res);
           });
         }, function(cb) {
@@ -144,7 +149,20 @@ Jelly = Tools.implementing(Logger, ReadableEntity, _Jelly = (function() {
     }
   };
 
-  Jelly.prototype.readAllGeneralConfigurationFiles = function(cb) {};
+  Jelly.prototype.readAllGeneralConfigurationFiles = function(cb) {
+    var content, _ref;
+
+    content = this.getLastExecutableContent();
+    if (content === null) {
+      cb(new Error('There is no executable content pushed on the Jelly Class'));
+      cb = function() {};
+      return;
+    }
+    if ((_ref = content.listOfConfigurationFiles) == null) {
+      content.listOfConfigurationFiles = [];
+    }
+    return async.map(content.listOfConfigurationFiles, function(config, cb) {});
+  };
 
   return Jelly;
 

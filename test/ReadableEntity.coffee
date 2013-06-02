@@ -304,8 +304,8 @@ describe('ReadableEntity', ->
       readableEntity.updateContent({content:'D',extension:'txt'})
 
       content = readableEntity.getLastExecutableContent()
-      assert.typeOf(content,'object', 'the function should return an object')
-      assert.equal(content.content, 'C', 'the function returned the wrong content')      
+      assert.typeOf(content,'string', 'the function should return the content pushed')
+      assert.equal(content, 'C', 'the function should return the content pushed')      
     )    
   )
 #------------------------------------------------------------------------------------------

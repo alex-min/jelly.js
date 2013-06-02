@@ -127,19 +127,50 @@ describe('Jelly', ->
           cb(e); cb = ->
       )
     )
-    it('Should push JellyConf content into the ReadableEntity methods', (cb) ->
+    it('Should return the content read', (cb) ->
       jelly = new Jelly()
       jelly.setRootDirectory("#{__dirname}/testFiles/validJellyConfFile")
       jelly.readJellyConfigurationFile( (e, content) ->
         try
           assert.equal(e, null)
           assert.typeOf(content, 'object')
-          assert.equal(content.content, '{}')
+          assert.equal(content.content, '{"test":true}')
           assert.equal(content.extension, 'json')
+
           cb(); cb = ->
         catch e
           cb(e); cb = ->
       )
     )
+    it('Should push a __exec content on the ReadableEntity object', (cb) ->
+      jelly = new Jelly()
+      jelly.setRootDirectory("#{__dirname}/testFiles/validJellyConfFile")
+      jelly.readJellyConfigurationFile( (e, content) ->
+        try
+          ct = jelly.getCurrentContent()
+          assert.equal(ct.extension, '__exec')
+          assert.typeOf(ct.content, 'object')
+          assert.equal(ct.content.test, true) # because the file contains {"test":true}
+          cb(); cb = ->
+        catch e
+          cb(e); cb = ->
+      )
+    )
+  )
+#------------------------------------------------------------------------------------------
+  describe('#readAllGeneralConfigurationFiles', ->
+    it('Should be a callable function', ->
+      assert.typeOf(Jelly.prototype.readAllGeneralConfigurationFiles, 'function')
+    )
+    it('Should return an error when there is no executable content available', (cb) ->
+      jelly = new Jelly()
+      jelly.readAllGeneralConfigurationFiles((err) ->
+        try
+          assert.equal(toType(err), 'error')
+          cb(); cb = ->
+        catch e
+          cb(e); cb = ->
+      )
+    )    
   )
 )

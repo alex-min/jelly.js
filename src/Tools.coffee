@@ -1,7 +1,24 @@
 exports.implementing = (mixins..., classReference) ->
+  classReference.__super__ ?= []
+
+
   for mixin in mixins
+    #console.log mixin.prototype.ctor
+    classReference.__super__.push(mixin)
     for key, value of mixin::
-      classReference::[key] = value
+      if key != '_constructor_'
+        classReference::[key] = value
+      else
+        classReference::_ctorList ?= []
+        classReference::_ctorList.push(value)
+
+  
+  classReference::_parentConstructor_ = ->
+    classReference::_ctorList ?= []
+    for fct in classReference::_ctorList
+      fct.call(this)
+
+
   classReference
 
 extend = (obj, mixin) ->

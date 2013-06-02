@@ -4,9 +4,13 @@ var Logger, WinstonLoggerWrapper, winston;
 winston = require('winston');
 
 WinstonLoggerWrapper = (function() {
-  function WinstonLoggerWrapper() {
+  WinstonLoggerWrapper.prototype._constructor_ = function() {
     this._logger = new winston.Logger();
-    this._logger.add(winston.transports.Console);
+    return this._logger.add(winston.transports.Console);
+  };
+
+  function WinstonLoggerWrapper() {
+    this._constructor_();
   }
 
   WinstonLoggerWrapper.prototype.LoggerWrapper = true;
@@ -50,8 +54,12 @@ WinstonLoggerWrapper = (function() {
 
 
 Logger = (function() {
+  Logger.prototype._constructor_ = function() {
+    return this._log = new WinstonLoggerWrapper();
+  };
+
   function Logger() {
-    this._log = new WinstonLoggerWrapper();
+    this._constructor_();
   }
 
   /**
@@ -64,9 +72,6 @@ Logger = (function() {
 
 
   Logger.prototype.getLogger = function() {
-    if (typeof this._log === 'undefined') {
-      this._log = new WinstonLoggerWrapper();
-    }
     return this._log;
   };
 
