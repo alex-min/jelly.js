@@ -1,0 +1,275 @@
+{
+    "project": {},
+    "files": {
+        "src\\GeneralConfiguration.js": {
+            "name": "src\\GeneralConfiguration.js",
+            "modules": {},
+            "classes": {},
+            "fors": {},
+            "namespaces": {}
+        },
+        "src\\Jelly.js": {
+            "name": "src\\Jelly.js",
+            "modules": {},
+            "classes": {
+                "Jelly": 1
+            },
+            "fors": {
+                "Jelly": 1
+            },
+            "namespaces": {}
+        },
+        "src\\Logger.js": {
+            "name": "src\\Logger.js",
+            "modules": {},
+            "classes": {
+                "Logger": 1
+            },
+            "fors": {
+                "Logger": 1
+            },
+            "namespaces": {}
+        },
+        "src\\ReadableEntity.js": {
+            "name": "src\\ReadableEntity.js",
+            "modules": {},
+            "classes": {
+                "ReadableEntity": 1
+            },
+            "fors": {
+                "ReadableEntity": 1
+            },
+            "namespaces": {}
+        }
+    },
+    "modules": {},
+    "classes": {
+        "ReadableEntity": {
+            "name": "ReadableEntity",
+            "shortname": "ReadableEntity",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src\\ReadableEntity.js",
+            "line": 8,
+            "description": "RedeableEntity is an (almost) abstract class to deal with general content\nThe main goal of this class is to provide a way to retreive multiple versions of the same content (which was processed)"
+        },
+        "Jelly": {
+            "name": "Jelly",
+            "shortname": "Jelly",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src\\Jelly.js",
+            "line": 16,
+            "description": "Jelly is the main class of the framework"
+        },
+        "Logger": {
+            "name": "Logger",
+            "shortname": "Logger",
+            "classitems": [],
+            "plugins": [],
+            "extensions": [],
+            "plugin_for": [],
+            "extension_for": [],
+            "file": "src\\Logger.js",
+            "line": 49,
+            "description": "The logger class is providing a small interface to add logging capabilites to a given class"
+        }
+    },
+    "classitems": [
+        {
+            "file": "src\\Jelly.js",
+            "line": 39,
+            "description": "Returns the current root directory\nShould return __dirname if nothing is set.",
+            "itemtype": "method",
+            "name": "getRootDirectory",
+            "return": {
+                "description": "Root directory",
+                "type": "String"
+            },
+            "class": "Jelly"
+        },
+        {
+            "file": "src\\Jelly.js",
+            "line": 53,
+            "description": "Sets the current root directory",
+            "itemtype": "method",
+            "name": "setRootDirectory",
+            "return": {
+                "description": "Root directory",
+                "type": "String"
+            },
+            "class": "Jelly"
+        },
+        {
+            "file": "src\\Jelly.js",
+            "line": 67,
+            "description": "Checks if the rootDirectory is valid (and all their subfolders)",
+            "itemtype": "method",
+            "name": "checkRootDirectory",
+            "params": [
+                {
+                    "name": "Callback",
+                    "description": "to fire, parameters : (err), if there is no error, err is null",
+                    "type": "Cb"
+                }
+            ],
+            "return": {
+                "description": "Root directory",
+                "type": "String"
+            },
+            "class": "Jelly"
+        },
+        {
+            "file": "src\\Jelly.js",
+            "line": 110,
+            "description": "read the main configuration file (/conf/JellyConf.json), the is no interpretation yet",
+            "itemtype": "method",
+            "name": "setRootDirectory",
+            "return": {
+                "description": "Root directory",
+                "type": "String"
+            },
+            "class": "Jelly"
+        },
+        {
+            "file": "src\\Logger.js",
+            "line": 65,
+            "description": "Get the logger class for external usage",
+            "itemtype": "method",
+            "name": "getLogger",
+            "return": {
+                "description": "Logger class object",
+                "type": "Logger"
+            },
+            "class": "Logger"
+        },
+        {
+            "file": "src\\ReadableEntity.js",
+            "line": 30,
+            "description": "Get the current state of the content",
+            "itemtype": "method",
+            "name": "getCurrentContent",
+            "return": {
+                "description": "Current state of the content",
+                "type": "String"
+            },
+            "class": "ReadableEntity"
+        },
+        {
+            "file": "src\\ReadableEntity.js",
+            "line": 43,
+            "description": "Get the current state of the content as an entity\nThis is the same thing as calling this.getCurrentContent().content",
+            "itemtype": "method",
+            "name": "getCurrentContentEntity",
+            "return": {
+                "description": "Current state of the content (only the entity part)",
+                "type": "String"
+            },
+            "class": "ReadableEntity"
+        },
+        {
+            "file": "src\\ReadableEntity.js",
+            "line": 57,
+            "description": "Erase all the contents",
+            "itemtype": "method",
+            "name": "eraseContent",
+            "class": "ReadableEntity"
+        },
+        {
+            "file": "src\\ReadableEntity.js",
+            "line": 74,
+            "description": "Get the first content registred\n-> Should return an empty object if nothing is set",
+            "itemtype": "method",
+            "name": "getFirstContent",
+            "return": {
+                "description": "first content registred"
+            },
+            "class": "ReadableEntity"
+        },
+        {
+            "file": "src\\ReadableEntity.js",
+            "line": 88,
+            "description": "Get the list of content registred",
+            "itemtype": "method",
+            "name": "getContentList",
+            "return": {
+                "description": "list of content registred"
+            },
+            "class": "ReadableEntity"
+        },
+        {
+            "file": "src\\ReadableEntity.js",
+            "line": 101,
+            "description": "Get the last content of a given extension\nReturns null if no content is found",
+            "itemtype": "method",
+            "name": "getLastContentOfExtension",
+            "params": [
+                {
+                    "name": "extension",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "last content of the given extension"
+            },
+            "class": "ReadableEntity"
+        },
+        {
+            "file": "src\\ReadableEntity.js",
+            "line": 128,
+            "description": "Get last executableContent\nEquivalent to this.getLastContentOfExtension('__exec')\n(__exec is the extension for executable js code)",
+            "itemtype": "method",
+            "name": "getLastExecutableContent",
+            "params": [
+                {
+                    "name": "extension",
+                    "description": "",
+                    "type": "String"
+                }
+            ],
+            "return": {
+                "description": "last content of the given extension"
+            },
+            "class": "ReadableEntity"
+        },
+        {
+            "file": "src\\ReadableEntity.js",
+            "line": 147,
+            "description": "Get the current content and try to eval it to execute it\nThis function can only handle 'json' or 'js' extensions and will return errors for everything else \nThe content will be pushed as the currentContent.\nEval will be called for 'js' content and 'JSON.parse' for 'json' content",
+            "itemtype": "method",
+            "name": "updateAndExecuteCurrentContent",
+            "params": [
+                {
+                    "name": "callback",
+                    "description": "to call when the work is done, params : (err : errors, content)",
+                    "type": "Function"
+                }
+            ],
+            "class": "ReadableEntity"
+        },
+        {
+            "file": "src\\ReadableEntity.js",
+            "line": 209,
+            "description": "Update the content stored",
+            "itemtype": "method",
+            "name": "updateContent",
+            "class": "ReadableEntity"
+        },
+        {
+            "file": "src\\ReadableEntity.js",
+            "line": 221,
+            "description": "Update the content from a given file",
+            "itemtype": "method",
+            "name": "updateContent",
+            "class": "ReadableEntity"
+        }
+    ],
+    "warnings": []
+}
