@@ -24,8 +24,11 @@ describe('Jelly', function() {
     it('Jelly should inherits from a Logger', function() {
       return assert.equal(Jelly.prototype.Logger, true);
     });
-    return it('Jelly should inherits from a ReadableEntity', function() {
+    it('Jelly should inherits from a ReadableEntity', function() {
       return assert.equal(Jelly.prototype.ReadableEntity, true);
+    });
+    return it('should extends from a ReadableEntity', function() {
+      return assert.equal(Jelly.prototype.TreeElement, true);
     });
   });
   describe('#getRootDirectory', function() {

@@ -4,6 +4,7 @@ async = require('async')
 GeneralConfiguration = require('./GeneralConfiguration')
 Logger = require('./Logger')
 Tools = require('./Tools')
+TreeElement = require('./TreeElement')
 ReadableEntity = require('./ReadableEntity')
 
 ###*
@@ -12,9 +13,10 @@ ReadableEntity = require('./ReadableEntity')
  * @class Jelly
  * @extends Logger
  * @extends ReadableEntity
+ * @extends TreeElement
 ###
 # inherits from Logger and ReadableEntity
-Jelly = Tools.implementing Logger, ReadableEntity, class _Jelly
+Jelly = Tools.implementing Logger, ReadableEntity, TreeElement, class _Jelly
 class Jelly
   _constructor_: () ->
     @_parentConstructor_()

@@ -13,10 +13,13 @@ describe('Jelly', ->
       jelly = new Jelly()
     )
     it('Jelly should inherits from a Logger', ->
-      assert.equal(Jelly.prototype.Logger, true);
+      assert.equal(Jelly.prototype.Logger, true)
     )
     it('Jelly should inherits from a ReadableEntity', ->
-      assert.equal(Jelly.prototype.ReadableEntity, true);
+      assert.equal(Jelly.prototype.ReadableEntity, true)
+    )
+    it('should extends from a ReadableEntity', ->
+      assert.equal(Jelly.prototype.TreeElement, true)
     )
   )
 
