@@ -171,6 +171,20 @@ describe('Jelly', ->
         catch e
           cb(e); cb = ->
       )
+    )
+    it('Should read all general configuration file', (cb) ->
+      jelly = new Jelly()
+      jelly.setRootDirectory("#{__dirname}/testFiles/validGeneralConfig")
+      async.series([
+        (cb) -> jelly.readJellyConfigurationFile( (err) -> cb(err,null)),
+        (cb) -> jelly.readAllGeneralConfigurationFiles( (err) -> cb(err,null))
+      ], (err, res) ->
+        try
+          assert.equal(err,null, 'files should be valid')
+          cb()
+        catch e
+          cb(e)        
+      )
     )    
   )
 )

@@ -225,7 +225,7 @@ describe('Jelly', function() {
     it('Should be a callable function', function() {
       return assert.typeOf(Jelly.prototype.readAllGeneralConfigurationFiles, 'function');
     });
-    return it('Should return an error when there is no executable content available', function(cb) {
+    it('Should return an error when there is no executable content available', function(cb) {
       var jelly;
 
       jelly = new Jelly();
@@ -240,6 +240,33 @@ describe('Jelly', function() {
           e = _error;
           cb(e);
           return cb = function() {};
+        }
+      });
+    });
+    return it('Should read all general configuration file', function(cb) {
+      var jelly;
+
+      jelly = new Jelly();
+      jelly.setRootDirectory("" + __dirname + "/testFiles/validGeneralConfig");
+      return async.series([
+        function(cb) {
+          return jelly.readJellyConfigurationFile(function(err) {
+            return cb(err, null);
+          });
+        }, function(cb) {
+          return jelly.readAllGeneralConfigurationFiles(function(err) {
+            return cb(err, null);
+          });
+        }
+      ], function(err, res) {
+        var e;
+
+        try {
+          assert.equal(err, null, 'files should be valid');
+          return cb();
+        } catch (_error) {
+          e = _error;
+          return cb(e);
         }
       });
     });

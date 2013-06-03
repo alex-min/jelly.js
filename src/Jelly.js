@@ -17,6 +17,8 @@ ReadableEntity = require('./ReadableEntity');
  * Jelly is the main class of the framework
  * 
  * @class Jelly
+ * @extends Logger
+ * @extends ReadableEntity
 */
 
 
@@ -158,11 +160,17 @@ Jelly = Tools.implementing(Logger, ReadableEntity, _Jelly = (function() {
       cb = function() {};
       return;
     }
+    cb();
+    return;
     if ((_ref = content.listOfConfigurationFiles) == null) {
       content.listOfConfigurationFiles = [];
     }
-    return async.map(content.listOfConfigurationFiles, function(config, cb) {});
+    return async.map(content.listOfConfigurationFiles, function(config, cb) {
+      return console.log(config);
+    });
   };
+
+  Jelly.prototype.readConfigurationFile = function(cb) {};
 
   return Jelly;
 

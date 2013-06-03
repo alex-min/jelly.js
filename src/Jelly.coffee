@@ -10,6 +10,8 @@ ReadableEntity = require('./ReadableEntity')
  * Jelly is the main class of the framework
  * 
  * @class Jelly
+ * @extends Logger
+ * @extends ReadableEntity
 ###
 # inherits from Logger and ReadableEntity
 Jelly = Tools.implementing Logger, ReadableEntity, class _Jelly
@@ -113,12 +115,18 @@ class Jelly
       cb(new Error('There is no executable content pushed on the Jelly Class')); cb = ->;
       return
 
+    cb(); return; # temporary code for testing purposes
+
     # the default is an empty array
     content.listOfConfigurationFiles ?= []
 
+    # read each configuration file specified
     async.map(content.listOfConfigurationFiles, (config, cb) ->
-
+      console.log config
     )
+
+  readConfigurationFile: (cb) ->
+
 
     ## TODO : This method will read all the general configuration files
 
