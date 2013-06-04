@@ -73,4 +73,44 @@ describe('TreeElement', ->
       )
     )
   )
+#------------------------------------------------------------------------------------------
+  describe('#setId', ->
+    it('Should be callable function', ->
+      assert.typeOf(TreeElement.prototype.setId, 'function')
+    )
+    it('Should set the id of the TreeElement', ->
+      elm = new TreeElement()
+      elm.setId('A')
+      assert.equal(elm.getId(), 'A')
+    )
+  )
+#------------------------------------------------------------------------------------------
+  describe('#getId', ->
+    it('Should be callable function', ->
+      assert.typeOf(TreeElement.prototype.getId, 'function')
+    )
+    # if it worked for #setKey, it will work here, no need for more tests   
+  )
+
+#------------------------------------------------------------------------------------------
+  describe('#getChildById', ->
+    it('Should be callable function', ->
+      assert.typeOf(TreeElement.prototype.getChildById, 'function')
+    )
+    it('Should be return null if the key is null', ->
+      a = new TreeElement()
+      b = new TreeElement()
+      a.addChild(b)
+      assert.equal(a.getChildById(null), null);
+    )
+    it('Should return a child if a key match', ->
+      a = new TreeElement()
+      b = new TreeElement()
+      a.addChild(b)
+      b.setId('b')
+      b.__TEST__ = 1
+      assert.typeOf(a.getChildById('b'), 'Object')
+      assert.equal(a.getChildById('b').__TEST__, 1, 'b was not returned as expected')
+    )
+  )
 )

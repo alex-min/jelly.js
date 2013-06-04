@@ -17,7 +17,67 @@ TreeElement = (function() {
 
   TreeElement.prototype._constructor_ = function() {
     this._childList = [];
-    return this._parent = null;
+    this._parent = null;
+    return this._id = null;
+  };
+
+  /**
+   * This method will return set the Id returned by the method TreeElement::getId
+   * The main goal is to provide an easy system to find node in TreeElements
+   * The default id is set to null.
+   * Any call to setId will replace the previous id without further check.
+   *
+   * @for TreeElement
+   * @method setId
+   * @param {Any Type} Id of the element (or null)
+  */
+
+
+  TreeElement.prototype.setId = function(_id) {
+    return this._id = _id;
+  };
+
+  /**
+   * This method will return the Id set by the method TreeElement::setId
+   * The main goal is to provide an easy system to find node in TreeElements
+   * The default id is set to null.
+   *
+   * @for TreeElement
+   * @method getId
+   * @return {Any Type} Id of the element (or null)
+  */
+
+
+  TreeElement.prototype.getId = function() {
+    return this._id;
+  };
+
+  /**
+   * This method will find a child by its Id.
+   * If nothing is found, the method will return null.
+   * Any null id passed to the method will result in a null return without any further research.
+   *
+   * @for TreeElement
+   * @method getChildById
+   * @param {Any Type} Searched id
+   * @param {TreeElement} Child found by the id (or null)
+  */
+
+
+  TreeElement.prototype.getChildById = function(id) {
+    var child, _i, _len, _ref;
+
+    if (typeof id === 'undefined' || id === null) {
+      return null;
+    }
+    _ref = this._childList;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      child = _ref[_i];
+      if (child.getId() === id) {
+        return child;
+      }
+    }
+    return null;
   };
 
   /**

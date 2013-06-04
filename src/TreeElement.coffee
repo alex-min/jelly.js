@@ -10,6 +10,50 @@ class TreeElement
   _constructor_: ->
     @_childList = []
     @_parent = null
+    @_id = null
+
+  ###*
+   * This method will return set the Id returned by the method TreeElement::getId
+   * The main goal is to provide an easy system to find node in TreeElements
+   * The default id is set to null.
+   * Any call to setId will replace the previous id without further check.
+   *
+   * @for TreeElement
+   * @method setId
+   * @param {Any Type} Id of the element (or null)
+  ###
+  setId: (_id) -> @_id = _id
+
+  ###*
+   * This method will return the Id set by the method TreeElement::setId
+   * The main goal is to provide an easy system to find node in TreeElements
+   * The default id is set to null.
+   *
+   * @for TreeElement
+   * @method getId
+   * @return {Any Type} Id of the element (or null)
+  ###
+  getId: -> @_id
+
+  ###*
+   * This method will find a child by its Id.
+   * If nothing is found, the method will return null.
+   * Any null id passed to the method will result in a null return without any further research.
+   *
+   * @for TreeElement
+   * @method getChildById
+   * @param {Any Type} Searched id
+   * @param {TreeElement} Child found by the id (or null)
+  ### 
+  getChildById: (id) ->
+    # if the key is invalid, return null
+    return null if typeof id == 'undefined' || id == null
+
+    for child in @_childList
+      # if the child has the right key
+      if child.getId() == id
+        return child
+    return null # we found nothing
 
   ###*
    * Get the list of children (the list should consist of TreeElement classes).

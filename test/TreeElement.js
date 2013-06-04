@@ -78,7 +78,7 @@ describe('TreeElement', function() {
       });
     });
   });
-  return describe('#getParent', function() {
+  describe('#getParent', function() {
     it('Should be callable function', function() {
       return assert.typeOf(TreeElement.prototype.getParent, 'function');
     });
@@ -95,6 +95,47 @@ describe('TreeElement', function() {
         assert.equal(err, null);
         return assert.equal(t2.getParent().__PARENT__, 1);
       });
+    });
+  });
+  describe('#setId', function() {
+    it('Should be callable function', function() {
+      return assert.typeOf(TreeElement.prototype.setId, 'function');
+    });
+    return it('Should set the id of the TreeElement', function() {
+      var elm;
+
+      elm = new TreeElement();
+      elm.setId('A');
+      return assert.equal(elm.getId(), 'A');
+    });
+  });
+  describe('#getId', function() {
+    return it('Should be callable function', function() {
+      return assert.typeOf(TreeElement.prototype.getId, 'function');
+    });
+  });
+  return describe('#getChildById', function() {
+    it('Should be callable function', function() {
+      return assert.typeOf(TreeElement.prototype.getChildById, 'function');
+    });
+    it('Should be return null if the key is null', function() {
+      var a, b;
+
+      a = new TreeElement();
+      b = new TreeElement();
+      a.addChild(b);
+      return assert.equal(a.getChildById(null), null);
+    });
+    return it('Should return a child if a key match', function() {
+      var a, b;
+
+      a = new TreeElement();
+      b = new TreeElement();
+      a.addChild(b);
+      b.setId('b');
+      b.__TEST__ = 1;
+      assert.typeOf(a.getChildById('b'), 'Object');
+      return assert.equal(a.getChildById('b').__TEST__, 1, 'b was not returned as expected');
     });
   });
 });

@@ -14,5 +14,13 @@ toType = function(obj) {
 describe('GeneralConfiguration', function() {
   var GeneralConfiguration;
 
-  return GeneralConfiguration = require('../src/GeneralConfiguration');
+  GeneralConfiguration = require('../src/GeneralConfiguration');
+  it('Should be a GeneralConfiguration', function() {
+    return assert.equal(GeneralConfiguration.prototype.GeneralConfiguration, true);
+  });
+  return describe('_constructor_', function() {
+    return it('Should have a _constructor_', function() {
+      return assert.typeOf(GeneralConfiguration.prototype._constructor_, 'function');
+    });
+  });
 });
