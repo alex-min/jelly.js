@@ -20,6 +20,19 @@ describe('ReadableEntity', function() {
       return readableEntity = new ReadableEntity();
     });
   });
+  describe('#readUpdateAndExecute', function() {
+    it('Should be a callable function', function() {
+      return assert.typeOf(ReadableEntity.prototype.readUpdateAndExecute, 'function');
+    });
+    return it('Should read, update and execute files', function(cb) {
+      var r;
+
+      r = new ReadableEntity();
+      return r.readUpdateAndExecute("" + __dirname + "/testFiles/validJellyConfFile/conf/JellyConf.json", 'utf8', function(err) {
+        return cb(err);
+      });
+    });
+  });
   describe('#updateAndExecuteCurrentContent', function() {
     it('Should be a callable function', function() {
       return assert.typeOf(ReadableEntity.prototype.updateAndExecuteCurrentContent, 'function');

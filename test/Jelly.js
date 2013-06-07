@@ -31,6 +31,20 @@ describe('Jelly', function() {
       return assert.equal(Jelly.prototype.TreeElement, true);
     });
   });
+  describe('#getLocalPath', function() {
+    it('Should be a callable function', function() {
+      return assert.typeOf(Jelly.prototype.getLocalPath, "function");
+    });
+    return it('Should be equivlent of getRootDirectory() + / + path', function() {
+      var Path, jelly;
+
+      jelly = new Jelly();
+      Path = 'a/b/c/d';
+      assert.equal("" + (jelly.getRootDirectory()) + "/" + Path, jelly.getLocalPath(Path));
+      jelly.setRootDirectory('e/f/g/h');
+      return assert.equal("" + (jelly.getRootDirectory()) + "/" + Path, jelly.getLocalPath(Path));
+    });
+  });
   describe('#getRootDirectory', function() {
     it('Should be a callable function', function() {
       return assert.typeOf(Jelly.prototype.getRootDirectory, "function");

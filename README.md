@@ -7,4 +7,4 @@ Unlike most of node web frameworks, Jelly.js is not only for Single Page Applica
 The main goal is to provide a system of module to reuse them later on.
 The documentation can be found under the /documentation directory.
 
-#### Current progress before the 1.0 version : **5%** 
+#### Current progress before the 1.0 version : **20%** 

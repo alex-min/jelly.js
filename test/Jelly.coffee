@@ -24,6 +24,19 @@ describe('Jelly', ->
   )
 
 #------------------------------------------------------------------------------------------
+  describe('#getLocalPath', ->
+    it('Should be a callable function', ->
+      assert.typeOf(Jelly.prototype.getLocalPath,"function")
+    )
+    it('Should be equivlent of getRootDirectory() + / + path', ->
+       jelly = new Jelly()
+       Path = 'a/b/c/d'
+       assert.equal("#{jelly.getRootDirectory()}/#{Path}", jelly.getLocalPath(Path));
+       jelly.setRootDirectory('e/f/g/h')
+       assert.equal("#{jelly.getRootDirectory()}/#{Path}", jelly.getLocalPath(Path));       
+    )
+  )
+#------------------------------------------------------------------------------------------
   describe('#getRootDirectory', ->
     it('Should be a callable function', ->
       assert.typeOf(Jelly.prototype.getRootDirectory,"function")

@@ -3,7 +3,7 @@ var extend,
   __slice = [].slice;
 
 exports.implementing = function() {
-  var classReference, key, mixin, mixins, value, _base, _i, _j, _len, _ref, _ref1, _ref2;
+  var classReference, func, key, mixin, mixins, value, _base, _base1, _i, _j, _k, _len, _len1, _ref, _ref1, _ref2, _ref3, _ref4;
 
   mixins = 2 <= arguments.length ? __slice.call(arguments, 0, _i = arguments.length - 1) : (_i = 0, []), classReference = arguments[_i++];
   if ((_ref = classReference.__super__) == null) {
@@ -15,30 +15,40 @@ exports.implementing = function() {
     _ref1 = mixin.prototype;
     for (key in _ref1) {
       value = _ref1[key];
-      if (key !== '_constructor_') {
-        classReference.prototype[key] = value;
-      } else {
+      if (key === '_ctorList') {
         if ((_ref2 = (_base = classReference.prototype)._ctorList) == null) {
           _base._ctorList = [];
         }
-        classReference.prototype._ctorList.push(value);
+        _ref3 = mixin.prototype._ctorList;
+        for (_k = 0, _len1 = _ref3.length; _k < _len1; _k++) {
+          func = _ref3[_k];
+          classReference.prototype._ctorList.push(func);
+        }
+      } else if (key !== '_constructor_') {
+        classReference.prototype[key] = value;
+      } else {
+        if ((_ref4 = (_base1 = classReference.prototype)._ctorList) == null) {
+          _base1._ctorList = [];
+        }
+        classReference.prototype._ctorList.push(mixin.prototype._constructor_);
       }
     }
   }
   classReference.prototype._parentConstructor_ = function() {
-    var fct, _base1, _k, _len1, _ref3, _ref4, _results;
+    var fct, _base2, _l, _len2, _ref5, _ref6, _results;
 
-    if ((_ref3 = (_base1 = classReference.prototype)._ctorList) == null) {
-      _base1._ctorList = [];
+    if ((_ref5 = (_base2 = classReference.prototype)._ctorList) == null) {
+      _base2._ctorList = [];
     }
-    _ref4 = classReference.prototype._ctorList;
+    _ref6 = classReference.prototype._ctorList;
     _results = [];
-    for (_k = 0, _len1 = _ref4.length; _k < _len1; _k++) {
-      fct = _ref4[_k];
+    for (_l = 0, _len2 = _ref6.length; _l < _len2; _l++) {
+      fct = _ref6[_l];
       _results.push(fct.call(this));
     }
     return _results;
   };
+  classReference._selfClassName = classReference.prototype.constructor.name;
   return classReference;
 };
 
@@ -51,8 +61,4 @@ extend = function(obj, mixin) {
     _results.push(obj[name] = method);
   }
   return _results;
-};
-
-exports.include = function(klass, mixin) {
-  return extend(klass.prototype, mixin);
 };

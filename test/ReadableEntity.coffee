@@ -13,6 +13,19 @@ describe('ReadableEntity', ->
     )
   )
 #------------------------------------------------------------------------------------------
+  describe('#readUpdateAndExecute', ->
+    it('Should be a callable function', ->
+      assert.typeOf(ReadableEntity.prototype.readUpdateAndExecute, 'function')
+    )
+    it('Should read, update and execute files', (cb) ->
+      r = new ReadableEntity()
+      r.readUpdateAndExecute("#{__dirname}/testFiles/validJellyConfFile/conf/JellyConf.json",\
+      'utf8', (err) ->
+         cb(err)
+      )
+    )
+  )
+#------------------------------------------------------------------------------------------
   describe('#updateAndExecuteCurrentContent', ->
     it('Should be a callable function', ->
       assert.typeOf(ReadableEntity.prototype.updateAndExecuteCurrentContent, 'function')

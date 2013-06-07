@@ -1,12 +1,17 @@
 fs = require('fs')
 path = require('path')
+async = require('async')
 
+Events = require ('./Events')
+Tools = require ('./Tools')
 ###*
  * RedeableEntity is an (almost) abstract class to deal with general content
  * The main goal of this class is to provide a way to retreive multiple versions of the same content (which was processed)
  * 
  * @class ReadableEntity
+ * @extends Events
 ###
+ReadableEntity = Tools.implementing Events, class _ReadableEntity
 class ReadableEntity
   _constructor_: ->
     if !(@_cs)
@@ -172,6 +177,35 @@ class ReadableEntity
     catch e
       cb(e, null); cb = ->
 
+  ###*
+   * Update content from a file and execute it after
+   * Equivalent of calling updateContentFromFile and updateAndExecuteCurrentContent methods.
+   * @for ReadableEntity
+   * @method readUpdateAndExecute
+   * @param {String} fileLocation : the location of the file to read
+   * @param {String} encoding : Encoding of the file (default:utf8)  
+   * @param {Function} callback to call when the work is done, params : (err : errors)
+  ###
+  readUpdateAndExecute: (fileLocation, encoding, cb) ->
+    cb = cb || ->
+
+    self = @
+    async.series([
+      (cb) ->
+        try
+          self.updateContentFromFile(fileLocation, 'utf8', (err, res) ->
+            cb(err, null)
+          )
+        catch e
+          cb(e)
+      (cb) ->
+        self.updateAndExecuteCurrentContent((err) -> cb(err))
+    ], (err) ->
+      if err
+        cb(new Error(err));
+      else
+        cb(null)
+    );
 
 
   ###*

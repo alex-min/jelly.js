@@ -42,6 +42,20 @@ Jelly = Tools.implementing(Logger, ReadableEntity, TreeElement, _Jelly = (functi
   }
 
   /**
+   * Get the path relatiive to the root directory
+   * getLocalPath(path) is equivalenent of getRootDirectory() + '/' + path
+   *
+   * @for Jelly
+   * @method getLocalPath
+   * @return {String} Local directory
+  */
+
+
+  Jelly.prototype.getLocalPath = function(path) {
+    return this._rootDirectory + '/' + path.toString();
+  };
+
+  /**
    * Returns the current root directory
    * Should return __dirname if nothing is set.
    *
@@ -122,13 +136,12 @@ Jelly = Tools.implementing(Logger, ReadableEntity, TreeElement, _Jelly = (functi
 
 
   Jelly.prototype.readJellyConfigurationFile = function(cb) {
-    var e, fileLocation, rootdir, self;
+    var e, fileLocation, self;
 
     self = this;
     cb = cb || function() {};
     try {
-      rootdir = this.getRootDirectory();
-      fileLocation = "" + rootdir + "/conf/JellyConf.json";
+      fileLocation = this.getLocalPath('/conf/JellyConf.json');
       return async.series([
         function(cb) {
           return self.checkRootDirectory(function(err) {
@@ -155,21 +168,59 @@ Jelly = Tools.implementing(Logger, ReadableEntity, TreeElement, _Jelly = (functi
   };
 
   Jelly.prototype.readAllGeneralConfigurationFiles = function(cb) {
-    var content, _ref;
+    var content, self, _ref;
 
+    self = this;
     content = this.getLastExecutableContent();
     if (content === null) {
       cb(new Error('There is no executable content pushed on the Jelly Class'));
       cb = function() {};
       return;
     }
-    cb();
-    return;
     if ((_ref = content.listOfConfigurationFiles) == null) {
       content.listOfConfigurationFiles = [];
     }
-    return async.map(content.listOfConfigurationFiles, function(config, cb) {
-      return console.log(config);
+    return async.map(content.listOfConfigurationFiles, function(fileLocation, cb) {
+      var fileAbsolutLocation, generalConfig;
+
+      fileAbsolutLocation = self.getLocalPath(fileLocation);
+      generalConfig = self.getChildById(fileLocation);
+      return async.series([
+        function(cb) {
+          if (generalConfig === null) {
+            generalConfig = new GeneralConfiguration();
+            generalConfig.setId(fileLocation);
+            generalConfig.setParent(self);
+            return self.addChild(generalConfig, cb);
+          } else {
+            return cb();
+          }
+        }, function(cb) {
+          return generalConfig.readUpdateAndExecute(fileAbsolutLocation, 'utf8', function(err) {
+            if (err) {
+              cb(err);
+              cb = function() {};
+              return;
+            }
+            self.emit('Jelly::readAllGeneralConfigurationFiles', self);
+            return generalConfig.readAllModules(function(err) {
+              if (err != null) {
+                return cb(new Error(err));
+              } else {
+                return cb();
+              }
+            });
+          });
+        }
+      ], function(err) {
+        return cb(err);
+      });
+    }, function(err) {
+      if (err) {
+        return cb(new Error(err));
+      } else {
+        return cb(null);
+      }
     });
   };
 
@@ -178,7 +229,5 @@ Jelly = Tools.implementing(Logger, ReadableEntity, TreeElement, _Jelly = (functi
   return Jelly;
 
 })());
-
-Tools.include(Jelly, ReadableEntity);
 
 module.exports = Jelly;
