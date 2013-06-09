@@ -118,10 +118,28 @@ class ReadableEntity
    * @return last content of the given extension
   ###
   getLastExecutableContent : ->
-    #@ReadableEntityCs()
     content = @getLastContentOfExtension('__exec') || {}
     return content.content || null
 
+  ###*
+   * Get last known path of the content
+   * Search for a 'filename' property on each content pushed
+   *
+   * @for ReadableEntity
+   * @method getLastFilename
+   * @param {String} extFilter [optional] : if a null value is given, the function will search on any extension
+   * , set a non-null value to use only a specified extension.
+   * @return last content of the given extension
+  ###
+  getLastFilename : (extFilter) ->
+    # for each content (decreasing iteration)
+    for content in @_entityContentList by -1
+      # if it has the right extension
+      # using null in this method means that any extension can be used
+      if extFilter == null || content.extension == extFilter 
+        if content.filename?
+          return content.filename
+    return null
 
   ###*
    * Get the current content and try to eval it to execute it
@@ -162,7 +180,7 @@ class ReadableEntity
           when 'json' then execContent = JSON.parse(curContent.content)
           when 'js' then execContent = eval(curContent.content)
       catch e
-        cb(new Error("Unable to parse content #{curContent.content}, #{e}"), null); cb = ->
+        cb(new Error("Unable to parse content #{curContent.content}, #{e} on file #{curContent.filename}"), null); cb = ->
         return
 
       # the executable extension is __exec
@@ -194,17 +212,17 @@ class ReadableEntity
       (cb) ->
         try
           self.updateContentFromFile(fileLocation, 'utf8', (err, res) ->
-            cb(err, null)
+            if err
+              cb(err, null)
+            else
+              cb(null, null)
           )
         catch e
           cb(e)
       (cb) ->
         self.updateAndExecuteCurrentContent((err) -> cb(err))
     ], (err) ->
-      if err
-        cb(new Error(err));
-      else
-        cb(null)
+      cb(err)
     );
 
 

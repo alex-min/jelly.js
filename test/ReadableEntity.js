@@ -20,6 +20,50 @@ describe('ReadableEntity', function() {
       return readableEntity = new ReadableEntity();
     });
   });
+  describe('#getLastFilename', function() {
+    it('Should be a callable function', function() {
+      return assert.typeOf(ReadableEntity.prototype.getLastFilename, 'function');
+    });
+    it('Should return null when nothing is set', function() {
+      return assert.equal(new ReadableEntity().getLastFilename(), null);
+    });
+    it('Should return the last extension pushed', function() {
+      var r;
+
+      r = new ReadableEntity();
+      r.updateContent({
+        content: 'A'
+      });
+      r.updateContent({
+        content: 'B',
+        filename: 'f1'
+      });
+      r.updateContent({
+        content: 'B',
+        filename: 'f2'
+      });
+      return assert.equal(r.getLastFilename(), 'f2');
+    });
+    return it('Should select a particular extension if given as parameter', function() {
+      var r;
+
+      r = new ReadableEntity();
+      r.updateContent({
+        content: 'A'
+      });
+      r.updateContent({
+        content: 'B',
+        filename: 'f1',
+        extension: 'txt'
+      });
+      r.updateContent({
+        content: 'B',
+        filename: 'f2',
+        extension: 'json'
+      });
+      return assert.equal(r.getLastFilename('txt'), 'f1');
+    });
+  });
   describe('#readUpdateAndExecute', function() {
     it('Should be a callable function', function() {
       return assert.typeOf(ReadableEntity.prototype.readUpdateAndExecute, 'function');

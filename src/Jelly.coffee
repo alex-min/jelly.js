@@ -73,7 +73,7 @@ class Jelly
         fs.stat(dir, (err,st) ->
                 try
                   if err
-                    cb(new Error(err), null); cb = -> # do not call the callback twice
+                    cb(err, null); cb = -> # do not call the callback twice
                     return
                   if !(st.isDirectory())
                     # do not call the callback twice
@@ -146,28 +146,13 @@ class Jelly
               self.addChild(generalConfig, cb)
             else
               cb()
-          # read, update and interpret the file
-          (cb) ->
-            generalConfig.readUpdateAndExecute(fileAbsolutLocation, 'utf8', (err) ->
-              if err
-                cb(err); cb = ->
-                return;
-              self.emit('Jelly::readAllGeneralConfigurationFiles', self)
-              generalConfig.readAllModules((err) ->
-                if err?
-                  cb(new Error(err))
-                else
-                  cb()
-              )
-            )
+          # interpret the file
+          (cb) -> generalConfig.loadFromFilename(fileAbsolutLocation, cb)
         ], (err) -> 
           cb(err)
         )
       , (err) ->
-        if err
-          cb(new Error(err))
-        else
-          cb(null)
+        cb(err)
     )
 
   readConfigurationFile: (cb) ->

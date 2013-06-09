@@ -1,9 +1,12 @@
 path = require('path')
 
+async = require('async')
+
 ReadableEntity = require('./ReadableEntity')
 Tools = require('./Tools')
 TreeElement = require('./TreeElement')
 Logger = require('./Logger')
+Module = require('./Module')
 
 ###*
  * GeneralConfiguration is a class dealing with GeneralConfiguration files
@@ -21,6 +24,7 @@ class GeneralConfiguration
   _constructor_:->
     @_parentConstructor_()
 
+  # set default values for the general configuration file
   _setDefaultContent: (content) ->
     content.name ?= path.basename(@getId(), '.json')
     content.moduleConfigurationFilename ?= 'assets.json'
@@ -28,14 +32,89 @@ class GeneralConfiguration
     content.pluginParameters ?= {}
     content.loadedModules ?= []
 
-  readAllModules: (cb) ->
+  ###*
+   * Load a general configuration from its configuration file
+   * This method must be called once when loading the general configuration for the first time.
+   * After this, only calls to the 'reload' method are allowed.
+   *
+   * @for GeneralConfiguration
+   * @method loadFromFilename
+   * @param {String} filename The location of the file
+   * @param {Function} callback : parameters (err : error occured) 
+  ###
+  loadFromFilename: (filename, cb) ->
+    self = @
     cb = cb || ->
 
+    @readUpdateAndExecute(filename, 'utf8', (err) ->
+      if err
+        cb(err)
+      else
+        self.reload(cb)
+    )
+
+  ###*
+   * Do the necessary calls to reload the general configuration (it must be loaded before calling this)
+   * Currently equivalent to the readAllFiles method 
+   *
+   * @for GeneralConfiguration
+   * @method reload
+   * @param {Function} callback : parameters (err : error occured) 
+  ###
+  reload: (cb) -> @readAllModules(cb)
+
+  ###*
+   * load all the module (this method is reading all modules recursively)
+   * The 'loadedModules' array on the general configuration file is used to determine the list of modules to load.
+   * This method is also triggering the 'readAllFiles' method on each module
+   *
+   * @for GeneralConfiguration
+   * @method readAllModules
+   * @param {Function} callback : parameters (err : error occured) 
+  ###
+  readAllModules: (cb) ->
+    self = @
+    cb = cb || ->
+
+    # we gather the last executable content to get what module to load
     content = @getLastExecutableContent()
     if content == null
-      cb(new Error('There is no executable content pushed on the Module Class')); cb = ->;
+      cb(new Error('There is no executable content pushed on the GeneralConfiguration Class')); cb = ->;
       return
-    @_setDefaultContent(content)
-    cb()    
+    @_setDefaultContent(content) # set default values for the general configuration file
+    
+    # for each module in the LoadedModules entry
+    async.map(content.loadedModules, (moduleName, cb) ->
+      # we get the module name
+      module = self.getChildById(moduleName)
+      async.series([
+            (cb) ->
+              # if the module is not loaded yet, we load it
+              if module == null
+                try
+                  module = new Module()
+                  module.setId(moduleName.name)
+                  module.setParent(self)
+                  jelly = self.getParent()
+                  moduledir = jelly.getLocalPath("app/#{moduleName.name}/#{content.moduleConfigurationFilename}")
+                  module.loadFromFilename(moduledir,(err) ->
+                    if err
+                      cb(err); cb = ->
+                      return
+                    else
+                      self.addChild(module, cb)
+                  )
+                catch e
+                  cb(e)
+              else
+                cb()
+          ,
+            (cb) -> cb()
+        ]
+      , (err) -> cb(err)
+      )
+    , (err) -> cb(err)
+    )
+    
 
 module.exports = GeneralConfiguration # export the class

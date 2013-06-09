@@ -104,7 +104,7 @@ Jelly = Tools.implementing(Logger, ReadableEntity, TreeElement, _Jelly = (functi
 
         try {
           if (err) {
-            cb(new Error(err), null);
+            cb(err, null);
             cb = function() {};
             return;
           }
@@ -196,31 +196,13 @@ Jelly = Tools.implementing(Logger, ReadableEntity, TreeElement, _Jelly = (functi
             return cb();
           }
         }, function(cb) {
-          return generalConfig.readUpdateAndExecute(fileAbsolutLocation, 'utf8', function(err) {
-            if (err) {
-              cb(err);
-              cb = function() {};
-              return;
-            }
-            self.emit('Jelly::readAllGeneralConfigurationFiles', self);
-            return generalConfig.readAllModules(function(err) {
-              if (err != null) {
-                return cb(new Error(err));
-              } else {
-                return cb();
-              }
-            });
-          });
+          return generalConfig.loadFromFilename(fileAbsolutLocation, cb);
         }
       ], function(err) {
         return cb(err);
       });
     }, function(err) {
-      if (err) {
-        return cb(new Error(err));
-      } else {
-        return cb(null);
-      }
+      return cb(err);
     });
   };
 

@@ -13,6 +13,29 @@ describe('ReadableEntity', ->
     )
   )
 #------------------------------------------------------------------------------------------
+  describe('#getLastFilename', ->
+    it('Should be a callable function', ->
+      assert.typeOf(ReadableEntity.prototype.getLastFilename, 'function')
+    )
+    it('Should return null when nothing is set', ->
+      assert.equal(new ReadableEntity().getLastFilename(), null)
+    )
+    it('Should return the last extension pushed', ->
+      r = new ReadableEntity()
+      r.updateContent({content:'A'})
+      r.updateContent({content:'B',filename:'f1'})
+      r.updateContent({content:'B',filename:'f2'})
+      assert.equal(r.getLastFilename(), 'f2')
+    )
+    it('Should select a particular extension if given as parameter', ->
+      r = new ReadableEntity()
+      r.updateContent({content:'A'})
+      r.updateContent({content:'B',filename:'f1', extension:'txt'})
+      r.updateContent({content:'B',filename:'f2', extension:'json'})
+      assert.equal(r.getLastFilename('txt'), 'f1')
+    )     
+  )
+#------------------------------------------------------------------------------------------
   describe('#readUpdateAndExecute', ->
     it('Should be a callable function', ->
       assert.typeOf(ReadableEntity.prototype.readUpdateAndExecute, 'function')

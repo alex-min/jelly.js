@@ -157,6 +157,33 @@ ReadableEntity = Tools.implementing(Events, _ReadableEntity = (function() {
   };
 
   /**
+   * Get last known path of the content
+   * Search for a 'filename' property on each content pushed
+   *
+   * @for ReadableEntity
+   * @method getLastFilename
+   * @param {String} extFilter [optional] : if a null value is given, the function will search on any extension
+   * , set a non-null value to use only a specified extension.
+   * @return last content of the given extension
+  */
+
+
+  ReadableEntity.prototype.getLastFilename = function(extFilter) {
+    var content, _i, _ref;
+
+    _ref = this._entityContentList;
+    for (_i = _ref.length - 1; _i >= 0; _i += -1) {
+      content = _ref[_i];
+      if (extFilter === null || content.extension === extFilter) {
+        if (content.filename != null) {
+          return content.filename;
+        }
+      }
+    }
+    return null;
+  };
+
+  /**
    * Get the current content and try to eval it to execute it
    * This function can only handle 'json' or 'js' extensions and will return errors for everything else 
    * The content will be pushed as the currentContent.
@@ -200,7 +227,7 @@ ReadableEntity = Tools.implementing(Events, _ReadableEntity = (function() {
         }
       } catch (_error) {
         e = _error;
-        cb(new Error("Unable to parse content " + curContent.content + ", " + e), null);
+        cb(new Error("Unable to parse content " + curContent.content + ", " + e + " on file " + curContent.filename), null);
         cb = function() {};
         return;
       }
@@ -240,7 +267,11 @@ ReadableEntity = Tools.implementing(Events, _ReadableEntity = (function() {
 
         try {
           return self.updateContentFromFile(fileLocation, 'utf8', function(err, res) {
-            return cb(err, null);
+            if (err) {
+              return cb(err, null);
+            } else {
+              return cb(null, null);
+            }
           });
         } catch (_error) {
           e = _error;
@@ -252,11 +283,7 @@ ReadableEntity = Tools.implementing(Events, _ReadableEntity = (function() {
         });
       }
     ], function(err) {
-      if (err) {
-        return cb(new Error(err));
-      } else {
-        return cb(null);
-      }
+      return cb(err);
     });
   };
 

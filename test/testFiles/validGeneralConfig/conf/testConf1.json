@@ -1,3 +1,6 @@
 {
-  
+  "loadedModules": [
+      {"name":"menu","params":{}},
+      {"name":"newsletter","params":{}}
+    ]
 }
