@@ -9,7 +9,6 @@ describe('GeneralConfiguration', ->
   it('Should be a GeneralConfiguration', ->
     assert.equal(GeneralConfiguration.prototype.GeneralConfiguration, true)
   )
-
 #------------------------------------------------------------------------------------------
   describe('_constructor_', ->
     it('Should have a _constructor_', ->
@@ -27,7 +26,7 @@ describe('GeneralConfiguration', ->
     it('Should extends from a ReadableEntity', ->
       assert.equal(GeneralConfiguration.prototype.ReadableEntity, true)
     )
-    it('Should extends from a ReadableEntity', ->
+    it('Should extends from a TreeElement', ->
       assert.equal(GeneralConfiguration.prototype.TreeElement, true)
     )
   )
@@ -83,5 +82,37 @@ describe('GeneralConfiguration', ->
           )
       )
     )
+  )
+#------------------------------------------------------------------------------------------
+  describe('#loadFromFilename', ->
+    it('Should be a callable function', ->
+      assert.typeOf(GeneralConfiguration.prototype.loadFromFilename, 'function')
+    )
+    it('Should return an error if there is no jelly object as parent', (cb) ->
+      g = new GeneralConfiguration()
+      g.loadFromFilename("#{__dirname}/testFiles/validGeneralConfig/conf/testConf1.json", (err) ->
+        try
+          assert.equal(toType(err), 'error')
+          cb()
+        catch e
+          cb(e)
+      )
+    )
+    it('Should return an error if there is no jelly object as parent', (cb) ->
+      g = new GeneralConfiguration()
+      g.loadFromFilename("#{__dirname}/testFiles/validGeneralConfig/conf/testConf1.json", (err) ->
+        try
+          assert.equal(toType(err), 'error')
+          cb()
+        catch e
+          cb(e)        
+      )
+    )
+  )
+#------------------------------------------------------------------------------------------
+  describe('#reload', ->
+    it('Should be a callable function', ->
+      assert.typeOf(GeneralConfiguration.prototype.reload, 'function')
+    )    
   )
 )

@@ -33,7 +33,7 @@ Jelly = Tools.implementing(Logger, ReadableEntity, TreeElement, _Jelly = (functi
 })(), Jelly = (function() {
   Jelly.prototype._constructor_ = function() {
     this._parentConstructor_();
-    this.getLogger().info('Jelly: Creating a new instance.');
+    this.getLogger().info('Creating a new instance.');
     return this._rootDirectory = __dirname;
   };
 

@@ -37,6 +37,25 @@ Module = Tools.implementing(Logger, ReadableEntity, TreeElement, _Module = (func
     return this._parentConstructor_();
   };
 
+  Module.prototype._setDefaultContent = function(content) {
+    var _ref, _ref1, _ref2, _ref3;
+
+    if ((_ref = content.fileList) == null) {
+      content.fileList = [];
+    }
+    if ((_ref1 = content.pathList) == null) {
+      content.pathList = [];
+    }
+    if ((_ref2 = content.plugins) == null) {
+      content.plugins = [];
+    }
+    if ((_ref3 = content.pluginParameters) == null) {
+      content.pluginParameters = {};
+    }
+    content.modulePlugins = [];
+    return content.modulePluginParameters = {};
+  };
+
   /**
    * Load a module from its configuration file
    * This method must be called once when loading the module for the first time.
@@ -89,6 +108,7 @@ Module = Tools.implementing(Logger, ReadableEntity, TreeElement, _Module = (func
   Module.prototype.readAllFiles = function(cb) {
     var content, self;
 
+    this.getLogger().info('read all files');
     self = this;
     cb = cb || function() {};
     content = this.getLastExecutableContent();
@@ -97,6 +117,7 @@ Module = Tools.implementing(Logger, ReadableEntity, TreeElement, _Module = (func
       cb = function() {};
       return;
     }
+    this._setDefaultContent(content);
     return cb();
   };
 

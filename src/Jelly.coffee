@@ -20,7 +20,7 @@ Jelly = Tools.implementing Logger, ReadableEntity, TreeElement, class _Jelly
 class Jelly
   _constructor_: () ->
     @_parentConstructor_()
-    @getLogger().info('Jelly: Creating a new instance.')
+    @getLogger().info('Creating a new instance.')
     @_rootDirectory = __dirname
 
   constructor: -> @_constructor_()

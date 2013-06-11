@@ -48,7 +48,7 @@ exports.implementing = function() {
     }
     return _results;
   };
-  classReference._selfClassName = classReference.prototype.constructor.name;
+  classReference.prototype._selfClassName = classReference.prototype.constructor.name;
   return classReference;
 };
 

@@ -137,6 +137,11 @@ GeneralConfiguration = Tools.implementing(Logger, ReadableEntity, TreeElement, _
               module.setId(moduleName.name);
               module.setParent(self);
               jelly = self.getParent();
+              if (typeof jelly === 'undefined' || jelly === null) {
+                cb(new Error('There is no Jelly parent on the GeneralConfiguration object (you should call GeneralConfiguration::setParent if you are using this class manualy)'));
+                cb = function() {};
+                return;
+              }
               moduledir = jelly.getLocalPath("app/" + moduleName.name + "/" + content.moduleConfigurationFilename);
               return module.loadFromFilename(moduledir, function(err) {
                 if (err) {

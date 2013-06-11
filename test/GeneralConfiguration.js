@@ -37,11 +37,11 @@ describe('GeneralConfiguration', function() {
     it('Should extends from a ReadableEntity', function() {
       return assert.equal(GeneralConfiguration.prototype.ReadableEntity, true);
     });
-    return it('Should extends from a ReadableEntity', function() {
+    return it('Should extends from a TreeElement', function() {
       return assert.equal(GeneralConfiguration.prototype.TreeElement, true);
     });
   });
-  return describe('#readAllModules', function() {
+  describe('#readAllModules', function() {
     it('Should be a callable function', function() {
       return assert.typeOf(GeneralConfiguration.prototype.readAllModules, 'function');
     });
@@ -112,6 +112,48 @@ describe('GeneralConfiguration', function() {
           });
         }
       });
+    });
+  });
+  describe('#loadFromFilename', function() {
+    it('Should be a callable function', function() {
+      return assert.typeOf(GeneralConfiguration.prototype.loadFromFilename, 'function');
+    });
+    it('Should return an error if there is no jelly object as parent', function(cb) {
+      var g;
+
+      g = new GeneralConfiguration();
+      return g.loadFromFilename("" + __dirname + "/testFiles/validGeneralConfig/conf/testConf1.json", function(err) {
+        var e;
+
+        try {
+          assert.equal(toType(err), 'error');
+          return cb();
+        } catch (_error) {
+          e = _error;
+          return cb(e);
+        }
+      });
+    });
+    return it('Should return an error if there is no jelly object as parent', function(cb) {
+      var g;
+
+      g = new GeneralConfiguration();
+      return g.loadFromFilename("" + __dirname + "/testFiles/validGeneralConfig/conf/testConf1.json", function(err) {
+        var e;
+
+        try {
+          assert.equal(toType(err), 'error');
+          return cb();
+        } catch (_error) {
+          e = _error;
+          return cb(e);
+        }
+      });
+    });
+  });
+  return describe('#reload', function() {
+    return it('Should be a callable function', function() {
+      return assert.typeOf(GeneralConfiguration.prototype.reload, 'function');
     });
   });
 });

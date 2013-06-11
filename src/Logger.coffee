@@ -4,15 +4,18 @@ class WinstonLoggerWrapper
   _constructor_:->
     @_logger = new (winston.Logger)() ## creating a logger instance
     @_logger.add(winston.transports.Console) ## adding console display  
+    @_name = ''
 
   constructor: -> @_constructor_()
   
   LoggerWrapper: true
 
-  info: (s) -> @_logger.info(s)
-  log: (type,s) -> @_logger.log(type,s)
-  error: (s) -> @_logger.error(s)
-  warn: (s) -> @_logger.warn(s)
+  setClassName: (name) -> @_name = name
+
+  info: (s) ->@_logger.info((@_name || '') + ': ' + s)
+  log: (type,s) -> @_logger.log(type, (@_name || '') + ': ' + s)
+  error: (s) -> @_logger.error((@_name || '') + ': ' + s)
+  warn: (s) -> @_logger.warn((@_name || '') + ': ' + s)
 
   off: -> @_logger.remove()
 
@@ -32,6 +35,7 @@ class WinstonLoggerWrapper
 class Logger
   _constructor_: ->
     @_log = new WinstonLoggerWrapper()
+    @_log.setClassName(@_selfClassName)
 
   constructor: -> @_constructor_()
 
@@ -42,7 +46,9 @@ class Logger
    * @method getLogger
    * @return {Logger} Logger class object
   ###
-  getLogger: -> @_log
+  getLogger: ->
+    
+    @_log
 
   Logger: true
 

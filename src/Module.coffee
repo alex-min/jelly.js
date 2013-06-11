@@ -21,6 +21,15 @@ class Module
   _constructor_:->
     @_parentConstructor_()
 
+  # set default values for the general configuration file
+  _setDefaultContent: (content) ->
+    content.fileList ?= []
+    content.pathList ?= []
+    content.plugins ?= []
+    content.pluginParameters ?= {}
+    content.modulePlugins = []
+    content.modulePluginParameters = {}
+
   ###*
    * Load a module from its configuration file
    * This method must be called once when loading the module for the first time.
@@ -61,12 +70,14 @@ class Module
    * @param {Function} callback : parameters (err : error occured) 
   ###  
   readAllFiles: (cb) ->
+    @getLogger().info('read all files')
     self = @
     cb = cb || ->
     content = @getLastExecutableContent()
     if content == null
       cb(new Error('There is no executable content pushed on the Module Class')); cb = ->;
       return
+    @_setDefaultContent(content)
     cb() # not implemented yet, [TODO]: implement reading of files
 
 

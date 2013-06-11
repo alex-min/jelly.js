@@ -22,7 +22,7 @@ exports.implementing = (mixins..., classReference) ->
     for fct in classReference::_ctorList
       fct.call(this)
 
-  classReference._selfClassName =  classReference.prototype.constructor.name;
+  classReference.prototype._selfClassName =  classReference.prototype.constructor.name;
   classReference
 
 extend = (obj, mixin) ->

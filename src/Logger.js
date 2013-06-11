@@ -6,7 +6,8 @@ winston = require('winston');
 WinstonLoggerWrapper = (function() {
   WinstonLoggerWrapper.prototype._constructor_ = function() {
     this._logger = new winston.Logger();
-    return this._logger.add(winston.transports.Console);
+    this._logger.add(winston.transports.Console);
+    return this._name = '';
   };
 
   function WinstonLoggerWrapper() {
@@ -15,20 +16,24 @@ WinstonLoggerWrapper = (function() {
 
   WinstonLoggerWrapper.prototype.LoggerWrapper = true;
 
+  WinstonLoggerWrapper.prototype.setClassName = function(name) {
+    return this._name = name;
+  };
+
   WinstonLoggerWrapper.prototype.info = function(s) {
-    return this._logger.info(s);
+    return this._logger.info((this._name || '') + ': ' + s);
   };
 
   WinstonLoggerWrapper.prototype.log = function(type, s) {
-    return this._logger.log(type, s);
+    return this._logger.log(type, (this._name || '') + ': ' + s);
   };
 
   WinstonLoggerWrapper.prototype.error = function(s) {
-    return this._logger.error(s);
+    return this._logger.error((this._name || '') + ': ' + s);
   };
 
   WinstonLoggerWrapper.prototype.warn = function(s) {
-    return this._logger.warn(s);
+    return this._logger.warn((this._name || '') + ': ' + s);
   };
 
   WinstonLoggerWrapper.prototype.off = function() {
@@ -55,7 +60,8 @@ WinstonLoggerWrapper = (function() {
 
 Logger = (function() {
   Logger.prototype._constructor_ = function() {
-    return this._log = new WinstonLoggerWrapper();
+    this._log = new WinstonLoggerWrapper();
+    return this._log.setClassName(this._selfClassName);
   };
 
   function Logger() {
