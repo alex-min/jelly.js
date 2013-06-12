@@ -4,6 +4,7 @@ path = require('path')
 toType = (obj) -> ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase()  
 Jelly = require('../src/Jelly');
 
+return;
 describe('GeneralConfiguration', ->
   GeneralConfiguration = require('../src/GeneralConfiguration');
   it('Should be a GeneralConfiguration', ->
@@ -36,24 +37,26 @@ describe('GeneralConfiguration', ->
       assert.typeOf(GeneralConfiguration.prototype.readAllModules, 'function')
     )
     it('Should read all modules', (cb) ->
-      jelly = new Jelly()
-      jelly.setRootDirectory("#{__dirname}/testFiles/validGeneralConfig")
-      async.series([
-        (cb) -> jelly.readJellyConfigurationFile( (err) -> cb(err,null)),
-        (cb) -> jelly.readAllGeneralConfigurationFiles( (err) -> cb(err,null))
-      ], (err, res) ->
-        try
-          assert.equal(err,null, 'files should be valid')
-          assert.equal(jelly.getChildList().length, 1, 'there is only one generalConfiguration file in the validGeneralConfig directory')
-          generalConfig = jelly.getChildList()[0]
-          assert.equal(generalConfig.GeneralConfiguration, true, 'the child should be a GeneralConfiguration type')
-          generalConfig.readAllModules((err) ->
-            cb(err)
-          )  
-        catch e
-          cb(e)        
-      )
-
+      try
+        jelly = new Jelly()
+        jelly.setRootDirectory("#{__dirname}/testFiles/validGeneralConfig")
+        async.series([
+          (cb) -> jelly.readJellyConfigurationFile( (err) -> cb(err,null)),
+          (cb) -> jelly.readAllGeneralConfigurationFiles( (err) -> cb(err,null))
+        ], (err, res) ->
+          try
+            assert.equal(err,null, 'files should be valid')
+            assert.equal(jelly.getChildList().length, 1, 'there is only one generalConfiguration file in the validGeneralConfig directory')
+            generalConfig = jelly.getChildList()[0]
+            assert.equal(generalConfig.GeneralConfiguration, true, 'the child should be a GeneralConfiguration type')
+            generalConfig.readAllModules((err) ->
+              cb(err); cb = ->
+            )  
+          catch e
+            cb(e) ; cb = ->        
+        )
+      catch e
+        cb(e)
     )
     it('Should set default parameters if they do not exist', (cb) ->
       generalConfig = new GeneralConfiguration();

@@ -257,34 +257,48 @@ ReadableEntity = Tools.implementing(Events, _ReadableEntity = (function() {
 
 
   ReadableEntity.prototype.readUpdateAndExecute = function(fileLocation, encoding, cb) {
-    var self;
+    var e, self;
 
     cb = cb || function() {};
     self = this;
-    return async.series([
-      function(cb) {
-        var e;
+    try {
+      return async.series([
+        function(cb) {
+          var e;
 
-        try {
-          return self.updateContentFromFile(fileLocation, 'utf8', function(err, res) {
-            if (err) {
-              return cb(err, null);
-            } else {
-              return cb(null, null);
-            }
-          });
-        } catch (_error) {
-          e = _error;
-          return cb(e);
+          try {
+            return self.updateContentFromFile(fileLocation, 'utf8', function(err, res) {
+              if (err) {
+                return cb(err, null);
+              } else {
+                return cb(null, null);
+              }
+            });
+          } catch (_error) {
+            e = _error;
+            return cb(e);
+          }
+        }, function(cb) {
+          var e;
+
+          try {
+            return self.updateAndExecuteCurrentContent(function(err) {
+              return cb(err);
+            });
+          } catch (_error) {
+            e = _error;
+            return cb(e);
+          }
         }
-      }, function(cb) {
-        return self.updateAndExecuteCurrentContent(function(err) {
-          return cb(err);
-        });
-      }
-    ], function(err) {
-      return cb(err);
-    });
+      ], function(err) {
+        cb(err);
+        return cb = function() {};
+      });
+    } catch (_error) {
+      e = _error;
+      cb(e);
+      return cb = function() {};
+    }
   };
 
   /**
@@ -308,42 +322,48 @@ ReadableEntity = Tools.implementing(Events, _ReadableEntity = (function() {
 
 
   ReadableEntity.prototype.updateContentFromFile = function(filename, encoding, cb) {
-    var self;
+    var e, self;
 
     if (encoding == null) {
       encoding = "utf8";
     }
-    self = this;
-    cb = cb || encoding;
-    if (typeof cb !== 'function') {
-      cb = function() {};
-    }
-    if (typeof encoding !== 'string') {
-      encoding = 'utf8';
-    }
-    return fs.readFile(filename, function(err, content) {
-      var extension;
-
-      try {
-        if (err) {
-          cb(err, null);
-          cb = function() {};
-          return;
-        }
-        extension = path.extname(filename).replace('.', '');
-        content = {
-          filename: filename,
-          content: content + '',
-          extension: extension
-        };
-        self.updateContent(content);
-        cb(err, content);
-        return cb = function() {};
-      } catch (_error) {
-        err = _error;
-        return cb(err, null);
+    try {
+      self = this;
+      cb = cb || encoding;
+      if (typeof cb !== 'function') {
+        cb = function() {};
       }
-    });
+      if (typeof encoding !== 'string') {
+        encoding = 'utf8';
+      }
+      return fs.readFile(filename, function(err, content) {
+        var extension;
+
+        try {
+          if (err != null) {
+            cb(err, null);
+            cb = function() {};
+            return;
+          }
+          extension = path.extname(filename).replace('.', '');
+          content = {
+            filename: filename,
+            content: content + '',
+            extension: extension
+          };
+          self.updateContent(content);
+          cb(err, content);
+          return cb = function() {};
+        } catch (_error) {
+          err = _error;
+          return cb(err, null);
+        }
+      });
+    } catch (_error) {
+      e = _error;
+      cb(e);
+      return cb = function() {};
+    }
   };
 
   return ReadableEntity;

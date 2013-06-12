@@ -208,22 +208,28 @@ class ReadableEntity
     cb = cb || ->
 
     self = @
-    async.series([
-      (cb) ->
-        try
-          self.updateContentFromFile(fileLocation, 'utf8', (err, res) ->
-            if err
-              cb(err, null)
-            else
-              cb(null, null)
-          )
-        catch e
-          cb(e)
-      (cb) ->
-        self.updateAndExecuteCurrentContent((err) -> cb(err))
-    ], (err) ->
-      cb(err)
-    );
+    try
+      async.series([
+        (cb) ->
+          try
+            self.updateContentFromFile(fileLocation, 'utf8', (err, res) ->
+              if err
+                cb(err, null)
+              else
+                cb(null, null)
+            )
+          catch e
+            cb(e)
+        (cb) ->
+          try
+            self.updateAndExecuteCurrentContent((err) -> cb(err))
+          catch e
+            cb(e)
+      ], (err) ->
+        cb(err); cb = ->
+      )
+    catch e
+      cb(e); cb = ->
 
 
   ###*
@@ -245,38 +251,40 @@ class ReadableEntity
   ###
   updateContentFromFile: (filename, encoding="utf8",cb) ->
     #@ReadableEntityCs()
-    self = @
+    try
+      self = @
 
-    # handle additional parameters
-    # because encoding is optional and the callback also, we need some tests
-    cb = cb || encoding
-    if typeof cb != 'function'
-      cb = ->
-    if typeof encoding != 'string'
-      encoding = 'utf8'
-
-    # read the file
-    fs.readFile(filename, (err,content) ->
-      try
-        if err # we pass the error to the callback
-          cb(err, null) ; cb = -> # call only the callback once
-          return
-
-        # file.js -> .js -> js
-        extension = path.extname(filename).replace('.','')
-        content = {
-            filename:filename,
-            content:content+'', # transform a Nodejs Buffer object into a string
-            extension:extension
-        }
-
-        # update the content (this is the purpose of the function)
-        self.updateContent(content)
-        cb(err,content) # callback
+      # handle additional parameters
+      # because encoding is optional and the callback also, we need some tests
+      cb = cb || encoding
+      if typeof cb != 'function'
         cb = ->
-      catch err
-        cb(err, null)
-    )
+      if typeof encoding != 'string'
+        encoding = 'utf8'
+
+      # read the file
+      fs.readFile(filename, (err,content) ->
+        try
+          if err? # we pass the error to the callback
+            cb(err, null) ; cb = -> # call only the callback once
+            return
+
+          # file.js -> .js -> js
+          extension = path.extname(filename).replace('.','')
+          content = {
+              filename:filename,
+              content:content+'', # transform a Nodejs Buffer object into a string
+              extension:extension
+          }
+          # update the content (this is the purpose of the function)
+          self.updateContent(content)
+          cb(err,content) # callback
+          cb = ->
+        catch err
+          cb(err, null)
+      )
+    catch e
+      cb(e); cb = ->
 
 
 module.exports = ReadableEntity # export the class

@@ -73,17 +73,32 @@ GeneralConfiguration = Tools.implementing(Logger, ReadableEntity, TreeElement, _
 
 
   GeneralConfiguration.prototype.loadFromFilename = function(filename, cb) {
-    var self;
+    var e, self;
 
     self = this;
     cb = cb || function() {};
-    return this.readUpdateAndExecute(filename, 'utf8', function(err) {
-      if (err) {
-        return cb(err);
-      } else {
-        return self.reload(cb);
-      }
-    });
+    try {
+      return this.readUpdateAndExecute(filename, 'utf8', function(err) {
+        var e;
+
+        try {
+          if (err != null) {
+            cb(err);
+            return cb = function() {};
+          } else {
+            self.reload(cb);
+            return cb = function() {};
+          }
+        } catch (_error) {
+          e = _error;
+          cb(e);
+          return cb = function() {};
+        }
+      });
+    } catch (_error) {
+      e = _error;
+      return cb(e);
+    }
   };
 
   /**
@@ -144,7 +159,7 @@ GeneralConfiguration = Tools.implementing(Logger, ReadableEntity, TreeElement, _
               }
               moduledir = jelly.getLocalPath("app/" + moduleName.name + "/" + content.moduleConfigurationFilename);
               return module.loadFromFilename(moduledir, function(err) {
-                if (err) {
+                if (err != null) {
                   cb(err);
                   cb = function() {};
                 } else {
@@ -159,7 +174,7 @@ GeneralConfiguration = Tools.implementing(Logger, ReadableEntity, TreeElement, _
             return cb();
           }
         }, function(cb) {
-          return cb();
+          return cb(null);
         }
       ], function(err) {
         return cb(err);

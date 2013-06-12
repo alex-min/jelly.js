@@ -48,54 +48,64 @@ describe('Module', function() {
       return assert.typeOf(Module.prototype.loadFromFilename, 'function');
     });
     it('Should return an error if the filename does not exist', function(cb) {
-      var m;
+      var e, m;
 
-      m = new Module();
-      return m.loadFromFilename('/do/not/exist/', function(err) {
-        var e;
+      try {
+        m = new Module();
+        return m.loadFromFilename('/do/not/exist/', function(err) {
+          var e;
 
-        try {
-          assert.equal(toType(err), 'error');
-          return cb();
-        } catch (_error) {
-          e = _error;
-          return cb(e);
-        }
-      });
+          try {
+            assert.equal(toType(err), 'error');
+            return cb();
+          } catch (_error) {
+            e = _error;
+            return cb(e);
+          }
+        });
+      } catch (_error) {
+        e = _error;
+        return cb(e);
+      }
     });
     return it('Should set some default content on the module config file', function(cb) {
-      var m;
+      var e, m;
 
-      m = new Module();
-      return m.loadFromFilename("" + __dirname + "/testFiles/empty.json", function(err) {
-        var content, e;
+      try {
+        m = new Module();
+        return m.loadFromFilename("" + __dirname + "/testFiles/empty.json", function(err) {
+          var content, e;
 
-        try {
-          if (err != null) {
-            cb(e);
-            cb = function() {};
-            return;
+          try {
+            if (err != null) {
+              cb(e);
+              cb = function() {};
+              return;
+            }
+            content = m.getLastExecutableContent();
+            assert.typeOf(content, 'object');
+            assert.typeOf(content.fileList, 'array');
+            assert.typeOf(content.pathList, 'array');
+            assert.typeOf(content.plugins, 'array');
+            assert.typeOf(content.pluginParameters, 'object');
+            assert.typeOf(content.modulePlugins, 'array');
+            assert.typeOf(content.modulePluginParameters, 'object');
+            assert.equal(content.fileList.length, 0);
+            assert.equal(content.pathList.length, 0);
+            assert.equal(content.plugins.length, 0);
+            assert.equal(JSON.stringify(content.pluginParameters), '{}');
+            assert.equal(content.modulePlugins.length, 0);
+            assert.equal(JSON.stringify(content.modulePluginParameters), '{}');
+            return cb();
+          } catch (_error) {
+            e = _error;
+            return cb(e);
           }
-          content = m.getLastExecutableContent();
-          assert.typeOf(content, 'object');
-          assert.typeOf(content.fileList, 'array');
-          assert.typeOf(content.pathList, 'array');
-          assert.typeOf(content.plugins, 'array');
-          assert.typeOf(content.pluginParameters, 'object');
-          assert.typeOf(content.modulePlugins, 'array');
-          assert.typeOf(content.modulePluginParameters, 'object');
-          assert.equal(content.fileList.length, 0);
-          assert.equal(content.pathList.length, 0);
-          assert.equal(content.plugins.length, 0);
-          assert.equal(JSON.stringify(content.pluginParameters), '{}');
-          assert.equal(content.modulePlugins.length, 0);
-          assert.equal(JSON.stringify(content.modulePluginParameters), '{}');
-          return cb();
-        } catch (_error) {
-          e = _error;
-          return cb(e);
-        }
-      });
+        });
+      } catch (_error) {
+        e = _error;
+        return cb(e);
+      }
     });
   });
   return describe('#reload', function() {
@@ -103,42 +113,89 @@ describe('Module', function() {
       return assert.typeOf(Module.prototype.reload, 'function');
     });
     it('Should send an error when there is no content loaded', function(cb) {
-      var m;
+      var e, m;
 
-      m = new Module();
-      return m.reload(function(err) {
-        assert.equal(toType(err), 'error');
-        return cb();
-      });
+      try {
+        m = new Module();
+        return m.reload(function(err) {
+          var e;
+
+          try {
+            assert.equal(toType(err), 'error');
+            return cb();
+          } catch (_error) {
+            e = _error;
+            return cb(e);
+          }
+        });
+      } catch (_error) {
+        e = _error;
+        return cb(e);
+      }
     });
-    return it('Should reload the content', function() {
-      var m;
+    it('Should send an error when there is no Id bound to the module', function(cb) {
+      var e, m;
 
-      m = new Module();
-      return m.loadFromFilename("" + __dirname + "/testFiles/empty.json", function(err) {
-        var e;
+      try {
+        m = new Module();
+        return m.loadFromFilename("" + __dirname + "/testFiles/empty.json", function(err) {
+          var e;
 
-        try {
-          assert.equal(err, null);
-          m.updateContent({
-            filename: "" + __dirname + "/testFiles/dummyFile.json",
-            content: {
-              _test: true
-            },
-            extension: '__exec'
-          });
-          return m.reload(function(err) {
-            var content;
+          try {
+            assert.equal(toType(err), 'error');
+            return cb();
+          } catch (_error) {
+            e = _error;
+            return cb(e);
+          }
+        });
+      } catch (_error) {
+        e = _error;
+        return cb(e);
+      }
+    });
+    return it('Should reload the content', function(cb) {
+      var e, m;
 
-            content = m.getLastExecutableContent();
-            assert.equal(content._test, true);
-            return assert.typeOf(content.plugins, 'array');
-          });
-        } catch (_error) {
-          e = _error;
-          return cb(e);
-        }
-      });
+      try {
+        m = new Module();
+        m.setId("pelos");
+        return m.loadFromFilename("" + __dirname + "/testFiles/empty.json", function(err) {
+          var e;
+
+          try {
+            assert.equal(err, null);
+            m.updateContent({
+              filename: "" + __dirname + "/testFiles/dummyFile.json",
+              content: {
+                _test: true
+              },
+              extension: '__exec'
+            });
+            cb();
+            return;
+            return m.reload(function(err) {
+              var content, e;
+
+              try {
+                content = m.getLastExecutableContent();
+                assert.equal(content._test, true);
+                assert.typeOf(content.plugins, 'array');
+                return cb();
+              } catch (_error) {
+                e = _error;
+                return cb(e);
+              }
+            });
+          } catch (_error) {
+            e = _error;
+            return cb(e);
+          }
+        });
+      } catch (_error) {
+        e = _error;
+        return cb(e);
+      }
     });
   });
 });

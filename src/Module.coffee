@@ -1,3 +1,4 @@
+async = require('async')
 
 Tools = require('./Tools')
 Logger = require('./Logger')
@@ -44,12 +45,18 @@ class Module
     self = @
     cb = cb || ->
 
-    @readUpdateAndExecute(filename, 'utf8', (err) ->
-      if err
-        cb(err)
-      else
-        self.reload(cb)
-    )
+    try
+      @readUpdateAndExecute(filename, 'utf8', (err) ->
+        try
+          if err?
+            cb(err); cb = ->
+          else
+            self.reload.call(self,cb); cb = ->
+        catch e
+          cb(e); cb = ->
+      )
+    catch e
+      cb(e); cb = ->
 
   ###*
    * Do the necessary calls to reload the module (it must be loaded before calling this)
@@ -70,15 +77,32 @@ class Module
    * @param {Function} callback : parameters (err : error occured) 
   ###  
   readAllFiles: (cb) ->
-    @getLogger().info('read all files')
-    self = @
-    cb = cb || ->
-    content = @getLastExecutableContent()
-    if content == null
-      cb(new Error('There is no executable content pushed on the Module Class')); cb = ->;
+    try
+      @getLogger().info('Reading all files')
+      self = @
+      cb = cb || ->
+      content = @getLastExecutableContent()
+      if content == null
+        cb(new Error('There is no executable content pushed on the Module Class')); cb = ->;
+        return
+      if @getId() == null
+        cb(new Error("There is no Id bound to the module")); cb = ->;
+        return
+      @_setDefaultContent(content)
+      # for each file in the content list
+      async.map(content.fileList, (file, cb) ->
+        #fileId = "#{file.name}"
+        try
+          file = self.getChildById("")
+          cb(); cb = ->
+        catch e
+          cb(e); cb = ->
+      , (err) ->
+        cb(err); cb = ->
+      )
+    catch e
+      cb(e); cb = ->;
       return
-    @_setDefaultContent(content)
-    cb() # not implemented yet, [TODO]: implement reading of files
 
 
 module.exports = Module # export the class

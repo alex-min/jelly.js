@@ -45,13 +45,18 @@ class GeneralConfiguration
   loadFromFilename: (filename, cb) ->
     self = @
     cb = cb || ->
-
-    @readUpdateAndExecute(filename, 'utf8', (err) ->
-      if err
-        cb(err)
-      else
-        self.reload(cb)
-    )
+    try
+      @readUpdateAndExecute(filename, 'utf8', (err) ->
+        try
+          if err?
+            cb(err); cb = ->
+          else
+            self.reload(cb); cb = ->
+        catch e
+          cb(e); cb = ->
+      )
+    catch e
+      cb(e)
 
   ###*
    * Do the necessary calls to reload the general configuration (it must be loaded before calling this)
@@ -61,7 +66,7 @@ class GeneralConfiguration
    * @method reload
    * @param {Function} callback : parameters (err : error occured) 
   ###
-  reload: (cb) -> @readAllModules(cb)
+  reload: (cb) ->@readAllModules(cb)
 
   ###*
    * load all the module (this method is reading all modules recursively)
@@ -75,7 +80,6 @@ class GeneralConfiguration
   readAllModules: (cb) ->
     self = @
     cb = cb || ->
-
     # we gather the last executable content to get what module to load
     content = @getLastExecutableContent()
     if content == null
@@ -101,7 +105,7 @@ class GeneralConfiguration
                     return
                   moduledir = jelly.getLocalPath("app/#{moduleName.name}/#{content.moduleConfigurationFilename}")
                   module.loadFromFilename(moduledir,(err) ->
-                    if err
+                    if err?
                       cb(err); cb = ->
                       return
                     else
@@ -111,10 +115,10 @@ class GeneralConfiguration
                   cb(e)
               else
                 cb()
-          ,
-            (cb) -> cb()
+          , (cb) -> cb(null)
         ]
-      , (err) -> cb(err)
+      , (err) ->
+        cb(err)
       )
     , (err) -> cb(err)
     )

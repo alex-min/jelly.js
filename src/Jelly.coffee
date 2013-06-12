@@ -130,12 +130,11 @@ class Jelly
 
     # the default is an empty array
     content.listOfConfigurationFiles ?= []
-
     # read each configuration file specified
     async.map(content.listOfConfigurationFiles, (fileLocation, cb) ->
         fileAbsolutLocation = self.getLocalPath(fileLocation)
         generalConfig = self.getChildById(fileLocation)
-
+        
         async.series([
           # check if this configuration file is already read 
           (cb) ->
@@ -155,7 +154,7 @@ class Jelly
         cb(err)
     )
 
-  readConfigurationFile: (cb) ->
+  readConfigurationFile: (cb) -> cb()
 
 
     ## TODO : This method will read all the general configuration files

@@ -206,7 +206,9 @@ Jelly = Tools.implementing(Logger, ReadableEntity, TreeElement, _Jelly = (functi
     });
   };
 
-  Jelly.prototype.readConfigurationFile = function(cb) {};
+  Jelly.prototype.readConfigurationFile = function(cb) {
+    return cb();
+  };
 
   return Jelly;
 
