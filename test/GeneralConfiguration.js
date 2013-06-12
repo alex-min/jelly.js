@@ -13,8 +13,6 @@ toType = function(obj) {
 
 Jelly = require('../src/Jelly');
 
-return;
-
 describe('GeneralConfiguration', function() {
   var GeneralConfiguration;
 

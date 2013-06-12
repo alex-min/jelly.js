@@ -158,13 +158,15 @@ GeneralConfiguration = Tools.implementing(Logger, ReadableEntity, TreeElement, _
                 return;
               }
               moduledir = jelly.getLocalPath("app/" + moduleName.name + "/" + content.moduleConfigurationFilename);
-              return module.loadFromFilename(moduledir, function(err) {
-                if (err != null) {
+              return self.addChild(module, function(err) {
+                if (err) {
                   cb(err);
                   cb = function() {};
-                } else {
-                  return self.addChild(module, cb);
+                  return;
                 }
+                return module.loadFromFilename(moduledir, function(err) {
+                  return cb(err);
+                });
               });
             } catch (_error) {
               e = _error;

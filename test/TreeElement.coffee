@@ -37,8 +37,8 @@ describe('TreeElement', ->
       )
     )
     it('Should push a child element', (cb) ->
-      treeElement = new TreeElement();
-      child = new TreeElement();
+      treeElement = new TreeElement()
+      child = new TreeElement()
       child.__TEST__ = 1;
       treeElement.addChild(child, (err,child) ->
         try
@@ -52,6 +52,26 @@ describe('TreeElement', ->
           cb(); cb = ->
         catch e
           cb(e); cb = ->
+      )
+    )
+
+    it('Should push a child element only once', (cb) ->
+      treeElement = new TreeElement()
+      child = new TreeElement()
+      child.setId('child')
+      treeElement.addChild(child , (err) ->
+        try
+          assert.equal(err, null)
+          treeElement.addChild(child, (err) ->
+            try
+              assert.equal(err, null)
+              assert.equal(treeElement.getChildList().length, 1)
+              cb()
+            catch e
+              cb(e)
+          )
+        catch e
+          cb(e)
       )
     )
   )

@@ -103,6 +103,7 @@ class TreeElement
    * The parent element must inherits from a TreeElement, this will be checked in the function.
    * In the case of an invalid element, an error will be returned in the callback.
    * The error will be a Javacript native Error.
+   * If the child is already in the list, only one instance will be added.
    *
    * @for TreeElement
    * @method addChild
@@ -120,6 +121,10 @@ class TreeElement
       cb(new Error("The child class must inherits from a TreeElement"), null)
       return
     else
+      # if the child is already pushed, we do not push it
+      if @getChildById(child.getId()) != null
+        cb(null, child); cb = ->
+        return
       @_childList.push(child)
       cb(null, child)
       return

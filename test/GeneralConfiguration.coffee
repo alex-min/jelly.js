@@ -4,7 +4,6 @@ path = require('path')
 toType = (obj) -> ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase()  
 Jelly = require('../src/Jelly');
 
-return;
 describe('GeneralConfiguration', ->
   GeneralConfiguration = require('../src/GeneralConfiguration');
   it('Should be a GeneralConfiguration', ->

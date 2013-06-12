@@ -104,12 +104,13 @@ class GeneralConfiguration
                     cb(new Error('There is no Jelly parent on the GeneralConfiguration object (you should call GeneralConfiguration::setParent if you are using this class manualy)')); cb = ->
                     return
                   moduledir = jelly.getLocalPath("app/#{moduleName.name}/#{content.moduleConfigurationFilename}")
-                  module.loadFromFilename(moduledir,(err) ->
-                    if err?
+                  self.addChild(module, (err) ->
+                    if err
                       cb(err); cb = ->
                       return
-                    else
-                      self.addChild(module, cb)
+                    module.loadFromFilename(moduledir,(err) ->
+                      cb(err)
+                    )
                   )
                 catch e
                   cb(e)

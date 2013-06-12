@@ -51,7 +51,7 @@ describe('TreeElement', function() {
         }
       });
     });
-    return it('Should push a child element', function(cb) {
+    it('Should push a child element', function(cb) {
       var child, treeElement;
 
       treeElement = new TreeElement();
@@ -74,6 +74,35 @@ describe('TreeElement', function() {
           e = _error;
           cb(e);
           return cb = function() {};
+        }
+      });
+    });
+    return it('Should push a child element only once', function(cb) {
+      var child, treeElement;
+
+      treeElement = new TreeElement();
+      child = new TreeElement();
+      child.setId('child');
+      return treeElement.addChild(child, function(err) {
+        var e;
+
+        try {
+          assert.equal(err, null);
+          return treeElement.addChild(child, function(err) {
+            var e;
+
+            try {
+              assert.equal(err, null);
+              assert.equal(treeElement.getChildList().length, 1);
+              return cb();
+            } catch (_error) {
+              e = _error;
+              return cb(e);
+            }
+          });
+        } catch (_error) {
+          e = _error;
+          return cb(e);
         }
       });
     });

@@ -138,6 +138,7 @@ TreeElement = (function() {
    * The parent element must inherits from a TreeElement, this will be checked in the function.
    * In the case of an invalid element, an error will be returned in the callback.
    * The error will be a Javacript native Error.
+   * If the child is already in the list, only one instance will be added.
    *
    * @for TreeElement
    * @method addChild
@@ -154,6 +155,11 @@ TreeElement = (function() {
     if (typeof child !== 'object' || Object.getPrototypeOf(child).TreeElement !== true) {
       cb(new Error("The child class must inherits from a TreeElement"), null);
     } else {
+      if (this.getChildById(child.getId()) !== null) {
+        cb(null, child);
+        cb = function() {};
+        return;
+      }
       this._childList.push(child);
       cb(null, child);
     }
