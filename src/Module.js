@@ -164,13 +164,14 @@ Module = Tools.implementing(Logger, ReadableEntity, TreeElement, _Module = (func
             }
           }
           return self.addChild(file, function(err) {
-            var e, extension, jelly;
+            var e, extension, fileLocation, jelly, pathExtension;
 
             try {
               extension = path.extname(fileId);
               if (!content.pathList[extension]) {
                 content.pathList[extension] = "/" + (extension.replace('.', ''));
               }
+              pathExtension = content.pathList[extension];
               generalConfig = self.getParent();
               jelly = generalConfig.getParent();
               if (jelly === null || typeof jelly === 'undefined') {
@@ -178,7 +179,12 @@ Module = Tools.implementing(Logger, ReadableEntity, TreeElement, _Module = (func
                 cb = function() {};
                 return;
               }
-              return file.loadFromFilename(fileId, function(err) {
+              if (self.getId() === null) {
+                cb(new Error("The module needs to have an Id to load a file, please call Module::setId() if you are using this class manualy"));
+                return;
+              }
+              fileLocation = "" + (jelly.getApplicationDirectory()) + "/" + (self.getId()) + "/" + pathExtension + "/" + fileId;
+              return file.loadFromFilename(fileLocation, function(err) {
                 cb(err);
                 return cb = function() {};
               });

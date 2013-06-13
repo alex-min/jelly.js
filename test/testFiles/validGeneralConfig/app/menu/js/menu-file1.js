@@ -1,0 +1,1 @@
+window.MENU_FILE_1 = true;

@@ -24,6 +24,31 @@ class File
   _constructor_:->
     @_parentConstructor_()
 
-  loadFromFilename: (filename, cb) -> cb()
+  ###*
+   * Load a file from its path
+   * This method must be called once when loading the module for the first time.
+   * After this, the 'reload' method will reload the file.
+   *
+   * @for Module
+   * @method loadFromFilename
+   * @param {String} filename The location of the file
+   * @param {Function} callback : parameters (err : error occured) 
+  ###
+  loadFromFilename: (filename, cb) ->
+    self = @
+    cb = cb || ->
+
+    try
+      # we read the file and update the content
+      @updateContentFromFile(filename, 'utf8', (err) ->
+        # there is no additional process on files unlike modules 
+        #  and general configuration files
+        # Everything else should be processed by external plugins
+        cb(err); cb = ->
+      )
+    catch e
+      cb(e); cb = ->
+
+
 
 module.exports = File # export the class

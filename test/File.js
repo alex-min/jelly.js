@@ -20,7 +20,7 @@ describe('File', function() {
   it('Should be a File', function() {
     return assert.equal(File.prototype.File, true);
   });
-  return describe('#constructor', function() {
+  describe('#constructor', function() {
     it('creating an instance should not throw errors', function() {
       var file;
 
@@ -34,6 +34,35 @@ describe('File', function() {
     });
     return it('Should extends from a TreeElement', function() {
       return assert.equal(File.prototype.TreeElement, true);
+    });
+  });
+  return describe('#loadFromFilename', function() {
+    it('Should be a callable function', function() {
+      return assert.typeOf(File.prototype.loadFromFilename, 'function');
+    });
+    it('Should return an error if the file does no exist', function(cb) {
+      var file;
+
+      file = new File();
+      return file.loadFromFilename('/do/not/exist', function(err) {
+        var e;
+
+        try {
+          assert.equal(toType(err), 'error');
+          return cb();
+        } catch (_error) {
+          e = _error;
+          return cb(e);
+        }
+      });
+    });
+    return it('Should load a file from its filename', function(cb) {
+      var file;
+
+      file = new File();
+      return file.loadFromFilename("" + __dirname + "/testFiles/dummyFIle.json", function(err) {
+        return cb(err);
+      });
     });
   });
 });

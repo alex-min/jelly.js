@@ -25,5 +25,27 @@ describe('File', ->
     )
   )  
 #------------------------------------------------------------------------------------------
+  describe('#loadFromFilename', ->
+    it('Should be a callable function', ->
+      assert.typeOf(File.prototype.loadFromFilename, 'function')
+    )
 
+    it('Should return an error if the file does no exist', (cb) ->
+      file = new File()
+      file.loadFromFilename('/do/not/exist',(err) ->
+        try
+          assert.equal(toType(err), 'error')
+          cb()
+        catch e
+          cb(e)
+      )
+    )
+
+    it('Should load a file from its filename', (cb) ->
+      file = new File()
+      file.loadFromFilename("#{__dirname}/testFiles/dummyFIle.json",(err) ->
+        cb(err)
+      )      
+    ) 
+  )
 )

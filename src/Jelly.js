@@ -70,6 +70,21 @@ Jelly = Tools.implementing(Logger, ReadableEntity, TreeElement, _Jelly = (functi
   };
 
   /**
+   * Returns the application folder
+   * Should return getRootDirectory() + '/app'.
+   * For the moment, the application directory cannot be set and is always under the /app directory.
+   *
+   * @for Jelly
+   * @method getRootDirectory
+   * @return {String} Root directory
+  */
+
+
+  Jelly.prototype.getApplicationDirectory = function() {
+    return "" + this._rootDirectory + "/app";
+  };
+
+  /**
    * Sets the current root directory
    *
    * @for Jelly

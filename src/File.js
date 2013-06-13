@@ -42,8 +42,33 @@ File = Tools.implementing(Logger, ReadableEntity, TreeElement, _File = (function
     return this._parentConstructor_();
   };
 
+  /**
+   * Load a file from its path
+   * This method must be called once when loading the module for the first time.
+   * After this, the 'reload' method will reload the file.
+   *
+   * @for Module
+   * @method loadFromFilename
+   * @param {String} filename The location of the file
+   * @param {Function} callback : parameters (err : error occured)
+  */
+
+
   File.prototype.loadFromFilename = function(filename, cb) {
-    return cb();
+    var e, self;
+
+    self = this;
+    cb = cb || function() {};
+    try {
+      return this.updateContentFromFile(filename, 'utf8', function(err) {
+        cb(err);
+        return cb = function() {};
+      });
+    } catch (_error) {
+      e = _error;
+      cb(e);
+      return cb = function() {};
+    }
   };
 
   return File;

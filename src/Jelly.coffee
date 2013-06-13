@@ -47,6 +47,18 @@ class Jelly
   ###  
   getRootDirectory: -> @_rootDirectory
 
+
+  ###*
+   * Returns the application folder
+   * Should return getRootDirectory() + '/app'.
+   * For the moment, the application directory cannot be set and is always under the /app directory.
+   *
+   * @for Jelly
+   * @method getRootDirectory
+   * @return {String} Root directory
+  ###  
+  getApplicationDirectory: -> "#{@_rootDirectory}/app"
+
   ###*
    * Sets the current root directory
    *

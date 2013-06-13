@@ -124,6 +124,7 @@ class Module
               # example : {'.js':'/js', '.css':'/css'} 
               if !(content.pathList[extension])
                 content.pathList[extension] = "/#{extension.replace('.','')}"
+              pathExtension = content.pathList[extension]
 
               generalConfig = self.getParent()
               jelly = generalConfig.getParent()
@@ -132,8 +133,11 @@ class Module
               if jelly == null || typeof jelly == 'undefined'
                 cb(new Error('There is no jelly parent on the file (file.getParent().getParent() == null), you should call GeneralConfiguration::setParent() if you are using this class manualy')); cb = ->
                 return
-
-              file.loadFromFilename(fileId, (err) ->
+              if self.getId() == null
+                cb(new Error("The module needs to have an Id to load a file, please call Module::setId() if you are using this class manualy"))
+                return
+              fileLocation =  "#{jelly.getApplicationDirectory()}/#{self.getId()}/#{pathExtension}/#{fileId}"
+              file.loadFromFilename(fileLocation, (err) ->
                 cb(err); cb = ->
               )
             catch e
