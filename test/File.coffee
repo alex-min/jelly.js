@@ -43,7 +43,7 @@ describe('File', ->
 
     it('Should load a file from its filename', (cb) ->
       file = new File()
-      file.loadFromFilename("#{__dirname}/testFiles/dummyFIle.json",(err) ->
+      file.loadFromFilename("#{__dirname}/testFiles/dummyFile.json",(err) ->
         cb(err)
       )      
     ) 

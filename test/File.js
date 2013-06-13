@@ -60,7 +60,7 @@ describe('File', function() {
       var file;
 
       file = new File();
-      return file.loadFromFilename("" + __dirname + "/testFiles/dummyFIle.json", function(err) {
+      return file.loadFromFilename("" + __dirname + "/testFiles/dummyFile.json", function(err) {
         return cb(err);
       });
     });
