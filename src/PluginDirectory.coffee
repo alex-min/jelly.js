@@ -63,6 +63,9 @@ class PluginDirectory
 
       # for each plugin folder
       fs.readdir(dir, (err, files) ->
+        if err?
+          cb(err); cb = ->
+          return
         async.map(files, (file, cb) ->
           # we load it
           self.readPluginFromPath("#{dir}/#{file}", file, cb)

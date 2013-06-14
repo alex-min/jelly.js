@@ -93,6 +93,11 @@ PluginDirectory = Tools.implementing(Logger, ReadableEntity, TreeElement, _Plugi
         return;
       }
       return fs.readdir(dir, function(err, files) {
+        if (err != null) {
+          cb(err);
+          cb = function() {};
+          return;
+        }
         return async.map(files, function(file, cb) {
           return self.readPluginFromPath("" + dir + "/" + file, file, cb);
         }, function(err) {
