@@ -32,8 +32,6 @@ File = Tools.implementing(Logger, ReadableEntity, TreeElement, _File = (function
   return _File;
 
 })(), File = (function() {
-  File.prototype.File = true;
-
   function File() {
     this._constructor_();
   }

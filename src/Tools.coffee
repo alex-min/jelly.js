@@ -1,6 +1,7 @@
 exports.implementing = (mixins..., classReference) ->
   classReference.__super__ ?= []
 
+  classReference.prototype[classReference.prototype.constructor.name] = true
 
   for mixin in mixins
     classReference.__super__.push(mixin)

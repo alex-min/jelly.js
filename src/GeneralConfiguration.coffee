@@ -19,7 +19,6 @@ Module = require('./Module')
 ###
 GeneralConfiguration = Tools.implementing Logger, ReadableEntity, TreeElement, class _GeneralConfiguration
 class GeneralConfiguration
-  GeneralConfiguration: true
   constructor: -> @_constructor_()
   _constructor_:->
     @_parentConstructor_()
@@ -39,6 +38,7 @@ class GeneralConfiguration
    *
    * @for GeneralConfiguration
    * @method loadFromFilename
+   * @async
    * @param {String} filename The location of the file
    * @param {Function} callback : parameters (err : error occured) 
   ###

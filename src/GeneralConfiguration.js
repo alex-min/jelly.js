@@ -32,8 +32,6 @@ GeneralConfiguration = Tools.implementing(Logger, ReadableEntity, TreeElement, _
   return _GeneralConfiguration;
 
 })(), GeneralConfiguration = (function() {
-  GeneralConfiguration.prototype.GeneralConfiguration = true;
-
   function GeneralConfiguration() {
     this._constructor_();
   }
@@ -67,6 +65,7 @@ GeneralConfiguration = Tools.implementing(Logger, ReadableEntity, TreeElement, _
    *
    * @for GeneralConfiguration
    * @method loadFromFilename
+   * @async
    * @param {String} filename The location of the file
    * @param {Function} callback : parameters (err : error occured)
   */

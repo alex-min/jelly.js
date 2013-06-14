@@ -59,6 +59,8 @@ WinstonLoggerWrapper = (function() {
 
 
 Logger = (function() {
+  Logger.prototype.Logger = true;
+
   Logger.prototype._constructor_ = function() {
     this._log = new WinstonLoggerWrapper();
     return this._log.setClassName(this._selfClassName);
@@ -80,8 +82,6 @@ Logger = (function() {
   Logger.prototype.getLogger = function() {
     return this._log;
   };
-
-  Logger.prototype.Logger = true;
 
   return Logger;
 

@@ -75,8 +75,9 @@ class Jelly
    *
    * @for Jelly
    * @method checkRootDirectory
-   * @param {cb} Callback to fire, parameters : (err), if there is no error, err is null
-   * @return {String} Root directory
+   * @async
+   * @param {Function}[callback] callback function
+   * @param {Error} callback.err Error found during execution
   ### 
   checkRootDirectory: (cb) ->
     cb = cb || ->
@@ -100,11 +101,19 @@ class Jelly
     )    
   
   ###*
-   * read the main configuration file (/conf/JellyConf.json), the is no interpretation yet
-   *
+   * Read the main configuration file (/conf/JellyConf.json)
+   * This will trigger other methods in this order :
+   *    - checkRootDirectory to check if the main directory is valid
+   *    - updateContentFromFile to read /conf/JellyConf.json
+   *    - updateAndExecuteCurrentContent to interpret the json file to use it on the code
+   *    - readAllGeneralConfigurationFiles : if everything is OK, process general configuration files.
+   * 
    * @for Jelly
-   * @method setRootDirectory
-   * @return {String} Root directory
+   * @method readJellyConfigurationFile
+   * @async
+   * @param {Function}[callback] callback function
+   * @param {String} callback.err Error found during execution
+   * @param {String} callback.content Content read from the file 
   ### 
   readJellyConfigurationFile: (cb) ->
     self = @
@@ -122,6 +131,10 @@ class Jelly
           )
         ## then interpret the file
         (cb) -> self.updateAndExecuteCurrentContent((err) -> cb(err))
+
+        ## then process all the general configuration files
+        ## this will also process the modules
+        (cb) -> self.readAllGeneralConfigurationFiles((err) -> cb(err))
       ], (err, res) ->
         # because the async function is returning an array of results
         # and only updateContentFromFile should return a result 

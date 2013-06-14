@@ -8,7 +8,6 @@ events = require('events')
  * @class Events
 ###
 class Events extends events.EventEmitter
-  Events: true
   constructor: -> @_constructor_()
   _constructor_:->
 

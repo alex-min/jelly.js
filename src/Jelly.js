@@ -103,8 +103,9 @@ Jelly = Tools.implementing(Logger, ReadableEntity, TreeElement, _Jelly = (functi
    *
    * @for Jelly
    * @method checkRootDirectory
-   * @param {cb} Callback to fire, parameters : (err), if there is no error, err is null
-   * @return {String} Root directory
+   * @async
+   * @param {Function}[callback] callback function
+   * @param {Error} callback.err Error found during execution
   */
 
 
@@ -142,11 +143,19 @@ Jelly = Tools.implementing(Logger, ReadableEntity, TreeElement, _Jelly = (functi
   };
 
   /**
-   * read the main configuration file (/conf/JellyConf.json), the is no interpretation yet
-   *
+   * Read the main configuration file (/conf/JellyConf.json)
+   * This will trigger other methods in this order :
+   *    - checkRootDirectory to check if the main directory is valid
+   *    - updateContentFromFile to read /conf/JellyConf.json
+   *    - updateAndExecuteCurrentContent to interpret the json file to use it on the code
+   *    - readAllGeneralConfigurationFiles : if everything is OK, process general configuration files.
+   * 
    * @for Jelly
-   * @method setRootDirectory
-   * @return {String} Root directory
+   * @method readJellyConfigurationFile
+   * @async
+   * @param {Function}[callback] callback function
+   * @param {String} callback.err Error found during execution
+   * @param {String} callback.content Content read from the file
   */
 
 
@@ -168,6 +177,10 @@ Jelly = Tools.implementing(Logger, ReadableEntity, TreeElement, _Jelly = (functi
           });
         }, function(cb) {
           return self.updateAndExecuteCurrentContent(function(err) {
+            return cb(err);
+          });
+        }, function(cb) {
+          return self.readAllGeneralConfigurationFiles(function(err) {
             return cb(err);
           });
         }

@@ -37,8 +37,6 @@ ReadableEntity = Tools.implementing(Events, _ReadableEntity = (function() {
     this._constructor_();
   }
 
-  ReadableEntity.prototype.ReadableEntity = true;
-
   /**
    * Get the current state of the content
    *
@@ -67,7 +65,7 @@ ReadableEntity = Tools.implementing(Events, _ReadableEntity = (function() {
   };
 
   /**
-   * Erase all the contents
+   * Erase all contents
    *
    * @for ReadableEntity
    * @method eraseContent
@@ -75,11 +73,6 @@ ReadableEntity = Tools.implementing(Events, _ReadableEntity = (function() {
 
 
   ReadableEntity.prototype.eraseContent = function() {
-    var _ref;
-
-    if ((_ref = this._entityContentList) == null) {
-      this._entityContentList = [];
-    }
     return this._entityContentList.length = 0;
   };
 
@@ -190,8 +183,11 @@ ReadableEntity = Tools.implementing(Events, _ReadableEntity = (function() {
    * Eval will be called for 'js' content and 'JSON.parse' for 'json' content  
    *
    * @for ReadableEntity
+   * @async
    * @method updateAndExecuteCurrentContent
-   * @param {Function} callback to call when the work is done, params : (err : errors, content)
+   * @param {Function}[callback] callback function
+   * @param {Error} callback.err Error found during execution
+   * @param {Error} callback.content Content processed
   */
 
 
@@ -250,9 +246,11 @@ ReadableEntity = Tools.implementing(Events, _ReadableEntity = (function() {
    * Equivalent of calling updateContentFromFile and updateAndExecuteCurrentContent methods.
    * @for ReadableEntity
    * @method readUpdateAndExecute
-   * @param {String} fileLocation : the location of the file to read
-   * @param {String} encoding : Encoding of the file (default:utf8)  
-   * @param {Function} callback to call when the work is done, params : (err : errors)
+   * @async
+   * @param {String} fileLocation the location of the file to read
+   * @param {String} encoding Encoding of the file (default:utf8)  
+   * @param {Function}[callback] callback function
+   * @param {Error} callback.err Error found during execution
   */
 
 
@@ -303,8 +301,10 @@ ReadableEntity = Tools.implementing(Events, _ReadableEntity = (function() {
 
   /**
    * Update the content stored
+   * The content will be considered as the current content.
    *
    * @for ReadableEntity
+   * @param content Content to push on the list of content stored
    * @method updateContent
   */
 
@@ -314,10 +314,16 @@ ReadableEntity = Tools.implementing(Events, _ReadableEntity = (function() {
   };
 
   /**
-   * Update the content from a given file
+   * Update the content from a local file
    *
    * @for ReadableEntity
-   * @method updateContent
+   * @method updateContentFromFile
+   * @async
+   * @param {String} filename The file location
+   * @param {String} encoding The encoding of the file, the encoding is the same as node's fs.readFile
+   * @param {Function}[callback] callback function
+   * @param {Error} callback.err Error found during execution   
+   * @param {String} callback.content The content of the file
   */
 
 

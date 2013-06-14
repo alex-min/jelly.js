@@ -20,7 +20,6 @@ class ReadableEntity
 
   constructor: -> @_constructor_()
 
-  ReadableEntity: true
 
   ###*
    * Get the current state of the content
@@ -30,8 +29,6 @@ class ReadableEntity
    * @return {String} Current state of the content
   ###
   getCurrentContent: ->
-    #@ReadableEntityCs()
-
     return @_entityContentList.slice(-1)[0] || {}
 
   ###*
@@ -43,19 +40,15 @@ class ReadableEntity
    * @return {String} Current state of the content (only the entity part)
   ###
   getCurrentContentEntity: ->
-    #@ReadableEntityCs()
     return @getCurrentContent().content
 
   ###*
-   * Erase all the contents
+   * Erase all contents
    *
    * @for ReadableEntity
    * @method eraseContent
   ###
   eraseContent: ->
-    #@ReadableEntityCs()
-
-    @_entityContentList ?= []
     @_entityContentList.length = 0
 
 
@@ -68,8 +61,6 @@ class ReadableEntity
    * @return first content registred
   ###
   getFirstContent: ->
-    #@ReadableEntityCs()
-
     # should return an empty object if nothing is set
     return @_entityContentList[0] || {}
   
@@ -81,8 +72,6 @@ class ReadableEntity
    * @return list of content registred
   ###
   getContentList: ->
-    #@ReadableEntityCs()
-
     return @_entityContentList
 
   ###*
@@ -95,8 +84,6 @@ class ReadableEntity
    * @return last content of the given extension
   ###
   getLastContentOfExtension : (ext) ->
-    #@ReadableEntityCs()
-
     # if the specified extension is invalid
     if typeof ext == 'undefined' || ext == null
       return null
@@ -148,12 +135,14 @@ class ReadableEntity
    * Eval will be called for 'js' content and 'JSON.parse' for 'json' content  
    *
    * @for ReadableEntity
+   * @async
    * @method updateAndExecuteCurrentContent
-   * @param {Function} callback to call when the work is done, params : (err : errors, content)
+   * @param {Function}[callback] callback function
+   * @param {Error} callback.err Error found during execution
+   * @param {Error} callback.content Content processed
   ###
   updateAndExecuteCurrentContent: (cb) ->
     try
-      #@ReadableEntityCs()    
       cb = cb || ->
 
       curContent = @getCurrentContent() # get the current content to execute it
@@ -200,9 +189,11 @@ class ReadableEntity
    * Equivalent of calling updateContentFromFile and updateAndExecuteCurrentContent methods.
    * @for ReadableEntity
    * @method readUpdateAndExecute
-   * @param {String} fileLocation : the location of the file to read
-   * @param {String} encoding : Encoding of the file (default:utf8)  
-   * @param {Function} callback to call when the work is done, params : (err : errors)
+   * @async
+   * @param {String} fileLocation the location of the file to read
+   * @param {String} encoding Encoding of the file (default:utf8)  
+   * @param {Function}[callback] callback function
+   * @param {Error} callback.err Error found during execution
   ###
   readUpdateAndExecute: (fileLocation, encoding, cb) ->
     cb = cb || ->
@@ -210,6 +201,7 @@ class ReadableEntity
     self = @
     try
       async.series([
+        # update the content first
         (cb) ->
           try
             self.updateContentFromFile(fileLocation, 'utf8', (err, res) ->
@@ -220,6 +212,7 @@ class ReadableEntity
             )
           catch e
             cb(e)
+        # and try to interpret it after
         (cb) ->
           try
             self.updateAndExecuteCurrentContent((err) -> cb(err))
@@ -234,23 +227,28 @@ class ReadableEntity
 
   ###*
    * Update the content stored
+   * The content will be considered as the current content.
    *
    * @for ReadableEntity
+   * @param content Content to push on the list of content stored
    * @method updateContent
   ###
   updateContent: (content) ->
-    #@ReadableEntityCs()
-
     @_entityContentList.push(content)
 
   ###*
-   * Update the content from a given file
+   * Update the content from a local file
    *
    * @for ReadableEntity
-   * @method updateContent
+   * @method updateContentFromFile
+   * @async
+   * @param {String} filename The file location
+   * @param {String} encoding The encoding of the file, the encoding is the same as node's fs.readFile
+   * @param {Function}[callback] callback function
+   * @param {Error} callback.err Error found during execution   
+   * @param {String} callback.content The content of the file 
   ###
   updateContentFromFile: (filename, encoding="utf8",cb) ->
-    #@ReadableEntityCs()
     try
       self = @
 

@@ -9,6 +9,7 @@ exports.implementing = function() {
   if ((_ref = classReference.__super__) == null) {
     classReference.__super__ = [];
   }
+  classReference.prototype[classReference.prototype.constructor.name] = true;
   for (_j = 0, _len = mixins.length; _j < _len; _j++) {
     mixin = mixins[_j];
     classReference.__super__.push(mixin);

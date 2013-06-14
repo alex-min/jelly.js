@@ -33,6 +33,7 @@ class WinstonLoggerWrapper
  * @class Logger
 ###
 class Logger
+  Logger: true
   _constructor_: ->
     @_log = new WinstonLoggerWrapper()
     @_log.setClassName(@_selfClassName)
@@ -50,6 +51,5 @@ class Logger
     
     @_log
 
-  Logger: true
 
 module.exports = Logger # export the class

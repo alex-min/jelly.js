@@ -16,8 +16,6 @@ events = require('events');
 Events = (function(_super) {
   __extends(Events, _super);
 
-  Events.prototype.Events = true;
-
   function Events() {
     this._constructor_();
   }
