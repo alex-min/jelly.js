@@ -60,6 +60,17 @@ class Jelly
   getApplicationDirectory: -> "#{@_rootDirectory}/app"
 
   ###*
+   * Returns the plugins folder
+   * Should return getRootDirectory() + '/plugins'.
+   * For the moment, the plugins directory cannot be set and is always under the /plugins directory.
+   *
+   * @for Jelly
+   * @method getPluginDirectory
+   * @return {String} Root directory
+  ###  
+  getPluginDirectory: -> "#{@_rootDirectory}/plugins"
+
+  ###*
    * Sets the current root directory
    *
    * @for Jelly

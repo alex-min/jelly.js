@@ -238,7 +238,7 @@ describe('Jelly', function() {
       });
     });
   });
-  return describe('#readAllGeneralConfigurationFiles', function() {
+  describe('#readAllGeneralConfigurationFiles', function() {
     it('Should be a callable function', function() {
       return assert.typeOf(Jelly.prototype.readAllGeneralConfigurationFiles, 'function');
     });
@@ -286,6 +286,20 @@ describe('Jelly', function() {
           return cb(e);
         }
       });
+    });
+  });
+  return describe('#getPluginDirectory', function() {
+    it('Should be a callable function', function() {
+      return assert.typeOf(Jelly.prototype.getPluginDirectory, 'function');
+    });
+    return it('Should return getRootDirectory() + /plugins', function() {
+      var j;
+
+      j = new Jelly();
+      j.setRootDirectory('a/b/c');
+      assert.equal(j.getPluginDirectory(), "" + (j.getRootDirectory()) + "/plugins");
+      j.setRootDirectory('/d/e/f/g/test');
+      return assert.equal(j.getPluginDirectory(), "" + (j.getRootDirectory()) + "/plugins");
     });
   });
 });

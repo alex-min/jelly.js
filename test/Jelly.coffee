@@ -203,4 +203,17 @@ describe('Jelly', ->
       )
     )    
   )
+#------------------------------------------------------------------------------------------
+  describe('#getPluginDirectory', ->
+    it('Should be a callable function', ->
+      assert.typeOf(Jelly.prototype.getPluginDirectory, 'function')
+    )
+    it('Should return getRootDirectory() + /plugins', ->
+      j = new Jelly()
+      j.setRootDirectory('a/b/c')
+      assert.equal(j.getPluginDirectory(), "#{j.getRootDirectory()}/plugins")
+      j.setRootDirectory('/d/e/f/g/test')
+      assert.equal(j.getPluginDirectory(), "#{j.getRootDirectory()}/plugins")
+    )    
+  )  
 )

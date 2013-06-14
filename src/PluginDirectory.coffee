@@ -1,4 +1,5 @@
 async = require('async')
+fs = require('fs')
 
 Tools = require('./Tools')
 Logger = require('./Logger')
@@ -33,11 +34,44 @@ class PluginDirectory
    * @param {String} callback.err Error found during execution
   ###
   readAllPlugins: (cb) ->
-    jelly = @getParent()
-    if jelly == null || typeof jelly == 'undefined'
-      cb(new Error("The PluginDirectory class must be bound to a Jelly configuration file. Please call PluginDirectory::setParent() if you are using this class manualy."))
-      return
-    cb()
+    self = @
+    cb = cb || ->
 
+    try
+      jelly = @getParent()
+      if jelly == null || typeof jelly == 'undefined'
+        cb(new Error("The PluginDirectory class must be bound to a Jelly configuration file. Please call PluginDirectory::setParent() if you are using this class manualy.")); cb = ->
+        return
+      async.series([
+        (cb) -> self.readPluginDirectory("#{__dirname}/plugins", cb)
+        (cb) -> self.readPluginDirectory(jelly.getPluginDirectory(), cb)
+      ], (err) ->
+        cb(err); cb = ->
+      )
+    catch e
+      cb(e)
+
+
+  readPluginDirectory: (dir, cb) ->
+    self = @
+    cb = cb || ->
+
+    try
+      if dir == null || typeof dir == 'undefined'
+        cb(new Error("Invalid parameter: directory == null")); cb = ->
+        return
+
+      # for each plugin folder
+      fs.readdir(dir, (err, files) ->
+        async.map(files, (file, cb) ->
+          # we load it
+          self.readPluginFromPath("#{dir}/#{file}", file, cb)
+        , (err) -> cb(err))
+      )
+    catch e
+      cb(e)
+      
+  readPluginFromPath: (dir, pluginName, cb) ->
+    cb()
 
 module.exports = PluginDirectory # export the class

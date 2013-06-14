@@ -22,5 +22,93 @@ describe('PluginDirectory', function() {
   it('Should be a PluginDirectory', function() {
     return assert.equal(PluginDirectory.prototype.PluginDirectory, true);
   });
-  return describe('#', function() {});
+  describe('_constructor_', function() {
+    return it('Should have a _constructor_', function() {
+      return assert.typeOf(PluginDirectory.prototype._constructor_, 'function');
+    });
+  });
+  describe('#constructor', function() {
+    it('creating an instance should not throw errors', function() {
+      var m;
+
+      return m = new PluginDirectory();
+    });
+    it('Should extends from a Logger', function() {
+      return assert.equal(PluginDirectory.prototype.Logger, true);
+    });
+    it('Should extends from a ReadableEntity', function() {
+      return assert.equal(PluginDirectory.prototype.ReadableEntity, true);
+    });
+    return it('Should extends from a TreeElement', function() {
+      return assert.equal(PluginDirectory.prototype.TreeElement, true);
+    });
+  });
+  describe('#readAllPlugins', function() {
+    it('Should be a callable function', function() {
+      return assert.typeOf(PluginDirectory.prototype.readAllPlugins, 'function');
+    });
+    it('Should return an error when there is no Jelly class bound', function(cb) {
+      var p;
+
+      p = new PluginDirectory();
+      return p.readAllPlugins(function(err) {
+        var e;
+
+        try {
+          assert.equal(toType(err), 'error');
+          return cb();
+        } catch (_error) {
+          e = _error;
+          return cb(e);
+        }
+      });
+    });
+    return it('Should read all plugins in the local and general plugin directory', function(cb) {
+      var jelly, p;
+
+      p = new PluginDirectory();
+      jelly = new Jelly();
+      p.setParent(jelly);
+      jelly.setRootDirectory("" + __dirname + "/testFiles/pluginLoading");
+      return p.readAllPlugins(function(err) {
+        if (err != null) {
+          cb(err);
+          cb = function() {};
+          return;
+        }
+        return cb();
+      });
+    });
+  });
+  return describe('#readPluginDirectory', function() {
+    it('Should be a callable function', function() {
+      return assert.typeOf(PluginDirectory.prototype.readPluginDirectory, 'function');
+    });
+    it('Should raise an error when a null value is passed as a directory', function(cb) {
+      return new PluginDirectory().readPluginDirectory(null, function(err) {
+        var e;
+
+        try {
+          assert.equal(toType(err), 'error');
+          return cb();
+        } catch (_error) {
+          e = _error;
+          return cb(e);
+        }
+      });
+    });
+    return it('Should read a valid plugin directory', function(cb) {
+      return new PluginDirectory().readPluginDirectory("" + __dirname + "/testFiles/pluginLoading", function(err) {
+        var e;
+
+        try {
+          assert.equal(err, null);
+          return cb();
+        } catch (_error) {
+          e = _error;
+          return cb(e);
+        }
+      });
+    });
+  });
 });
