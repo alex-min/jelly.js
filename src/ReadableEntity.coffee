@@ -102,31 +102,62 @@ class ReadableEntity
    * @for ReadableEntity
    * @method getLastExecutableContent
    * @param {String} extension
-   * @return last content of the given extension
+   * @return last content of the given extension (or null)
   ###
   getLastExecutableContent : ->
     content = @getLastContentOfExtension('__exec') || {}
     return content.content || null
 
   ###*
-   * Get last known path of the content
-   * Search for a 'filename' property on each content pushed
+   * Get last known path of the content.
+   * Search for a 'filename' property on each content pushed.
+   * Should be equivalement of calling getLastOfProperty('filename',extFilter)
    *
    * @for ReadableEntity
    * @method getLastFilename
-   * @param {String} extFilter [optional] : if a null value is given, the function will search on any extension
+   * @param {String} [extFilter] If a null value is given, the function will search on any extension
    * , set a non-null value to use only a specified extension.
-   * @return last content of the given extension
+   * @return last content of the given extension (or null)
   ###
   getLastFilename : (extFilter) ->
+    return @getLastOfProperty('filename',extFilter)
+
+  ###*
+   * Get last known directory of the content
+   * Search for a 'directory' property on each content pushed
+   * Should be equivalement of calling getLastOfProperty('directory',extFilter)
+   
+   * @for ReadableEntity
+   * @method getLastDirectory
+   * @param {String} [extFilter] If a null value is given, the function will search on any extension
+   * , set a non-null value to use only a specified extension.
+   * @return last directory pushed
+  ###
+  getLastDirectory : (extFilter) ->
+    return @getLastOfProperty('directory',extFilter)
+
+  ###*
+   * Get last known property of the content.
+   * Search for a property on each content pushed.
+   * Returns null if no property are found.
+   *
+   * @for ReadableEntity
+   * @method getLastOfProperty
+   * @param {String} property Property name
+   * @param {String} [extFilter] If a null value is given, the function will search on any extension
+   * , set a non-null value to use only a specified extension.
+   * @return last directory pushed
+  ###
+  getLastOfProperty: (property, extFilter) ->
     # for each content (decreasing iteration)
     for content in @_entityContentList by -1
       # if it has the right extension
       # using null in this method means that any extension can be used
       if extFilter == null || content.extension == extFilter 
-        if content.filename?
-          return content.filename
-    return null
+        if content[property]?
+          return content[property]
+    return null    
+
 
   ###*
    * Get the current content and try to eval it to execute it

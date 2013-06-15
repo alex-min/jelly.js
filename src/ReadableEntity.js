@@ -138,7 +138,7 @@ ReadableEntity = Tools.implementing(Events, _ReadableEntity = (function() {
    * @for ReadableEntity
    * @method getLastExecutableContent
    * @param {String} extension
-   * @return last content of the given extension
+   * @return last content of the given extension (or null)
   */
 
 
@@ -150,26 +150,62 @@ ReadableEntity = Tools.implementing(Events, _ReadableEntity = (function() {
   };
 
   /**
-   * Get last known path of the content
-   * Search for a 'filename' property on each content pushed
+   * Get last known path of the content.
+   * Search for a 'filename' property on each content pushed.
+   * Should be equivalement of calling getLastOfProperty('filename',extFilter)
    *
    * @for ReadableEntity
    * @method getLastFilename
-   * @param {String} extFilter [optional] : if a null value is given, the function will search on any extension
+   * @param {String} [extFilter] If a null value is given, the function will search on any extension
    * , set a non-null value to use only a specified extension.
-   * @return last content of the given extension
+   * @return last content of the given extension (or null)
   */
 
 
   ReadableEntity.prototype.getLastFilename = function(extFilter) {
+    return this.getLastOfProperty('filename', extFilter);
+  };
+
+  /**
+   * Get last known directory of the content
+   * Search for a 'directory' property on each content pushed
+   * Should be equivalement of calling getLastOfProperty('directory',extFilter)
+   
+   * @for ReadableEntity
+   * @method getLastDirectory
+   * @param {String} [extFilter] If a null value is given, the function will search on any extension
+   * , set a non-null value to use only a specified extension.
+   * @return last directory pushed
+  */
+
+
+  ReadableEntity.prototype.getLastDirectory = function(extFilter) {
+    return this.getLastOfProperty('directory', extFilter);
+  };
+
+  /**
+   * Get last known property of the content.
+   * Search for a property on each content pushed.
+   * Returns null if no property are found.
+   *
+   * @for ReadableEntity
+   * @method getLastOfProperty
+   * @param {String} property Property name
+   * @param {String} [extFilter] If a null value is given, the function will search on any extension
+   * , set a non-null value to use only a specified extension.
+   * @return last directory pushed
+  */
+
+
+  ReadableEntity.prototype.getLastOfProperty = function(property, extFilter) {
     var content, _i, _ref;
 
     _ref = this._entityContentList;
     for (_i = _ref.length - 1; _i >= 0; _i += -1) {
       content = _ref[_i];
       if (extFilter === null || content.extension === extFilter) {
-        if (content.filename != null) {
-          return content.filename;
+        if (content[property] != null) {
+          return content[property];
         }
       }
     }

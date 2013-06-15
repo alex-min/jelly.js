@@ -64,6 +64,94 @@ describe('ReadableEntity', function() {
       return assert.equal(r.getLastFilename('txt'), 'f1');
     });
   });
+  describe('#getLastDirectory', function() {
+    it('Should be a callable function', function() {
+      return assert.typeOf(ReadableEntity.prototype.getLastDirectory, 'function');
+    });
+    it('Should return null when nothing is set', function() {
+      return assert.equal(new ReadableEntity().getLastDirectory(), null);
+    });
+    it('Should return the last extension pushed', function() {
+      var r;
+
+      r = new ReadableEntity();
+      r.updateContent({
+        content: 'A'
+      });
+      r.updateContent({
+        content: 'B',
+        directory: 'f1'
+      });
+      r.updateContent({
+        content: 'B',
+        directory: 'f2'
+      });
+      return assert.equal(r.getLastDirectory(), 'f2');
+    });
+    return it('Should select a particular extension if given as parameter', function() {
+      var r;
+
+      r = new ReadableEntity();
+      r.updateContent({
+        content: 'A'
+      });
+      r.updateContent({
+        content: 'B',
+        directory: 'f1',
+        extension: 'txt'
+      });
+      r.updateContent({
+        content: 'B',
+        directory: 'f2',
+        extension: 'json'
+      });
+      return assert.equal(r.getLastDirectory('txt'), 'f1');
+    });
+  });
+  describe('#getLastOfProperty', function() {
+    it('Should be a callable function', function() {
+      return assert.typeOf(ReadableEntity.prototype.getLastOfProperty, 'function');
+    });
+    it('Should return null when nothing is set', function() {
+      return assert.equal(new ReadableEntity().getLastOfProperty(), null);
+    });
+    it('Should return the last extension pushed', function() {
+      var r;
+
+      r = new ReadableEntity();
+      r.updateContent({
+        content: 'A'
+      });
+      r.updateContent({
+        content: 'B',
+        directory: 'f1'
+      });
+      r.updateContent({
+        content: 'C',
+        directory: 'f2'
+      });
+      return assert.equal(r.getLastOfProperty('content'), 'C');
+    });
+    return it('Should select a particular extension if given as parameter', function() {
+      var r;
+
+      r = new ReadableEntity();
+      r.updateContent({
+        content: 'A'
+      });
+      r.updateContent({
+        content: 'B',
+        directory: 'f1',
+        extension: 'txt'
+      });
+      r.updateContent({
+        content: 'B',
+        directory: 'f2',
+        extension: 'json'
+      });
+      return assert.equal(r.getLastOfProperty('content', 'txt'), 'B');
+    });
+  });
   describe('#readUpdateAndExecute', function() {
     it('Should be a callable function', function() {
       return assert.typeOf(ReadableEntity.prototype.readUpdateAndExecute, 'function');

@@ -19,7 +19,6 @@ File = require('./File')
 ###
 Module = Tools.implementing Logger, ReadableEntity, TreeElement, class _Module
 class Module
-  Module: true
   constructor: -> @_constructor_()
   _constructor_:->
     @_parentConstructor_()

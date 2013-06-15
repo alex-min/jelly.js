@@ -122,16 +122,23 @@ describe('PluginDirectory', ->
         )
     )
     it('Should raise an error when there null is given as a name', (cb) ->
-        new PluginDirectory().readPluginFromPath("#{__dirname}/testFiles/pluginLoading/plugins/testPlugin", null, (err) ->
+        new PluginDirectory().readPluginFromPath("#{__dirname}/testFiles/pluginLoading/plugins/testPlugin", null, (err, pluginHandler) ->
           try
             assert.equal(toType(err), 'error')
+            assert.equal(pluginHandler, null)
             cb()
           catch e
             cb(e)
         )
     )
     it('Should load a plugin', (cb) ->
-        new PluginDirectory().readPluginFromPath("#{__dirname}/testFiles/pluginLoading/plugins/testPlugin", "testPlugin", (err) ->
+        new PluginDirectory().readPluginFromPath("#{__dirname}/testFiles/pluginLoading/plugins/testPlugin", "testPlugin", (err, pluginHandler) ->
+          try
+            assert.typeOf(pluginHandler, 'object')
+            assert.equal(pluginHandler.PluginHandler, true)
+          catch e
+            cb(e); cb = ->
+            return
           cb(err)
         )
     )

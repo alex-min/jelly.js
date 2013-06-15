@@ -155,11 +155,12 @@ describe('PluginDirectory', function() {
       });
     });
     it('Should raise an error when there null is given as a name', function(cb) {
-      return new PluginDirectory().readPluginFromPath("" + __dirname + "/testFiles/pluginLoading/plugins/testPlugin", null, function(err) {
+      return new PluginDirectory().readPluginFromPath("" + __dirname + "/testFiles/pluginLoading/plugins/testPlugin", null, function(err, pluginHandler) {
         var e;
 
         try {
           assert.equal(toType(err), 'error');
+          assert.equal(pluginHandler, null);
           return cb();
         } catch (_error) {
           e = _error;
@@ -168,7 +169,18 @@ describe('PluginDirectory', function() {
       });
     });
     return it('Should load a plugin', function(cb) {
-      return new PluginDirectory().readPluginFromPath("" + __dirname + "/testFiles/pluginLoading/plugins/testPlugin", "testPlugin", function(err) {
+      return new PluginDirectory().readPluginFromPath("" + __dirname + "/testFiles/pluginLoading/plugins/testPlugin", "testPlugin", function(err, pluginHandler) {
+        var e;
+
+        try {
+          assert.typeOf(pluginHandler, 'object');
+          assert.equal(pluginHandler.PluginHandler, true);
+        } catch (_error) {
+          e = _error;
+          cb(e);
+          cb = function() {};
+          return;
+        }
         return cb(err);
       });
     });

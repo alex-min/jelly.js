@@ -33,8 +33,6 @@ Module = Tools.implementing(Logger, ReadableEntity, TreeElement, _Module = (func
   return _Module;
 
 })(), Module = (function() {
-  Module.prototype.Module = true;
-
   function Module() {
     this._constructor_();
   }
