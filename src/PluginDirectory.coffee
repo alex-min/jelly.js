@@ -55,10 +55,10 @@ class PluginDirectory
   readPluginDirectory: (dir, cb) ->
     self = @
     cb = cb || ->
-
+    
     try
       if dir == null || typeof dir == 'undefined'
-        cb(new Error("Invalid parameter: directory == null")); cb = ->
+        cb(new Error('Invalid parameter: directory == null')); cb = ->
         return
 
       # for each plugin folder
@@ -68,13 +68,38 @@ class PluginDirectory
           return
         async.map(files, (file, cb) ->
           # we load it
-          self.readPluginFromPath("#{dir}/#{file}", file, cb)
+          self.readPluginFromPath("#{dir}/#{file}", file, (err) ->
+            if err?
+              self.getLogger().info("Unable to load plugin #{file} #{err}")
+            cb()
+          )
         , (err) -> cb(err))
       )
     catch e
       cb(e)
       
   readPluginFromPath: (dir, pluginName, cb) ->
-    cb()
+    cb = cb || ->
+    self = @
+
+    try
+      if dir == null || typeof dir == 'undefined'
+        cb(new Error("An invalid 'null' value was given as directory for pluginName #{pluginName}")); cb = ->
+        return
+      if pluginName == null || typeof pluginName == 'undefined'
+        cb(new Error("An invalid 'null' value was given as pluginName for directory #{dir}")); cb = ->
+        return
+      @getLogger().info("Reading plugin '#{pluginName}' <#{dir}>")
+      fs.stat("#{dir}", (err, stats) ->
+        if err?
+          cb(new Error("#{dir} is an invalid directory : #{err}")); cb = ->
+          return
+        if !(stats.isDirectory())
+          cb(new Error("#{dir} is not a directory on plugin #{pluginName}")); cb = ->
+          return
+        cb(); cb = ->
+      )
+    catch e
+      cb(e)
 
 module.exports = PluginDirectory # export the class

@@ -80,7 +80,7 @@ describe('PluginDirectory', function() {
       });
     });
   });
-  return describe('#readPluginDirectory', function() {
+  describe('#readPluginDirectory', function() {
     it('Should be a callable function', function() {
       return assert.typeOf(PluginDirectory.prototype.readPluginDirectory, 'function');
     });
@@ -97,8 +97,8 @@ describe('PluginDirectory', function() {
         }
       });
     });
-    return it('Should read a valid plugin directory', function(cb) {
-      return new PluginDirectory().readPluginDirectory("" + __dirname + "/testFiles/pluginLoading", function(err) {
+    it('Should read a valid plugin directory', function(cb) {
+      return new PluginDirectory().readPluginDirectory("" + __dirname + "/testFiles/pluginLoading/plugins", function(err) {
         var e;
 
         try {
@@ -108,6 +108,68 @@ describe('PluginDirectory', function() {
           e = _error;
           return cb(e);
         }
+      });
+    });
+    it('Should raise an error if the directory specified do not exist', function(cb) {
+      return new PluginDirectory().readPluginDirectory("/do/not/exist", function(err) {
+        var e;
+
+        try {
+          assert.equal(toType(err), 'error');
+          return cb();
+        } catch (_error) {
+          e = _error;
+          return cb(e);
+        }
+      });
+    });
+    return it('Should raise an error if the directory specified is a file', function(cb) {
+      return new PluginDirectory().readPluginDirectory("" + __dirname + "/testFiles/dummyFile.json", function(err) {
+        var e;
+
+        try {
+          assert.equal(toType(err), 'error');
+          return cb();
+        } catch (_error) {
+          e = _error;
+          return cb(e);
+        }
+      });
+    });
+  });
+  return describe('#readPluginFromPath', function() {
+    it('Should be a callable function', function() {
+      return assert.typeOf(PluginDirectory.prototype.readPluginFromPath, 'function');
+    });
+    it('Should raise an error when there null is given as a directory', function(cb) {
+      return new PluginDirectory().readPluginFromPath(null, "pluginName", function(err) {
+        var e;
+
+        try {
+          assert.equal(toType(err), 'error');
+          return cb();
+        } catch (_error) {
+          e = _error;
+          return cb(e);
+        }
+      });
+    });
+    it('Should raise an error when there null is given as a name', function(cb) {
+      return new PluginDirectory().readPluginFromPath("" + __dirname + "/testFiles/pluginLoading/plugins/testPlugin", null, function(err) {
+        var e;
+
+        try {
+          assert.equal(toType(err), 'error');
+          return cb();
+        } catch (_error) {
+          e = _error;
+          return cb(e);
+        }
+      });
+    });
+    return it('Should load a plugin', function(cb) {
+      return new PluginDirectory().readPluginFromPath("" + __dirname + "/testFiles/pluginLoading/plugins/testPlugin", "testPlugin", function(err) {
+        return cb(err);
       });
     });
   });

@@ -88,7 +88,7 @@ PluginDirectory = Tools.implementing(Logger, ReadableEntity, TreeElement, _Plugi
     cb = cb || function() {};
     try {
       if (dir === null || typeof dir === 'undefined') {
-        cb(new Error("Invalid parameter: directory == null"));
+        cb(new Error('Invalid parameter: directory == null'));
         cb = function() {};
         return;
       }
@@ -99,7 +99,12 @@ PluginDirectory = Tools.implementing(Logger, ReadableEntity, TreeElement, _Plugi
           return;
         }
         return async.map(files, function(file, cb) {
-          return self.readPluginFromPath("" + dir + "/" + file, file, cb);
+          return self.readPluginFromPath("" + dir + "/" + file, file, function(err) {
+            if (err != null) {
+              self.getLogger().info("Unable to load plugin " + file + " " + err);
+            }
+            return cb();
+          });
         }, function(err) {
           return cb(err);
         });
@@ -111,7 +116,40 @@ PluginDirectory = Tools.implementing(Logger, ReadableEntity, TreeElement, _Plugi
   };
 
   PluginDirectory.prototype.readPluginFromPath = function(dir, pluginName, cb) {
-    return cb();
+    var e, self;
+
+    cb = cb || function() {};
+    self = this;
+    try {
+      if (dir === null || typeof dir === 'undefined') {
+        cb(new Error("An invalid 'null' value was given as directory for pluginName " + pluginName));
+        cb = function() {};
+        return;
+      }
+      if (pluginName === null || typeof pluginName === 'undefined') {
+        cb(new Error("An invalid 'null' value was given as pluginName for directory " + dir));
+        cb = function() {};
+        return;
+      }
+      this.getLogger().info("Reading plugin '" + pluginName + "' <" + dir + ">");
+      return fs.stat("" + dir, function(err, stats) {
+        if (err != null) {
+          cb(new Error("" + dir + " is an invalid directory : " + err));
+          cb = function() {};
+          return;
+        }
+        if (!(stats.isDirectory())) {
+          cb(new Error("" + dir + " is not a directory on plugin " + pluginName));
+          cb = function() {};
+          return;
+        }
+        cb();
+        return cb = function() {};
+      });
+    } catch (_error) {
+      e = _error;
+      return cb(e);
+    }
   };
 
   return PluginDirectory;

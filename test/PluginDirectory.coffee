@@ -77,13 +77,64 @@ describe('PluginDirectory', ->
     )
 
     it('Should read a valid plugin directory', (cb) ->
-      new PluginDirectory().readPluginDirectory("#{__dirname}/testFiles/pluginLoading", (err) ->
+      new PluginDirectory().readPluginDirectory("#{__dirname}/testFiles/pluginLoading/plugins", (err) ->
         try
           assert.equal(err, null)
           cb()
         catch e
           cb(e)
-      )      
+      )
     )
-  )   
+
+    it('Should raise an error if the directory specified do not exist', (cb) ->
+      new PluginDirectory().readPluginDirectory("/do/not/exist", (err) ->
+        try
+          assert.equal(toType(err), 'error')
+          cb()
+        catch e
+          cb(e)
+      )
+    )
+
+    it('Should raise an error if the directory specified is a file', (cb) ->
+      new PluginDirectory().readPluginDirectory("#{__dirname}/testFiles/dummyFile.json", (err) ->
+        try
+          assert.equal(toType(err), 'error')
+          cb()
+        catch e
+          cb(e)
+      )
+    )
+
+  )
+#------------------------------------------------------------------------------------------
+  describe('#readPluginFromPath', ->
+    it('Should be a callable function', ->
+      assert.typeOf(PluginDirectory.prototype.readPluginFromPath, 'function')
+    )
+    it('Should raise an error when there null is given as a directory', (cb) ->
+        new PluginDirectory().readPluginFromPath(null, "pluginName", (err) ->
+          try
+            assert.equal(toType(err), 'error')
+            cb()
+          catch e
+            cb(e)
+        )
+    )
+    it('Should raise an error when there null is given as a name', (cb) ->
+        new PluginDirectory().readPluginFromPath("#{__dirname}/testFiles/pluginLoading/plugins/testPlugin", null, (err) ->
+          try
+            assert.equal(toType(err), 'error')
+            cb()
+          catch e
+            cb(e)
+        )
+    )
+    it('Should load a plugin', (cb) ->
+        new PluginDirectory().readPluginFromPath("#{__dirname}/testFiles/pluginLoading/plugins/testPlugin", "testPlugin", (err) ->
+          cb(err)
+        )
+    )
+
+  )
 )
