@@ -33,6 +33,15 @@ describe('PluginHandler', ->
       )    
     )   
   )
-
-  
+#------------------------------------------------------------------------------------------
+  describe('#getPluginInterface', ->
+    it('Should be a callable function', ->
+      assert.typeOf(PluginHandler.prototype.getPluginInterface, 'function')
+    )
+    it('Should return a pluginInterface instance', ->
+      p = new PluginHandler()
+      assert.typeOf(p.getPluginInterface(), 'object')
+      assert.equal(p.getPluginInterface().constructor.name, 'PluginInterface', 'should be a pluginInterface type')
+    )
+  )
 )

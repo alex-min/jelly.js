@@ -27,7 +27,7 @@ describe('PluginHandler', function() {
       return assert.typeOf(PluginHandler.prototype._constructor_, 'function');
     });
   });
-  return describe('#readConfigFile', function() {
+  describe('#readConfigFile', function() {
     it('Should be a callable function', function() {
       return assert.typeOf(PluginHandler.prototype.readConfigFile, 'function');
     });
@@ -43,6 +43,18 @@ describe('PluginHandler', function() {
           return cb(e);
         }
       });
+    });
+  });
+  return describe('#getPluginInterface', function() {
+    it('Should be a callable function', function() {
+      return assert.typeOf(PluginHandler.prototype.getPluginInterface, 'function');
+    });
+    return it('Should return a pluginInterface instance', function() {
+      var p;
+
+      p = new PluginHandler();
+      assert.typeOf(p.getPluginInterface(), 'object');
+      return assert.equal(p.getPluginInterface().constructor.name, 'PluginInterface', 'should be a pluginInterface type');
     });
   });
 });

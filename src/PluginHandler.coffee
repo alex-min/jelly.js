@@ -6,6 +6,7 @@ Logger = require('./Logger')
 ReadableEntity = require('./ReadableEntity')
 TreeElement = require('./TreeElement')
 File = require('./File')
+PluginInterface = require('./PluginInterface')
 
 ###*
  * PluginHandler is the child class of PluginDirectory.
@@ -23,6 +24,7 @@ class PluginHandler
   constructor: -> @_constructor_()
   _constructor_:->
     @_parentConstructor_()
+    @_pluginInterface = new PluginInterface()
 
   ###*
    * Read config file of the plugin (/config.json).
@@ -49,9 +51,29 @@ class PluginHandler
         return
       cb(null)
     )
+ 
+  ###*
+   * Get the PluginInterface instance associated with the class.
+   * The PluginInterface instance is handling the main file (default:main.js) of the plugin.
+   * The instance is created in the constructor, there is no need to call anything to create it.
+   *
+   * @for PluginHandler
+   * @method getPluginInterface
+   * @return {PluginInterface} The PluginInterface instance
+  ###
+  getPluginInterface: () -> return @_pluginInterface
 
   reload: (cb) ->
     cb = cb || ->
-    @readConfigFile(cb)
+    self = @
+
+    @readConfigFile((err) ->
+      if err?
+        cb(err); cb = ->
+        return
+      self._pluginInterface.unload((err) ->
+        cb(err)
+      )
+    )
 
 module.exports = PluginHandler # export the class
