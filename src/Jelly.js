@@ -187,12 +187,14 @@ Jelly = Tools.implementing(Logger, ReadableEntity, TreeElement, _Jelly = (functi
             return cb(err, null);
           });
         }, function(cb) {
-          return self.updateContentFromFile(fileLocation, 'utf8', function(err, res) {
-            return cb(err, res);
-          });
-        }, function(cb) {
-          return self.updateAndExecuteCurrentContent(function(err) {
-            return cb(err);
+          return self.readUpdateAndExecute(fileLocation, 'utf8', function(err) {
+            var content;
+
+            content = null;
+            if (err === null) {
+              content = self.getLastContentOfExtension('json');
+            }
+            return cb(err, content);
           });
         }, function(cb) {
           return self.readAllGeneralConfigurationFiles(function(err) {

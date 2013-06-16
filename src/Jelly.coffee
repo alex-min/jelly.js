@@ -135,13 +135,13 @@ class Jelly
       async.series([
         ## check the root directory
         (cb) -> self.checkRootDirectory((err) -> cb(err,null)),
-        ## then read the file
-        (cb) ->
-          self.updateContentFromFile(fileLocation, 'utf8', (err, res) ->
-            cb(err, res)
-          )
-        ## then interpret the file
-        (cb) -> self.updateAndExecuteCurrentContent((err) -> cb(err))
+        ## then read and interpret the file
+        (cb) -> self.readUpdateAndExecute(fileLocation, 'utf8', (err) ->
+          content = null
+          if err == null
+            content = self.getLastContentOfExtension('json')
+          cb(err, content)
+        )
 
         ## then process all the general configuration files
         ## this will also process the modules

@@ -83,7 +83,7 @@ class PluginDirectory
           # we load it
           self.readPluginFromPath("#{dir}/#{file}", file, (err) ->
             if err?
-              self.getLogger().info("Unable to load plugin #{file} #{err}")
+              self.getLogger().error("Unable to load plugin #{file} #{err}")
             cb()
           )
         , (err) -> cb(err))

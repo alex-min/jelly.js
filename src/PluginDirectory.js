@@ -118,7 +118,7 @@ PluginDirectory = Tools.implementing(Logger, ReadableEntity, TreeElement, _Plugi
         return async.map(files, function(file, cb) {
           return self.readPluginFromPath("" + dir + "/" + file, file, function(err) {
             if (err != null) {
-              self.getLogger().info("Unable to load plugin " + file + " " + err);
+              self.getLogger().error("Unable to load plugin " + file + " " + err);
             }
             return cb();
           });

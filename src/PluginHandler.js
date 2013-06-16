@@ -16,12 +16,12 @@ TreeElement = require('./TreeElement');
 File = require('./File');
 
 /**
- * PluginDirectory is the parent class of PluginHandler.
- * Each Jelly instance is suppose to contain a PluginDirectory class with multiple PluginHandler in it.
- * This class is dealing only with general methods related to all plugins.
- * To use a plugin directly, look at the PluginHandler class.
+ * PluginHandler is the child class of PluginDirectory.
+ * Each PluginDirectory instance is suppose to contain a PluginHandler class with itself, multiple PluginInterface in it.
+ * This class is dealing with configuration related to a plugin.
+ * The code is handled by a PluginInterface class
  * 
- * @class PluginDirectory
+ * @class PluginHandler
  * @extends Logger
  * @extends ReadableEntity
  * @extends TreeElement
@@ -42,9 +42,44 @@ PluginHandler = Tools.implementing(Logger, ReadableEntity, TreeElement, _PluginH
     return this._parentConstructor_();
   };
 
+  /**
+   * Read config file of the plugin (/config.json).
+   * This method will update the current content to the config file.
+   * Before calling this function, make sure a directory is previously pushed as a content (by calling updateContent).
+   * To set a new directory for the plugin, please call this.updateContent({directory:'newdir'}).
+   * This method must be called again after to update the configuration file.
+   *
+   * @for PluginHandler
+   * @method readConfigFile
+   * @async
+   * @param {Function}[callback] callback function
+   * @param {String} callback.err Error found during execution
+  */
+
+
+  PluginHandler.prototype.readConfigFile = function(cb) {
+    var dir;
+
+    cb = cb || function() {};
+    dir = this.getLastDirectory();
+    if (dir === null) {
+      cb(new Error("No directory is specified"));
+      cb = function() {};
+      return;
+    }
+    return this.readUpdateAndExecute("" + dir + "/config.json", 'utf8', function(err, data) {
+      if (err != null) {
+        cb(new Error("Unable to read the plugin configuration file : " + err.message));
+        cb = function() {};
+        return;
+      }
+      return cb(null);
+    });
+  };
+
   PluginHandler.prototype.reload = function(cb) {
     cb = cb || function() {};
-    return cb();
+    return this.readConfigFile(cb);
   };
 
   return PluginHandler;

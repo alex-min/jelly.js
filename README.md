@@ -1,6 +1,5 @@
 # jelly.js
-[![Build Status](https://travis-ci.org/alex-min/jelly.js.png?branch=master)](https://travis-ci.org/alex-min/jelly.js)
-[![Dependencies](https://david-dm.org/alex-min/jelly.js.png)](https://david-dm.org/alex-min/jelly.js)
+[![Build Status](https://travis-ci.org/alex-min/jelly.js.png?branch=master)](https://travis-ci.org/alex-min/jelly.js) [![Dependencies](https://david-dm.org/alex-min/jelly.js.png)](https://david-dm.org/alex-min/jelly.js)
 ========
 Jelly.js will be a modular node.js web framework to design web application.
 

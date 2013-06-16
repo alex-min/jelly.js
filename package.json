@@ -8,11 +8,11 @@
   },
   "repository": "",
   "keywords": [
-    "famework",
+    "framework",
     "web"
   ],
   "author": "alex-min",
-  "license": "BSD",
+  "license": "MIT",
   "dependencies": {
     "chai": "~1.6.0",
     "mocha": "~1.10.0",
