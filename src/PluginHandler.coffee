@@ -25,6 +25,14 @@ class PluginHandler
   _constructor_:->
     @_parentConstructor_()
     @_pluginInterface = new PluginInterface()
+    @_pluginInterface.setParent(this)
+    @addChild(@_pluginInterface)
+
+
+  # set default values for the general configuration file
+  _setDefaultContent: (content) ->
+    content.mainFile ?= 'main.js'
+    return content
 
   ###*
    * Read config file of the plugin (/config.json).
@@ -40,18 +48,53 @@ class PluginHandler
    * @param {String} callback.err Error found during execution
   ###
   readConfigFile: (cb) ->
+    self = @
     cb = cb || ->
+
+    try
+      # get the config directory
+      dir = @getLastDirectory()
+      if dir == null
+        cb(new Error('No directory is specified')); cb = ->
+        return
+      # get the config.json
+      @readUpdateAndExecute("#{dir}/config.json", 'utf8', (err, data) ->
+        if err?
+          cb(new Error("Unable to read the plugin configuration file : #{err.message}")); cb = ->
+          return
+        # add default values to the content
+        self._setDefaultContent(self.getLastExecutableContent())
+        self.readMainEntryFile(cb); cb = ->
+      )
+    catch e
+      cb(e)
+ 
+  readMainEntryFile: (cb) ->
+    cb = cb || ->
+
+    # get the config directory
     dir = @getLastDirectory()
     if dir == null
-      cb(new Error("No directory is specified")); cb = ->
+      cb(new Error('No directory is specified'), null); cb = ->
       return
-    @readUpdateAndExecute("#{dir}/config.json", 'utf8', (err, data) ->
+
+    # get the last revision of the config file
+    content = @getLastExecutableContent()
+    if content == null
+      cb(new Error('The configuration file is not loaded (please call PluginHandler::readConfigFile before using this method)'), null); cb = ->
+      return
+    # reset default values (just in case)
+    @_setDefaultContent(content)
+
+    # read the mainFile
+    @_pluginInterface.readUpdateAndExecute("#{dir}/#{content.mainFile}", 'utf8', (err, data) ->
       if err?
-        cb(new Error("Unable to read the plugin configuration file : #{err.message}")); cb = ->
+        cb(new Error("Unable to process <#{dir}/#{content.mainFile}> : #{err.message}"))
         return
-      cb(null)
+      cb(null, data)
     )
- 
+
+
   ###*
    * Get the PluginInterface instance associated with the class.
    * The PluginInterface instance is handling the main file (default:main.js) of the plugin.

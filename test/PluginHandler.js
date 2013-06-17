@@ -27,6 +27,18 @@ describe('PluginHandler', function() {
       return assert.typeOf(PluginHandler.prototype._constructor_, 'function');
     });
   });
+  describe('#_setDefaultContent', function() {
+    it('Should be a callable function', function() {
+      return assert.typeOf(PluginHandler.prototype._setDefaultContent, 'function');
+    });
+    return it('Should set some default values', function() {
+      var content;
+
+      content = new PluginHandler()._setDefaultContent({});
+      assert.typeOf(content, 'object');
+      return assert.equal(content.mainFile, 'main.js');
+    });
+  });
   describe('#readConfigFile', function() {
     it('Should be a callable function', function() {
       return assert.typeOf(PluginHandler.prototype.readConfigFile, 'function');
@@ -45,16 +57,80 @@ describe('PluginHandler', function() {
       });
     });
   });
-  return describe('#getPluginInterface', function() {
+  describe('#getPluginInterface', function() {
     it('Should be a callable function', function() {
       return assert.typeOf(PluginHandler.prototype.getPluginInterface, 'function');
     });
-    return it('Should return a pluginInterface instance', function() {
+    it('Should return a pluginInterface instance', function() {
       var p;
 
       p = new PluginHandler();
       assert.typeOf(p.getPluginInterface(), 'object');
       return assert.equal(p.getPluginInterface().constructor.name, 'PluginInterface', 'should be a pluginInterface type');
+    });
+    return it('The pluginInterface instance should be a child of the PluginHandler', function() {
+      var p, pInterface, parent;
+
+      p = new PluginHandler();
+      pInterface = p.getPluginInterface();
+      p.__TEST__ = true;
+      parent = pInterface.getParent();
+      assert.typeOf(parent, 'object');
+      assert.equal(parent.constructor.name, 'PluginHandler');
+      assert.equal(parent.__TEST__, true);
+      return assert.equal(p.getChildList().length, 1, 'the pluginInterface should be a child of the PluginHandler');
+    });
+  });
+  return describe('#readMainEntryFile', function() {
+    it('Should be a callable function', function() {
+      return assert.typeOf(PluginHandler.prototype.readMainEntryFile, 'function');
+    });
+    it('Should raise an error when the directory is not loaded', function(cb) {
+      return new PluginHandler().readMainEntryFile(function(err, data) {
+        var e;
+
+        try {
+          assert.equal(data, null);
+          assert.equal(toType(err), 'error');
+          return cb();
+        } catch (_error) {
+          e = _error;
+          return cb(e);
+        }
+      });
+    });
+    it('Should raise an error when the configuration file is not loaded', function(cb) {
+      var p;
+
+      p = new PluginHandler();
+      p.updateContent({
+        directory: __dirname
+      });
+      return p.readMainEntryFile(function(err, data) {
+        var e;
+
+        try {
+          assert.equal(data, null);
+          assert.equal(toType(err), 'error');
+          return cb();
+        } catch (_error) {
+          e = _error;
+          return cb(e);
+        }
+      });
+    });
+    return it('Should load the content from the content updated', function(cb) {
+      var p;
+
+      p = new PluginHandler();
+      p.updateContent({
+        directory: "" + __dirname + "/testFiles/pluginLoading/plugins/testPlugin",
+        extension: '__exec',
+        content: {}
+      });
+      return p.readMainEntryFile(function(err, data) {
+        return cb(err);
+      });
     });
   });
 });

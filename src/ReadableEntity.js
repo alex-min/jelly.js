@@ -200,6 +200,9 @@ ReadableEntity = Tools.implementing(Events, _ReadableEntity = (function() {
   ReadableEntity.prototype.getLastOfProperty = function(property, extFilter) {
     var content, _i, _ref;
 
+    if (typeof extFilter === 'undefined') {
+      extFilter = null;
+    }
     _ref = this._entityContentList;
     for (_i = _ref.length - 1; _i >= 0; _i += -1) {
       content = _ref[_i];

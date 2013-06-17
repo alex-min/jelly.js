@@ -149,6 +149,9 @@ class ReadableEntity
    * @return last directory pushed
   ###
   getLastOfProperty: (property, extFilter) ->
+    if typeof extFilter == 'undefined'
+      extFilter = null
+
     # for each content (decreasing iteration)
     for content in @_entityContentList by -1
       # if it has the right extension

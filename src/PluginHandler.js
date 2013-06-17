@@ -42,7 +42,18 @@ PluginHandler = Tools.implementing(Logger, ReadableEntity, TreeElement, _PluginH
 
   PluginHandler.prototype._constructor_ = function() {
     this._parentConstructor_();
-    return this._pluginInterface = new PluginInterface();
+    this._pluginInterface = new PluginInterface();
+    this._pluginInterface.setParent(this);
+    return this.addChild(this._pluginInterface);
+  };
+
+  PluginHandler.prototype._setDefaultContent = function(content) {
+    var _ref;
+
+    if ((_ref = content.mainFile) == null) {
+      content.mainFile = 'main.js';
+    }
+    return content;
   };
 
   /**
@@ -61,22 +72,56 @@ PluginHandler = Tools.implementing(Logger, ReadableEntity, TreeElement, _PluginH
 
 
   PluginHandler.prototype.readConfigFile = function(cb) {
-    var dir;
+    var dir, e, self;
+
+    self = this;
+    cb = cb || function() {};
+    try {
+      dir = this.getLastDirectory();
+      if (dir === null) {
+        cb(new Error('No directory is specified'));
+        cb = function() {};
+        return;
+      }
+      return this.readUpdateAndExecute("" + dir + "/config.json", 'utf8', function(err, data) {
+        if (err != null) {
+          cb(new Error("Unable to read the plugin configuration file : " + err.message));
+          cb = function() {};
+          return;
+        }
+        self._setDefaultContent(self.getLastExecutableContent());
+        self.readMainEntryFile(cb);
+        return cb = function() {};
+      });
+    } catch (_error) {
+      e = _error;
+      return cb(e);
+    }
+  };
+
+  PluginHandler.prototype.readMainEntryFile = function(cb) {
+    var content, dir;
 
     cb = cb || function() {};
     dir = this.getLastDirectory();
     if (dir === null) {
-      cb(new Error("No directory is specified"));
+      cb(new Error('No directory is specified'), null);
       cb = function() {};
       return;
     }
-    return this.readUpdateAndExecute("" + dir + "/config.json", 'utf8', function(err, data) {
+    content = this.getLastExecutableContent();
+    if (content === null) {
+      cb(new Error('The configuration file is not loaded (please call PluginHandler::readConfigFile before using this method)'), null);
+      cb = function() {};
+      return;
+    }
+    this._setDefaultContent(content);
+    return this._pluginInterface.readUpdateAndExecute("" + dir + "/" + content.mainFile, 'utf8', function(err, data) {
       if (err != null) {
-        cb(new Error("Unable to read the plugin configuration file : " + err.message));
-        cb = function() {};
+        cb(new Error("Unable to process <" + dir + "/" + content.mainFile + "> : " + err.message));
         return;
       }
-      return cb(null);
+      return cb(null, data);
     });
   };
 
