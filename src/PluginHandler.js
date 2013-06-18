@@ -113,9 +113,10 @@ PluginHandler = Tools.implementing(Logger, ReadableEntity, TreeElement, _PluginH
 
 
   PluginHandler.prototype.readMainEntryFile = function(cb) {
-    var content, dir;
+    var content, dir, self;
 
     cb = cb || function() {};
+    self = this;
     dir = this.getLastDirectory();
     if (dir === null) {
       cb(new Error('No directory is specified'), null);
@@ -160,8 +161,8 @@ PluginHandler = Tools.implementing(Logger, ReadableEntity, TreeElement, _PluginH
    *    Read the config.json from the plugin</li>
    *  <li> <strong>readMainEntryFile</strong> :
    *    Read the main.js (or what is specified on the config.json file (mainFile entry)</li>
-   *  <li> <strong>getPluginInterface().unload()</strong> :
-   *    Unload the current plugin.
+   *  <li> <strong>getPluginInterface().reload()</strong> :
+   *    reload the current plugin.
    * </ul>
    * You must have set a directory ( updateContent({directory:'/dir/to/set'}) ) before using this method.  
    *
@@ -192,7 +193,7 @@ PluginHandler = Tools.implementing(Logger, ReadableEntity, TreeElement, _PluginH
         function(cb) {
           return self.readMainEntryFile(cb);
         }, function(cb) {
-          return self._pluginInterface.unload(cb);
+          return self._pluginInterface.reload(cb);
         }
       ], function(err) {
         return cb(err);

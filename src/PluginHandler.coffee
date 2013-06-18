@@ -82,6 +82,7 @@ class PluginHandler
   ###
   readMainEntryFile: (cb) ->
     cb = cb || ->
+    self = @
 
     # get the config directory
     dir = @getLastDirectory()
@@ -124,8 +125,8 @@ class PluginHandler
    *    Read the config.json from the plugin</li>
    *  <li> <strong>readMainEntryFile</strong> :
    *    Read the main.js (or what is specified on the config.json file (mainFile entry)</li>
-   *  <li> <strong>getPluginInterface().unload()</strong> :
-   *    Unload the current plugin.
+   *  <li> <strong>getPluginInterface().reload()</strong> :
+   *    reload the current plugin.
    * </ul>
    * You must have set a directory ( updateContent({directory:'/dir/to/set'}) ) before using this method.  
    *
@@ -154,8 +155,8 @@ class PluginHandler
         # first we read the main.js entry point of the plugin
         (cb) -> self.readMainEntryFile(cb)
 
-        # then we unload the plugin
-        (cb) -> self._pluginInterface.unload(cb)
+        # then we reload the plugin
+        (cb) -> self._pluginInterface.reload(cb)
  
       ], (err) ->
         cb(err)

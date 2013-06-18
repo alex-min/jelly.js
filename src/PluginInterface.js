@@ -43,11 +43,10 @@ PluginInterface = Tools.implementing(Logger, ReadableEntity, TreeElement, _Plugi
   };
 
   /**
-   *  @property STATUS
-   *  @type Object
-   *  @static
-   *  @final
-   *  @readOnly
+   *  @property {Object} STATUS
+   *  @for
+   *  @attribute {Int} NOT_LOADED The plugin is not loaded
+   *  @attribute {Int} LOADED The plugin is loaded
   */
 
 
@@ -56,26 +55,118 @@ PluginInterface = Tools.implementing(Logger, ReadableEntity, TreeElement, _Plugi
     LOADED: 1
   };
 
-  PluginInterface.prototype.unload = function(cb) {
-    cb = cb || function() {};
-    return cb();
+  /**
+   * Get the current status of the plugin.
+   * Currently, two values are possible : <ul>
+   *  <li><strong> PluginInterface::STATUS.NOT_LOADED </strong> : The plugin is currently not loaded.</li>
+   *  <li><strong> PluginInterface::STATUS.LOADED </strong> : The plugin is loaded </li></ul>
+   *
+   * @for PluginInterface
+   * @method getStatus
+   * @return {PluginInterface::STATUS} Current status of the plugin
+  */
+
+
+  PluginInterface.prototype.getStatus = function() {
+    return this._status;
   };
+
+  /**
+   * This method will trigger exports.unload on the main plugin file.
+   * This method must be called when reloading the plugin to let the plugin know a reload event is happening.
+   *
+   * @for PluginInterface
+   * @method unload
+   * @async
+   * @param {Function}[callback] callback function
+   * @param {Error} callback.err Error found during execution
+  */
+
+
+  PluginInterface.prototype.unload = function(cb) {
+    var content;
+
+    cb = cb || function() {};
+    content = this.getLastExecutableContent();
+    if (content === null) {
+      this.getLogger().warning('Unable to unload plugin : There is no content');
+      cb(null);
+      cb = function() {};
+      return;
+    }
+    if (typeof content !== 'object') {
+      this.getLogger().warning('Unable to unload plugin : The content is not an object');
+      cb(null);
+      cb = function() {};
+      return;
+    }
+    if (typeof content.unload !== 'function') {
+      this.getLogger().warning('Unable to unload plugin: There is no unload function exported in the plugin file');
+      cb(null);
+      cb = function() {};
+    }
+    return content.unload.call(this, cb);
+  };
+
+  /**
+   * This method will trigger exports.load on the main plugin file.
+   * This method must be called when reloading the plugin to let the plugin know a reload event is happening.
+   *
+   * @for PluginInterface
+   * @method load
+   * @async
+   * @param {Function}[callback] callback function
+   * @param {Error} callback.err Error found during execution
+  */
+
 
   PluginInterface.prototype.load = function(cb) {
+    var content;
+
     cb = cb || function() {};
-    return cb();
+    content = this.getLastExecutableContent();
+    if (content === null) {
+      this.getLogger().warning('Unable to load plugin : There is no content');
+      cb(null);
+      cb = function() {};
+      return;
+    }
+    if (typeof content !== 'object') {
+      this.getLogger().warning('Unable to load plugin : The content is not an object');
+      cb(null);
+      cb = function() {};
+      return;
+    }
+    if (typeof content.load !== 'function') {
+      this.getLogger().warning('Unable to load plugin: There is no unload function exported in the plugin file');
+      cb(null);
+      cb = function() {};
+    }
+    return content.load.call(this, cb);
   };
 
-  PluginInterface.prototype.readFile = function(filename, cb) {
+  /**
+   * This method is the equivalent of calling unload and load just after.
+   * This will trigger exports.unload and export.load on the plugin main file.
+   *
+   * @for PluginInterface
+   * @method reload
+   * @async
+   * @param {Function}[callback] callback function
+   * @param {Error} callback.err Error found during execution
+  */
+
+
+  PluginInterface.prototype.reload = function(cb) {
     var self;
 
-    self = this;
     cb = cb || function() {};
+    self = this;
     return async.series([
       function(cb) {
         return self.unload(cb);
       }, function(cb) {
-        return cb();
+        return self.load(cb);
       }
     ], function(err) {
       return cb(err);
