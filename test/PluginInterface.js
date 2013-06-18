@@ -27,6 +27,15 @@ describe('PluginInterface', function() {
       return assert.typeOf(PluginInterface.prototype._constructor_, 'function');
     });
   });
+  describe('::STATUS', function() {
+    it('Should exist', function() {
+      return assert.typeOf(PluginInterface.prototype.STATUS, 'object');
+    });
+    return it('Should contain the status', function() {
+      assert.equal(PluginInterface.prototype.STATUS.NOT_LOADED, 0);
+      return assert.equal(PluginInterface.prototype.STATUS.LOADED, 1);
+    });
+  });
   describe('#constructor', function() {
     it('creating an instance should not throw errors', function() {
       var pluginInterface;

@@ -16,7 +16,17 @@ describe('PluginInterface', ->
       assert.typeOf(PluginInterface.prototype._constructor_, 'function');
     )
   )
+#------------------------------------------------------------------------------------------
+  describe('::STATUS', ->
+    it('Should exist', ->
+      assert.typeOf(PluginInterface::STATUS, 'object')
+    )
 
+    it('Should contain the status', ->
+      assert.equal(PluginInterface::STATUS.NOT_LOADED, 0)
+      assert.equal(PluginInterface::STATUS.LOADED, 1)
+    )   
+  )
 #------------------------------------------------------------------------------------------
   describe('#constructor', ->
     it('creating an instance should not throw errors', ->

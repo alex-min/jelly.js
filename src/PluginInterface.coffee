@@ -24,6 +24,13 @@ class PluginInterface
     @_parentConstructor_()
     @_status = PluginInterface::STATUS.NOT_LOADED
 
+  ###*
+   *  @property STATUS
+   *  @type Object
+   *  @static
+   *  @final
+   *  @readOnly
+  ###
   STATUS: {
     NOT_LOADED: 0
     LOADED: 1

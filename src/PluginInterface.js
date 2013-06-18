@@ -42,6 +42,15 @@ PluginInterface = Tools.implementing(Logger, ReadableEntity, TreeElement, _Plugi
     return this._status = PluginInterface.prototype.STATUS.NOT_LOADED;
   };
 
+  /**
+   *  @property STATUS
+   *  @type Object
+   *  @static
+   *  @final
+   *  @readOnly
+  */
+
+
   PluginInterface.prototype.STATUS = {
     NOT_LOADED: 0,
     LOADED: 1
