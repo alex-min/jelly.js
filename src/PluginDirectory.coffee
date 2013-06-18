@@ -110,32 +110,48 @@ class PluginDirectory
     self = @
 
     try
+      # if dir == null > the directory is invalid
       if dir == null || typeof dir == 'undefined'
         cb(new Error("An invalid 'null' value was given as directory for pluginName #{pluginName}"), null); cb = ->
         return
+
+      # if pluginName == null > the plugin name is invalid
       if pluginName == null || typeof pluginName == 'undefined'
         cb(new Error("An invalid 'null' value was given as pluginName for directory #{dir}"), null); cb = ->
         return
+
       @getLogger().info("Reading plugin '#{pluginName}' <#{dir}>")
+      
+      # checking if the directory is correct
       fs.stat("#{dir}", (err, stats) ->
+        # cannot access to the directory
         if err?
           cb(new Error("#{dir} is an invalid directory : #{err}"), null); cb = ->
           return
+        # the directory specified is maybe a file or something else
         if !(stats.isDirectory())
           cb(new Error("#{dir} is not a directory on plugin #{pluginName}"), null); cb = ->
           return
         pluginHandler = self.getChildById(pluginName)
+        # if the plugin is not registred yet
         if pluginHandler == null
+          # we create it and push it to the class
           pluginHandler = new PluginHandler()
           pluginHandler.setId(pluginName)
           pluginHandler.updateContent({directory:dir})
           pluginHandler.setParent(self)
-        self.addChild(pluginHandler, (err) ->
-          pluginHandler.reload((err) ->
-            cb(err, pluginHandler); cb = ->
-          )
+        async.series([
+          # first we add the plugin to the class
+          (cb) -> self.addChild(pluginHandler, cb)
+
+          # then we read its configuration file 
+          (cb) -> pluginHandler.readConfigFile(cb)
+
+          # after this, we reload the plugin
+          (cb) -> pluginHandler.reload(cb)
+        ], (err) ->
+          cb(err, pluginHandler)
         )
-        
       )
     catch e
       cb(e)

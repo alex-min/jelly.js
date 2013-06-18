@@ -142,7 +142,10 @@ describe('PluginDirectory', function() {
       return assert.typeOf(PluginDirectory.prototype.readPluginFromPath, 'function');
     });
     it('Should raise an error when there null is given as a directory', function(cb) {
-      return new PluginDirectory().readPluginFromPath(null, "pluginName", function(err) {
+      var p;
+
+      p = new PluginDirectory();
+      return p.readPluginFromPath(null, "pluginName", function(err) {
         var e;
 
         try {

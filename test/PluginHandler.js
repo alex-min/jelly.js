@@ -81,7 +81,7 @@ describe('PluginHandler', function() {
       return assert.equal(p.getChildList().length, 1, 'the pluginInterface should be a child of the PluginHandler');
     });
   });
-  return describe('#readMainEntryFile', function() {
+  describe('#readMainEntryFile', function() {
     it('Should be a callable function', function() {
       return assert.typeOf(PluginHandler.prototype.readMainEntryFile, 'function');
     });
@@ -129,6 +129,39 @@ describe('PluginHandler', function() {
         content: {}
       });
       return p.readMainEntryFile(function(err, data) {
+        return cb(err);
+      });
+    });
+  });
+  return describe('#reload', function() {
+    it('Should be a callable function', function() {
+      return assert.typeOf(PluginHandler.prototype.reload, 'function');
+    });
+    it('Should raise an error when there is no directory bound to the class', function(cb) {
+      var p;
+
+      p = new PluginHandler();
+      return p.reload(function(err) {
+        var e;
+
+        try {
+          assert.equal(toType(err), 'error');
+          cb();
+          return cb = function() {};
+        } catch (_error) {
+          e = _error;
+          return cb(e);
+        }
+      });
+    });
+    return it('Should reload plugins', function(cb) {
+      var p;
+
+      p = new PluginHandler();
+      p.updateContent({
+        directory: "" + __dirname + "/testFiles/pluginLoading/plugins/testPlugin"
+      });
+      return p.reload(function(err) {
         return cb(err);
       });
     });

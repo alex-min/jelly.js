@@ -103,4 +103,27 @@ describe('PluginHandler', ->
       )
     )   
   )
+#------------------------------------------------------------------------------------------
+  describe('#reload', ->
+    it('Should be a callable function', ->
+      assert.typeOf(PluginHandler.prototype.reload, 'function')
+    )
+    it('Should raise an error when there is no directory bound to the class', (cb) ->
+      p = new PluginHandler()
+      p.reload((err) ->
+        try
+          assert.equal(toType(err), 'error')
+          cb(); cb = ->
+        catch e
+          cb(e)
+      )
+    )     
+    it('Should reload plugins', (cb) ->
+      p = new PluginHandler()
+      p.updateContent({directory:"#{__dirname}/testFiles/pluginLoading/plugins/testPlugin"})
+      p.reload((err) ->
+        cb(err)        
+      )
+    )       
+  )
 )

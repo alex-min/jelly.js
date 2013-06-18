@@ -22,13 +22,31 @@ class PluginInterface
   constructor: -> @_constructor_()
   _constructor_:->
     @_parentConstructor_()
+    @_status = PluginInterface::STATUS.NOT_LOADED
+
+  STATUS: {
+    NOT_LOADED: 0
+    LOADED: 1
+  }
 
   unload: (cb) ->
     cb = cb || ->
     cb()
 
-  readFile: (filename, cb) ->
+  load: (cb) ->
     cb = cb || ->
     cb()
+
+  readFile: (filename, cb) ->
+    self = @
+    cb = cb || ->
+
+    async.series([
+      (cb) -> self.unload(cb)
+      (cb) -> cb()
+
+    ], (err) ->
+      cb(err)
+    )
 
 module.exports = PluginInterface # export the class

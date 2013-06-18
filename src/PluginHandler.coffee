@@ -68,7 +68,18 @@ class PluginHandler
       )
     catch e
       cb(e)
- 
+
+  ###*
+   * Read the main entry point of the plugin (default:main.js).
+   * The name of the main entry file can be set from the plugin config.json with the entry 'mainFile'.
+   * You must have set a directory ( updateContent({directory:'/dir/to/set'}) ) before using this method.  
+   *
+   * @for PluginHandler
+   * @method readMainEntryFile
+   * @async
+   * @param {Function}[callback] callback function
+   * @param {Error} callback.err Error found during execution
+  ###
   readMainEntryFile: (cb) ->
     cb = cb || ->
 
@@ -106,15 +117,47 @@ class PluginHandler
   ###
   getPluginInterface: () -> return @_pluginInterface
 
+  ###*
+   * Reload the plugin.
+   * Will call in the order : <ul>
+   *  <li> <strong>readConfigFile</strong> :
+   *    Read the config.json from the plugin</li>
+   *  <li> <strong>readMainEntryFile</strong> :
+   *    Read the main.js (or what is specified on the config.json file (mainFile entry)</li>
+   *  <li> <strong>getPluginInterface().unload()</strong> :
+   *    Unload the current plugin.
+   * </ul>
+   * You must have set a directory ( updateContent({directory:'/dir/to/set'}) ) before using this method.  
+   *
+   * @for PluginHandler
+   * @method reload
+   * @async
+   * @param {Function}[callback] callback function
+   * @param {Error} callback.err Error found during execution
+  ###
   reload: (cb) ->
     cb = cb || ->
     self = @
 
+    # reading the 'config.json' config file
     @readConfigFile((err) ->
       if err?
         cb(err); cb = ->
         return
-      self._pluginInterface.unload((err) ->
+      # get the last revision of the config file
+      content = self.getLastExecutableContent()
+      
+      # set some default values
+      self._setDefaultContent(content)
+
+      async.series([
+        # first we read the main.js entry point of the plugin
+        (cb) -> self.readMainEntryFile(cb)
+
+        # then we unload the plugin
+        (cb) -> self._pluginInterface.unload(cb)
+ 
+      ], (err) ->
         cb(err)
       )
     )

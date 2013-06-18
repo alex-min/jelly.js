@@ -99,6 +99,19 @@ PluginHandler = Tools.implementing(Logger, ReadableEntity, TreeElement, _PluginH
     }
   };
 
+  /**
+   * Read the main entry point of the plugin (default:main.js).
+   * The name of the main entry file can be set from the plugin config.json with the entry 'mainFile'.
+   * You must have set a directory ( updateContent({directory:'/dir/to/set'}) ) before using this method.  
+   *
+   * @for PluginHandler
+   * @method readMainEntryFile
+   * @async
+   * @param {Function}[callback] callback function
+   * @param {Error} callback.err Error found during execution
+  */
+
+
   PluginHandler.prototype.readMainEntryFile = function(cb) {
     var content, dir;
 
@@ -140,18 +153,48 @@ PluginHandler = Tools.implementing(Logger, ReadableEntity, TreeElement, _PluginH
     return this._pluginInterface;
   };
 
+  /**
+   * Reload the plugin.
+   * Will call in the order : <ul>
+   *  <li> <strong>readConfigFile</strong> :
+   *    Read the config.json from the plugin</li>
+   *  <li> <strong>readMainEntryFile</strong> :
+   *    Read the main.js (or what is specified on the config.json file (mainFile entry)</li>
+   *  <li> <strong>getPluginInterface().unload()</strong> :
+   *    Unload the current plugin.
+   * </ul>
+   * You must have set a directory ( updateContent({directory:'/dir/to/set'}) ) before using this method.  
+   *
+   * @for PluginHandler
+   * @method reload
+   * @async
+   * @param {Function}[callback] callback function
+   * @param {Error} callback.err Error found during execution
+  */
+
+
   PluginHandler.prototype.reload = function(cb) {
     var self;
 
     cb = cb || function() {};
     self = this;
     return this.readConfigFile(function(err) {
+      var content;
+
       if (err != null) {
         cb(err);
         cb = function() {};
         return;
       }
-      return self._pluginInterface.unload(function(err) {
+      content = self.getLastExecutableContent();
+      self._setDefaultContent(content);
+      return async.series([
+        function(cb) {
+          return self.readMainEntryFile(cb);
+        }, function(cb) {
+          return self._pluginInterface.unload(cb);
+        }
+      ], function(err) {
         return cb(err);
       });
     });

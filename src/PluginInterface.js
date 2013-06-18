@@ -38,7 +38,13 @@ PluginInterface = Tools.implementing(Logger, ReadableEntity, TreeElement, _Plugi
   }
 
   PluginInterface.prototype._constructor_ = function() {
-    return this._parentConstructor_();
+    this._parentConstructor_();
+    return this._status = PluginInterface.prototype.STATUS.NOT_LOADED;
+  };
+
+  PluginInterface.prototype.STATUS = {
+    NOT_LOADED: 0,
+    LOADED: 1
   };
 
   PluginInterface.prototype.unload = function(cb) {
@@ -46,9 +52,25 @@ PluginInterface = Tools.implementing(Logger, ReadableEntity, TreeElement, _Plugi
     return cb();
   };
 
-  PluginInterface.prototype.readFile = function(filename, cb) {
+  PluginInterface.prototype.load = function(cb) {
     cb = cb || function() {};
     return cb();
+  };
+
+  PluginInterface.prototype.readFile = function(filename, cb) {
+    var self;
+
+    self = this;
+    cb = cb || function() {};
+    return async.series([
+      function(cb) {
+        return self.unload(cb);
+      }, function(cb) {
+        return cb();
+      }
+    ], function(err) {
+      return cb(err);
+    });
   };
 
   return PluginInterface;

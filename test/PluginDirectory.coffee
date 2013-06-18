@@ -113,7 +113,8 @@ describe('PluginDirectory', ->
       assert.typeOf(PluginDirectory.prototype.readPluginFromPath, 'function')
     )
     it('Should raise an error when there null is given as a directory', (cb) ->
-        new PluginDirectory().readPluginFromPath(null, "pluginName", (err) ->
+        p = new PluginDirectory()
+        p.readPluginFromPath(null, "pluginName", (err) ->
           try
             assert.equal(toType(err), 'error')
             cb()

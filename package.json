@@ -14,8 +14,8 @@
   "author": "alex-min",
   "license": "MIT",
   "dependencies": {
-    "chai": "~1.6.0",
-    "mocha": "~1.10.0",
+    "chai": "~1.7.0",
+    "mocha": "~1.11.0",
     "async": "~0.2.9",
     "winston": "~0.7.1"
   },

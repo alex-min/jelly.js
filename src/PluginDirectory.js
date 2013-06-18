@@ -187,11 +187,16 @@ PluginDirectory = Tools.implementing(Logger, ReadableEntity, TreeElement, _Plugi
           });
           pluginHandler.setParent(self);
         }
-        return self.addChild(pluginHandler, function(err) {
-          return pluginHandler.reload(function(err) {
-            cb(err, pluginHandler);
-            return cb = function() {};
-          });
+        return async.series([
+          function(cb) {
+            return self.addChild(pluginHandler, cb);
+          }, function(cb) {
+            return pluginHandler.readConfigFile(cb);
+          }, function(cb) {
+            return pluginHandler.reload(cb);
+          }
+        ], function(err) {
+          return cb(err, pluginHandler);
         });
       });
     } catch (_error) {
