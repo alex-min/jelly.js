@@ -26,7 +26,7 @@ class PluginInterface
 
   ###*
    *  @property {Object} STATUS
-   *  @for
+   *  @c
    *  @attribute {Int} NOT_LOADED The plugin is not loaded
    *  @attribute {Int} LOADED The plugin is loaded
   ###
@@ -48,6 +48,23 @@ class PluginInterface
   getStatus: () ->
     return @_status
 
+  ###*
+   * Set the current status of the plugin.
+   * Currently, two values are possible : <ul>
+   *  <li><strong> PluginInterface::STATUS.NOT_LOADED </strong> : The plugin is currently not loaded.</li>
+   *  <li><strong> PluginInterface::STATUS.LOADED </strong> : The plugin is loaded </li></ul>
+   *
+   * @for PluginInterface
+   * @method setStatus
+   * @param {PluginInterface::STATUS} New status of the plugin
+   * @return {PluginInterface::STATUS} New status of the plugin (or null if the status is invalid)
+  ###
+  setStatus: (status) ->
+    if status == PluginInterface::STATUS.NOT_LOADED \
+      || status == PluginInterface::STATUS.LOADED
+        @_status = status
+    return null
+
 
   ###*
    * This method will trigger exports.unload on the main plugin file.
@@ -61,6 +78,7 @@ class PluginInterface
   ###
   unload: (cb) ->
     cb = cb || ->
+    self = @
 
     # get the last revision of the config file
     content = @getLastExecutableContent()
@@ -68,23 +86,26 @@ class PluginInterface
     # there is no content
     if content == null
       # unload should not trigger any errors when there is no content
-      @getLogger().warning('Unable to unload plugin : There is no content')
+      @getLogger().warn('Unable to unload plugin : There is no content')
       cb(null); cb = ->
       return
 
     # the content is strange
     if typeof content != 'object'
-      @getLogger().warning('Unable to unload plugin : The content is not an object')
+      @getLogger().warn('Unable to unload plugin : The content is not an object')
       cb(null); cb = ->
       return
 
     # there is no unload function declared
     if typeof content.unload != 'function'
-      @getLogger().warning('Unable to unload plugin: There is no unload function exported in the plugin file')
+      @getLogger().warn('Unable to unload plugin: There is no unload function exported in the plugin file')
       cb(null); cb = ->
 
     # calling the unload method with this as content
-    content.unload.call(this, cb)
+    content.unload.call(this, () ->
+      self.setStatus(PluginInterface::STATUS.NOT_LOADED)
+      cb()
+    )
 
   ###*
    * This method will trigger exports.load on the main plugin file.
@@ -98,6 +119,7 @@ class PluginInterface
   ###
   load: (cb) ->
     cb = cb || ->
+    self = @
 
     # get the last revision of the config file
     content = @getLastExecutableContent()
@@ -105,23 +127,26 @@ class PluginInterface
     # there is no content
     if content == null
       # unload should not trigger any errors when there is no content
-      @getLogger().warning('Unable to load plugin : There is no content')
+      @getLogger().warn('Unable to load plugin : There is no content')
       cb(null); cb = ->
       return
 
     # the content is strange
     if typeof content != 'object'
-      @getLogger().warning('Unable to load plugin : The content is not an object')
+      @getLogger().warn('Unable to load plugin : The content is not an object')
       cb(null); cb = ->
       return
 
     # there is no unload function declared
     if typeof content.load != 'function'
-      @getLogger().warning('Unable to load plugin: There is no unload function exported in the plugin file')
+      @getLogger().warn('Unable to load plugin: There is no unload function exported in the plugin file')
       cb(null); cb = ->
 
     # calling the unload method with this as content
-    content.load.call(this, cb)
+    content.load.call(this, () ->
+      self.setStatus(PluginInterface::STATUS.LOADED)
+      cb()
+    )
 
   ###*
    * This method is the equivalent of calling unload and load just after.
@@ -142,6 +167,38 @@ class PluginInterface
       (cb) -> self.load(cb) 
     ], (err) ->
       cb(err)
+    )
+
+
+  call: (object, params, cb) ->
+    cb = cb || ->
+    self = @
+
+    # get the last revision of the config file
+    content = @getLastExecutableContent()
+
+    # there is no content
+    if content == null
+      # unload should not trigger any errors when there is no content
+      @getLogger().warn('Unable to call plugin : There is no content')
+      cb(null); cb = ->
+      return
+
+    # the content is strange
+    if typeof content != 'object'
+      @getLogger().warn('Unable to call plugin : The content is not an object')
+      cb(null); cb = ->
+      return
+
+    # there is no unload function declared
+    if typeof content.oncall != 'function'
+      @getLogger().warn('Unable to call plugin: There is no oncall function exported in the plugin file')
+      cb(null); cb = ->
+
+    # calling the unload method with this as content
+    content.oncall.call(this, () ->
+      self.setStatus(PluginInterface::STATUS.LOADED)
+      cb()
     )
 
 module.exports = PluginInterface # export the class

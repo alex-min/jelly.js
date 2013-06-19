@@ -52,9 +52,55 @@ describe('PluginInterface', function() {
       return assert.equal(PluginInterface.prototype.TreeElement, true);
     });
   });
-  return describe('#unload', function() {
+  describe('#unload', function() {
     return it('Should be a callable function', function() {
       return assert.typeOf(PluginInterface.prototype.unload, 'function');
+    });
+  });
+  return describe('#getStatus', function() {
+    it('Should be a callable function', function() {
+      return assert.typeOf(PluginInterface.prototype.getStatus, 'function');
+    });
+    it('Should return NOT_LOADED by default', function() {
+      return assert.equal(new PluginInterface().getStatus(), PluginInterface.prototype.STATUS.NOT_LOADED);
+    });
+    return it('Should set to LOADED if we load the plugin and NOT_LOADED if we unload the plugin', function(cb) {
+      var p;
+
+      p = new PluginInterface();
+      p.updateContent({
+        content: {
+          load: function(cb) {
+            return cb();
+          },
+          unload: function(cb) {
+            return cb();
+          }
+        },
+        extension: '__exec'
+      });
+      return p.load(function() {
+        var e;
+
+        try {
+          assert.equal(p.getStatus(), PluginInterface.prototype.STATUS.LOADED);
+          return p.unload(function() {
+            var e;
+
+            try {
+              assert.equal(p.getStatus(), PluginInterface.prototype.STATUS.NOT_LOADED);
+              cb();
+              return cb = function() {};
+            } catch (_error) {
+              e = _error;
+              return cb(e);
+            }
+          });
+        } catch (_error) {
+          e = _error;
+          return cb(e);
+        }
+      });
     });
   });
 });

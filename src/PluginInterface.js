@@ -44,7 +44,7 @@ PluginInterface = Tools.implementing(Logger, ReadableEntity, TreeElement, _Plugi
 
   /**
    *  @property {Object} STATUS
-   *  @for
+   *  @c
    *  @attribute {Int} NOT_LOADED The plugin is not loaded
    *  @attribute {Int} LOADED The plugin is loaded
   */
@@ -72,6 +72,26 @@ PluginInterface = Tools.implementing(Logger, ReadableEntity, TreeElement, _Plugi
   };
 
   /**
+   * Set the current status of the plugin.
+   * Currently, two values are possible : <ul>
+   *  <li><strong> PluginInterface::STATUS.NOT_LOADED </strong> : The plugin is currently not loaded.</li>
+   *  <li><strong> PluginInterface::STATUS.LOADED </strong> : The plugin is loaded </li></ul>
+   *
+   * @for PluginInterface
+   * @method setStatus
+   * @param {PluginInterface::STATUS} New status of the plugin
+   * @return {PluginInterface::STATUS} New status of the plugin (or null if the status is invalid)
+  */
+
+
+  PluginInterface.prototype.setStatus = function(status) {
+    if (status === PluginInterface.prototype.STATUS.NOT_LOADED || status === PluginInterface.prototype.STATUS.LOADED) {
+      this._status = status;
+    }
+    return null;
+  };
+
+  /**
    * This method will trigger exports.unload on the main plugin file.
    * This method must be called when reloading the plugin to let the plugin know a reload event is happening.
    *
@@ -84,28 +104,32 @@ PluginInterface = Tools.implementing(Logger, ReadableEntity, TreeElement, _Plugi
 
 
   PluginInterface.prototype.unload = function(cb) {
-    var content;
+    var content, self;
 
     cb = cb || function() {};
+    self = this;
     content = this.getLastExecutableContent();
     if (content === null) {
-      this.getLogger().warning('Unable to unload plugin : There is no content');
+      this.getLogger().warn('Unable to unload plugin : There is no content');
       cb(null);
       cb = function() {};
       return;
     }
     if (typeof content !== 'object') {
-      this.getLogger().warning('Unable to unload plugin : The content is not an object');
+      this.getLogger().warn('Unable to unload plugin : The content is not an object');
       cb(null);
       cb = function() {};
       return;
     }
     if (typeof content.unload !== 'function') {
-      this.getLogger().warning('Unable to unload plugin: There is no unload function exported in the plugin file');
+      this.getLogger().warn('Unable to unload plugin: There is no unload function exported in the plugin file');
       cb(null);
       cb = function() {};
     }
-    return content.unload.call(this, cb);
+    return content.unload.call(this, function() {
+      self.setStatus(PluginInterface.prototype.STATUS.NOT_LOADED);
+      return cb();
+    });
   };
 
   /**
@@ -121,28 +145,32 @@ PluginInterface = Tools.implementing(Logger, ReadableEntity, TreeElement, _Plugi
 
 
   PluginInterface.prototype.load = function(cb) {
-    var content;
+    var content, self;
 
     cb = cb || function() {};
+    self = this;
     content = this.getLastExecutableContent();
     if (content === null) {
-      this.getLogger().warning('Unable to load plugin : There is no content');
+      this.getLogger().warn('Unable to load plugin : There is no content');
       cb(null);
       cb = function() {};
       return;
     }
     if (typeof content !== 'object') {
-      this.getLogger().warning('Unable to load plugin : The content is not an object');
+      this.getLogger().warn('Unable to load plugin : The content is not an object');
       cb(null);
       cb = function() {};
       return;
     }
     if (typeof content.load !== 'function') {
-      this.getLogger().warning('Unable to load plugin: There is no unload function exported in the plugin file');
+      this.getLogger().warn('Unable to load plugin: There is no unload function exported in the plugin file');
       cb(null);
       cb = function() {};
     }
-    return content.load.call(this, cb);
+    return content.load.call(this, function() {
+      self.setStatus(PluginInterface.prototype.STATUS.LOADED);
+      return cb();
+    });
   };
 
   /**
@@ -170,6 +198,35 @@ PluginInterface = Tools.implementing(Logger, ReadableEntity, TreeElement, _Plugi
       }
     ], function(err) {
       return cb(err);
+    });
+  };
+
+  PluginInterface.prototype.call = function(object, params, cb) {
+    var content, self;
+
+    cb = cb || function() {};
+    self = this;
+    content = this.getLastExecutableContent();
+    if (content === null) {
+      this.getLogger().warn('Unable to call plugin : There is no content');
+      cb(null);
+      cb = function() {};
+      return;
+    }
+    if (typeof content !== 'object') {
+      this.getLogger().warn('Unable to call plugin : The content is not an object');
+      cb(null);
+      cb = function() {};
+      return;
+    }
+    if (typeof content.oncall !== 'function') {
+      this.getLogger().warn('Unable to call plugin: There is no oncall function exported in the plugin file');
+      cb(null);
+      cb = function() {};
+    }
+    return content.oncall.call(this, function() {
+      self.setStatus(PluginInterface.prototype.STATUS.LOADED);
+      return cb();
     });
   };
 

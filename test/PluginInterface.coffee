@@ -48,4 +48,38 @@ describe('PluginInterface', ->
       assert.typeOf(PluginInterface.prototype.unload, 'function')
     )    
   )
+#------------------------------------------------------------------------------------------
+  describe('#getStatus', ->
+    it('Should be a callable function', ->
+      assert.typeOf(PluginInterface.prototype.getStatus, 'function')
+    )
+    it('Should return NOT_LOADED by default', ->
+      assert.equal(new PluginInterface().getStatus(), PluginInterface::STATUS.NOT_LOADED)
+    )
+    it('Should set to LOADED if we load the plugin and NOT_LOADED if we unload the plugin', (cb) ->
+      p = new PluginInterface()
+      p.updateContent({
+        content: {
+          load: (cb) -> cb()
+          unload: (cb) -> cb()
+        }
+        extension: '__exec'
+      })
+
+
+      p.load(() ->
+        try
+          assert.equal(p.getStatus(), PluginInterface::STATUS.LOADED)
+          p.unload(() ->
+            try
+              assert.equal(p.getStatus(), PluginInterface::STATUS.NOT_LOADED)
+              cb(); cb = ->
+            catch e
+              cb(e)
+          )
+        catch e
+          cb(e)
+      )
+    )          
+  )
 )
