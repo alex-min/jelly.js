@@ -33,11 +33,12 @@ class PluginWrapper
       if config == null
         cb(new Error("There is no config file read on the parent module of the File '#{@getId()}'")); cb = ->
         return
+      config.filePluginParameters ?= []
+      config.filePluginParameters[pluginHandler.getId()] = {}
       # calling the plugin with the pluginParameters
       pluginHandler.getPluginInterface().oncall(this,
       {
-        plugins:config.filePlugins
-        pluginParameters:config.filePluginParameters
+        pluginParameters:config.filePluginParameters[pluginHandler.getId()]
       },cb)    
 
 
@@ -53,11 +54,14 @@ class PluginWrapper
       if config == null
         cb(new Error("There is no config file loaded for the Id '#{self.getId()}' on a #{self.constructor.name} object")); cb = ->
         return
+
+      config.filePluginParameters ?= []
+      config.filePluginParameters[pluginHandler.getId()] = {}
       # calling the plugin with the plugin parameters
       pluginHandler.getPluginInterface().oncall(self,
       {
         plugins:config.plugins
-        pluginParameters:config.pluginParameters
+        pluginParameters:config.filePluginParameters[pluginHandler.getId()]
       },cb)    
 
   ###*
@@ -84,6 +88,11 @@ class PluginWrapper
     # check if the class inherits from a ReadableEntity class
     if self.ReadableEntity != true
       cb(new Error("Unable to apply plugin : The class must inherit from ReadableEntity to use this method"))
+      return
+
+    # the plugin does not have any Id
+    if pluginHandler.getId() == null
+      cb(new Error("The pluginHandler must have an ID to be applied.")); cb = ->
       return
 
     # specific case for the File class which does not have its own configuration file

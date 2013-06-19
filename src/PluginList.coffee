@@ -39,4 +39,14 @@ class PluginList
           return handler
     return null
 
+  applyPluginsToJelly: () ->
+    ;
+
+  applyPluginsToModule: () ->
+    ;
+
+  applyPluginsToFile: () ->
+    ;
+
+
 module.exports = PluginList # export the class

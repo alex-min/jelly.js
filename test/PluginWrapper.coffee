@@ -87,9 +87,10 @@ describe('PluginWrapper', ->
           cb(e)
       )
     )
-    # ---------- #    
+    # ---------- #   
     it('Should apply the plugin to a File instance', (cb) ->
       p = new PluginHandler()
+      p.setId('plugin')
       file = new File()
       module = new Module()
       file.setParent(module)
@@ -103,7 +104,7 @@ describe('PluginWrapper', ->
       pluginInterface = p.getPluginInterface()
       pluginInterface.updateContent({
         content: {
-          oncall: ->
+          oncall: (obj, param, cb) ->
             console.log('TEST:ONCALL fired !')
             cb()
         },
@@ -111,10 +112,7 @@ describe('PluginWrapper', ->
       })
 
       file.applyPlugin(p, (err) ->
-        try
-          assert.equal(toType(err), 'error')
-        catch e
-          cb(e)
+        cb(err)
       )
     )
     # ---------- #
@@ -128,6 +126,98 @@ describe('PluginWrapper', ->
         catch e
           cb(e)
       )
-    )          
+    )
+    # ---------- #   
+    it('Should raise an error when the pluginHandler does not have an id set', (cb) ->
+      p = new PluginHandler()
+      file = new File()
+      module = new Module()
+      file.setParent(module)
+      emptyFile = {
+        content:{}
+        extension:'__exec'
+      }
+      module.updateContent(emptyFile)
+      p.updateContent(emptyFile)
+
+      pluginInterface = p.getPluginInterface()
+      pluginInterface.updateContent({
+        content: { oncall : (obj,param, cb) ->
+          cb()
+        },
+        extension:'__exec'
+      })
+
+      file.applyPlugin(p, (err) ->
+        try
+          assert.equal(toType(err), 'error')
+          cb()
+        catch e
+          cb(e)
+      )
+    )
+    # ---------- #   
+    it('Should set an empty array as pluginParameters by default on a File instance', (cb) ->
+      p = new PluginHandler()
+      p.setId('plugin')
+      file = new File()
+      module = new Module()
+      file.setParent(module)
+      emptyFile = {
+        content:{}
+        extension:'__exec'
+      }
+      module.updateContent(emptyFile)
+      p.updateContent(emptyFile)
+
+      pluginInterface = p.getPluginInterface()
+      pluginInterface.updateContent({
+        content: {
+          oncall: (obj, param, cb) ->
+            try
+              assert.typeOf(param, 'object')
+              assert.equal(toType(param.pluginParameters), 'object')
+              assert.equal(JSON.stringify(param.pluginParameters), '{}')
+              cb()
+            catch e
+              cb(e)
+        },
+        extension:'__exec'
+      })
+
+      file.applyPlugin(p, (err) ->
+        cb(err)
+      )
+    )
+    # ---------- #   
+    it('Should set an empty array as pluginParameters by default on a Other instances', (cb) ->
+      p = new PluginHandler()
+      p.setId('plugin')
+      module = new Module()
+      emptyFile = {
+        content:{}
+        extension:'__exec'
+      }
+      module.updateContent(emptyFile)
+      p.updateContent(emptyFile)
+
+      pluginInterface = p.getPluginInterface()
+      pluginInterface.updateContent({
+        content: {
+          oncall: (obj, param, cb) ->
+            try
+              assert.typeOf(param, 'object')
+              assert.equal(toType(param.pluginParameters), 'object')
+              assert.equal(JSON.stringify(param.pluginParameters), '{}')
+              cb()
+            catch e
+              cb(e)
+        },
+        extension:'__exec'
+      })
+      module.applyPlugin(p, (err) ->
+        cb(err)
+      )
+    )    
   )
 )

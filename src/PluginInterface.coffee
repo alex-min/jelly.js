@@ -196,9 +196,9 @@ class PluginInterface
       cb(null); cb = ->
 
     # calling the unload method with this as content
-    content.oncall.call(this, () ->
+    content.oncall.call(this, object, params, (err) ->
       self.setStatus(PluginInterface::STATUS.LOADED)
-      cb()
+      cb(err)
     )
 
 module.exports = PluginInterface # export the class

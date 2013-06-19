@@ -224,9 +224,9 @@ PluginInterface = Tools.implementing(Logger, ReadableEntity, TreeElement, _Plugi
       cb(null);
       cb = function() {};
     }
-    return content.oncall.call(this, function() {
+    return content.oncall.call(this, object, params, function(err) {
       self.setStatus(PluginInterface.prototype.STATUS.LOADED);
-      return cb();
+      return cb(err);
     });
   };
 

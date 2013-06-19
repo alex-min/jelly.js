@@ -70,6 +70,12 @@ PluginList = Tools.implementing(Logger, ReadableEntity, TreeElement, _PluginList
     return null;
   };
 
+  PluginList.prototype.applyPluginsToJelly = function() {};
+
+  PluginList.prototype.applyPluginsToModule = function() {};
+
+  PluginList.prototype.applyPluginsToFile = function() {};
+
   return PluginList;
 
 })());

@@ -35,7 +35,7 @@ PluginWrapper = (function() {
   }
 
   PluginWrapper.prototype._applyPluginFile = function(pluginHandler, cb) {
-    var config, module;
+    var config, module, _ref;
 
     module = this.getParent();
     if (module === null || typeof module === 'undefined') {
@@ -49,14 +49,17 @@ PluginWrapper = (function() {
       cb = function() {};
       return;
     }
+    if ((_ref = config.filePluginParameters) == null) {
+      config.filePluginParameters = [];
+    }
+    config.filePluginParameters[pluginHandler.getId()] = {};
     return pluginHandler.getPluginInterface().oncall(this, {
-      plugins: config.filePlugins,
-      pluginParameters: config.filePluginParameters
+      pluginParameters: config.filePluginParameters[pluginHandler.getId()]
     }, cb);
   };
 
   PluginWrapper.prototype._applyPluginOtherClass = function(pluginHandler, cb) {
-    var config, self;
+    var config, self, _ref;
 
     self = this;
     config = self.getLastExecutableContent();
@@ -65,9 +68,13 @@ PluginWrapper = (function() {
       cb = function() {};
       return;
     }
+    if ((_ref = config.filePluginParameters) == null) {
+      config.filePluginParameters = [];
+    }
+    config.filePluginParameters[pluginHandler.getId()] = {};
     return pluginHandler.getPluginInterface().oncall(self, {
       plugins: config.plugins,
-      pluginParameters: config.pluginParameters
+      pluginParameters: config.filePluginParameters[pluginHandler.getId()]
     }, cb);
   };
 
@@ -95,6 +102,11 @@ PluginWrapper = (function() {
     }
     if (self.ReadableEntity !== true) {
       cb(new Error("Unable to apply plugin : The class must inherit from ReadableEntity to use this method"));
+      return;
+    }
+    if (pluginHandler.getId() === null) {
+      cb(new Error("The pluginHandler must have an ID to be applied."));
+      cb = function() {};
       return;
     }
     if (self.File === true) {

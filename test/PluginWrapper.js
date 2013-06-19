@@ -121,6 +121,7 @@ describe('PluginWrapper', function() {
       var emptyFile, file, module, p, pluginInterface;
 
       p = new PluginHandler();
+      p.setId('plugin');
       file = new File();
       module = new Module();
       file.setParent(module);
@@ -133,7 +134,7 @@ describe('PluginWrapper', function() {
       pluginInterface = p.getPluginInterface();
       pluginInterface.updateContent({
         content: {
-          oncall: function() {
+          oncall: function(obj, param, cb) {
             console.log('TEST:ONCALL fired !');
             return cb();
           }
@@ -141,17 +142,10 @@ describe('PluginWrapper', function() {
         extension: '__exec'
       });
       return file.applyPlugin(p, function(err) {
-        var e;
-
-        try {
-          return assert.equal(toType(err), 'error');
-        } catch (_error) {
-          e = _error;
-          return cb(e);
-        }
+        return cb(err);
       });
     });
-    return it('Should raise an error when there is no content', function(cb) {
+    it('Should raise an error when there is no content', function(cb) {
       var module, p;
 
       p = new PluginHandler();
@@ -166,6 +160,112 @@ describe('PluginWrapper', function() {
           e = _error;
           return cb(e);
         }
+      });
+    });
+    it('Should raise an error when the pluginHandler does not have an id set', function(cb) {
+      var emptyFile, file, module, p, pluginInterface;
+
+      p = new PluginHandler();
+      file = new File();
+      module = new Module();
+      file.setParent(module);
+      emptyFile = {
+        content: {},
+        extension: '__exec'
+      };
+      module.updateContent(emptyFile);
+      p.updateContent(emptyFile);
+      pluginInterface = p.getPluginInterface();
+      pluginInterface.updateContent({
+        content: {
+          oncall: function(obj, param, cb) {
+            return cb();
+          }
+        },
+        extension: '__exec'
+      });
+      return file.applyPlugin(p, function(err) {
+        var e;
+
+        try {
+          assert.equal(toType(err), 'error');
+          return cb();
+        } catch (_error) {
+          e = _error;
+          return cb(e);
+        }
+      });
+    });
+    it('Should set an empty array as pluginParameters by default on a File instance', function(cb) {
+      var emptyFile, file, module, p, pluginInterface;
+
+      p = new PluginHandler();
+      p.setId('plugin');
+      file = new File();
+      module = new Module();
+      file.setParent(module);
+      emptyFile = {
+        content: {},
+        extension: '__exec'
+      };
+      module.updateContent(emptyFile);
+      p.updateContent(emptyFile);
+      pluginInterface = p.getPluginInterface();
+      pluginInterface.updateContent({
+        content: {
+          oncall: function(obj, param, cb) {
+            var e;
+
+            try {
+              assert.typeOf(param, 'object');
+              assert.equal(toType(param.pluginParameters), 'object');
+              assert.equal(JSON.stringify(param.pluginParameters), '{}');
+              return cb();
+            } catch (_error) {
+              e = _error;
+              return cb(e);
+            }
+          }
+        },
+        extension: '__exec'
+      });
+      return file.applyPlugin(p, function(err) {
+        return cb(err);
+      });
+    });
+    return it('Should set an empty array as pluginParameters by default on a Other instances', function(cb) {
+      var emptyFile, module, p, pluginInterface;
+
+      p = new PluginHandler();
+      p.setId('plugin');
+      module = new Module();
+      emptyFile = {
+        content: {},
+        extension: '__exec'
+      };
+      module.updateContent(emptyFile);
+      p.updateContent(emptyFile);
+      pluginInterface = p.getPluginInterface();
+      pluginInterface.updateContent({
+        content: {
+          oncall: function(obj, param, cb) {
+            var e;
+
+            try {
+              assert.typeOf(param, 'object');
+              assert.equal(toType(param.pluginParameters), 'object');
+              assert.equal(JSON.stringify(param.pluginParameters), '{}');
+              return cb();
+            } catch (_error) {
+              e = _error;
+              return cb(e);
+            }
+          }
+        },
+        extension: '__exec'
+      });
+      return module.applyPlugin(p, function(err) {
+        return cb(err);
       });
     });
   });
