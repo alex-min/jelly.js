@@ -5,6 +5,8 @@ Logger = require('./Logger')
 ReadableEntity = require('./ReadableEntity')
 TreeElement = require('./TreeElement')
 File = require('./File')
+PluginWrapper = require('./PluginWrapper')
+
 
 ###*
  * File is a class dealing with Module files.
@@ -17,7 +19,7 @@ File = require('./File')
  * @extends ReadableEntity
  * @extends TreeElement
 ###
-File = Tools.implementing Logger, ReadableEntity, TreeElement, class _File
+File = Tools.implementing PluginWrapper, Logger, ReadableEntity, TreeElement, class _File
 class File
   constructor: -> @_constructor_()
   _constructor_:->

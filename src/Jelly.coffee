@@ -6,6 +6,7 @@ Logger = require('./Logger')
 Tools = require('./Tools')
 TreeElement = require('./TreeElement')
 ReadableEntity = require('./ReadableEntity')
+PluginWrapper = require('./PluginWrapper')
 
 ###*
  * Jelly is the main class of the framework
@@ -16,7 +17,7 @@ ReadableEntity = require('./ReadableEntity')
  * @extends TreeElement
 ###
 # inherits from Logger and ReadableEntity
-Jelly = Tools.implementing Logger, ReadableEntity, TreeElement, class _Jelly
+Jelly = Tools.implementing PluginWrapper, Logger, ReadableEntity, TreeElement, class _Jelly
 class Jelly
   _constructor_: () ->
     @_parentConstructor_()
@@ -129,6 +130,7 @@ class Jelly
   readJellyConfigurationFile: (cb) ->
     self = @
     cb = cb || ->
+
     try # handle unknown errors
       fileLocation = @getLocalPath('/conf/JellyConf.json')
 

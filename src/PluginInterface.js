@@ -201,26 +201,26 @@ PluginInterface = Tools.implementing(Logger, ReadableEntity, TreeElement, _Plugi
     });
   };
 
-  PluginInterface.prototype.call = function(object, params, cb) {
+  PluginInterface.prototype.oncall = function(object, params, cb) {
     var content, self;
 
     cb = cb || function() {};
     self = this;
     content = this.getLastExecutableContent();
     if (content === null) {
-      this.getLogger().warn('Unable to call plugin : There is no content');
+      this.getLogger().warn('Unable to oncall plugin : There is no content');
       cb(null);
       cb = function() {};
       return;
     }
     if (typeof content !== 'object') {
-      this.getLogger().warn('Unable to call plugin : The content is not an object');
+      this.getLogger().warn('Unable to oncall plugin : The content is not an object');
       cb(null);
       cb = function() {};
       return;
     }
     if (typeof content.oncall !== 'function') {
-      this.getLogger().warn('Unable to call plugin: There is no oncall function exported in the plugin file');
+      this.getLogger().warn('Unable to oncall plugin: There is no oncall function exported in the plugin file');
       cb(null);
       cb = function() {};
     }

@@ -31,6 +31,9 @@ describe('Module', ->
     it('Should extends from a TreeElement', ->
       assert.equal(Module.prototype.TreeElement, true)
     )
+    it('Should extends from a PluginWrapper', ->
+      assert.equal(Module.prototype.PluginWrapper, true)
+    ) 
   )
 #------------------------------------------------------------------------------------------
   describe('#loadFromFilename', ->

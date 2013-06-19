@@ -7,6 +7,7 @@ Tools = require('./Tools')
 TreeElement = require('./TreeElement')
 Logger = require('./Logger')
 Module = require('./Module')
+PluginWrapper = require('./PluginWrapper')
 
 ###*
  * GeneralConfiguration is a class dealing with GeneralConfiguration files
@@ -17,7 +18,7 @@ Module = require('./Module')
  * @extends ReadableEntity
  * @extends TreeElement
 ###
-GeneralConfiguration = Tools.implementing Logger, ReadableEntity, TreeElement, class _GeneralConfiguration
+GeneralConfiguration = Tools.implementing PluginWrapper, Logger, ReadableEntity, TreeElement, class _GeneralConfiguration
 class GeneralConfiguration
   constructor: -> @_constructor_()
   _constructor_:->

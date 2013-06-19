@@ -39,8 +39,11 @@ describe('Module', function() {
     it('Should extends from a ReadableEntity', function() {
       return assert.equal(Module.prototype.ReadableEntity, true);
     });
-    return it('Should extends from a TreeElement', function() {
+    it('Should extends from a TreeElement', function() {
       return assert.equal(Module.prototype.TreeElement, true);
+    });
+    return it('Should extends from a PluginWrapper', function() {
+      return assert.equal(Module.prototype.PluginWrapper, true);
     });
   });
   describe('#loadFromFilename', function() {

@@ -170,7 +170,7 @@ class PluginInterface
     )
 
 
-  call: (object, params, cb) ->
+  oncall: (object, params, cb) ->
     cb = cb || ->
     self = @
 
@@ -180,19 +180,19 @@ class PluginInterface
     # there is no content
     if content == null
       # unload should not trigger any errors when there is no content
-      @getLogger().warn('Unable to call plugin : There is no content')
+      @getLogger().warn('Unable to oncall plugin : There is no content')
       cb(null); cb = ->
       return
 
     # the content is strange
     if typeof content != 'object'
-      @getLogger().warn('Unable to call plugin : The content is not an object')
+      @getLogger().warn('Unable to oncall plugin : The content is not an object')
       cb(null); cb = ->
       return
 
     # there is no unload function declared
     if typeof content.oncall != 'function'
-      @getLogger().warn('Unable to call plugin: There is no oncall function exported in the plugin file')
+      @getLogger().warn('Unable to oncall plugin: There is no oncall function exported in the plugin file')
       cb(null); cb = ->
 
     # calling the unload method with this as content

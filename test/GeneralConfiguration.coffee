@@ -30,6 +30,9 @@ describe('GeneralConfiguration', ->
     it('Should extends from a TreeElement', ->
       assert.equal(GeneralConfiguration.prototype.TreeElement, true)
     )
+    it('Should extends from a PluginWrapper', ->
+      assert.equal(GeneralConfiguration.prototype.PluginWrapper, true)
+    )
   )
 #------------------------------------------------------------------------------------------
   describe('#readAllModules', ->

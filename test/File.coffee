@@ -23,6 +23,9 @@ describe('File', ->
     it('Should extends from a TreeElement', ->
       assert.equal(File.prototype.TreeElement, true)
     )
+    it('Should extends from a PluginWrapper', ->
+      assert.equal(File.prototype.PluginWrapper, true)
+    )   
   )  
 #------------------------------------------------------------------------------------------
   describe('#loadFromFilename', ->

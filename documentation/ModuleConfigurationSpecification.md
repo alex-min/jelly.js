@@ -63,9 +63,9 @@ Here is an example of all the features the file should support :
       }
     },
 
-    modulePlugins: ['output'],
+    filePlugins: ['output'],
 
-    modulePluginParameters : {
+    filePluginParameters : {
       'output':{}
     }
   }
@@ -111,6 +111,8 @@ The plugin entry is containing a list of plugins to load. Each plugin is process
 
 Plugin parameters can be found on the ```pluginParameters``` entry.
 
+Plugins in this section are applied to the entire module.
+
 (see the PluginSpecification documentation for more information on plugins)
 
 #### pluginParameters
@@ -129,9 +131,9 @@ Where 'bare' is the bare parameter (closure) for coffeescript.
 
 (more details on the PluginsSpecification Documentation)
 
-#### modulePlugins
+#### filePlugins
 
-Because the ```plugins``` entry is only dealing with plugins related to files, this entry can apply plugin on a module basis.
+Because the ```plugins``` entry is only dealing with plugins related to modules, this entry can apply plugin on files.
 
 Module plugins will be processed after file plugins.
 

@@ -21,6 +21,9 @@ describe('Jelly', ->
     it('should extends from a ReadableEntity', ->
       assert.equal(Jelly.prototype.TreeElement, true)
     )
+    it('Should extends from a PluginWrapper', ->
+      assert.equal(Jelly.prototype.PluginWrapper, true)
+    )    
   )
 
 #------------------------------------------------------------------------------------------

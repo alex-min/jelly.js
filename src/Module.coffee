@@ -6,6 +6,7 @@ Logger = require('./Logger')
 ReadableEntity = require('./ReadableEntity')
 TreeElement = require('./TreeElement')
 File = require('./File')
+PluginWrapper = require('./PluginWrapper')
 
 ###*
  * Module is a class dealing with framework Modules.
@@ -17,7 +18,7 @@ File = require('./File')
  * @extends ReadableEntity
  * @extends TreeElement
 ###
-Module = Tools.implementing Logger, ReadableEntity, TreeElement, class _Module
+Module = Tools.implementing PluginWrapper, Logger, ReadableEntity, TreeElement, class _Module
 class Module
   constructor: -> @_constructor_()
   _constructor_:->
@@ -39,8 +40,10 @@ class Module
    *
    * @for Module
    * @method loadFromFilename
+   * @async
    * @param {String} filename The location of the file
-   * @param {Function} callback : parameters (err : error occured) 
+   * @param {Function}[callback] callback function
+   * @param {String} callback.err Error found during execution
   ###
   loadFromFilename: (filename, cb) ->
     self = @

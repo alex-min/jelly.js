@@ -37,8 +37,11 @@ describe('GeneralConfiguration', function() {
     it('Should extends from a ReadableEntity', function() {
       return assert.equal(GeneralConfiguration.prototype.ReadableEntity, true);
     });
-    return it('Should extends from a TreeElement', function() {
+    it('Should extends from a TreeElement', function() {
       return assert.equal(GeneralConfiguration.prototype.TreeElement, true);
+    });
+    return it('Should extends from a PluginWrapper', function() {
+      return assert.equal(GeneralConfiguration.prototype.PluginWrapper, true);
     });
   });
   describe('#readAllModules', function() {
