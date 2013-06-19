@@ -3,7 +3,8 @@ async = require('async')
 path = require('path')
 toType = (obj) -> ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase()  
 Jelly = require('../src/Jelly');
-GeneralConfiguration = require('../src/GeneralConfiguration');
+GeneralConfiguration = require('../src/GeneralConfiguration');\
+File = require('../src/File')
 
 describe('PluginInterface', ->
   PluginInterface = require('../src/PluginInterface')
@@ -81,5 +82,63 @@ describe('PluginInterface', ->
           cb(e)
       )
     )          
+  )
+#------------------------------------------------------------------------------------------
+  describe('#oncall', ->
+    it('Should be a callable function', ->
+      assert.typeOf(PluginInterface.prototype.oncall, 'function')
+    )
+    it('Should raise an error when the caller object is invalid', (cb) ->
+      p = new PluginInterface();
+      p.updateContent({
+        content: { oncall: (sender, params, call) -> call() }
+        extension: '__exec'
+      })
+      p.oncall(null, {}, (err) ->
+        try
+          assert.equal(toType(err), 'error')
+          cb()
+        catch e
+          cb(e)        
+      )
+    )
+    it('Should raise an error when the content is undefined', (cb) ->
+      p = new PluginInterface();
+      file = new File()
+      p.oncall(file, {}, (err) ->
+        try
+          assert.equal(toType(err), 'error')
+          cb()
+        catch e
+          cb(e)        
+      )
+    )
+    it('Should raise an error when the content is not an object', (cb) ->
+      p = new PluginInterface();
+      file = new File()
+      p.updateContent({
+        content: 3
+        extension: '__exec'
+      })      
+      p.oncall(file, {}, (err) ->
+        try
+          assert.equal(toType(err), 'error')
+          cb()
+        catch e
+          cb(e)        
+      )
+    )
+    it('Should call the oncall method on the plugin file', (cb) ->
+      p = new PluginInterface();
+      file = new File()
+      p.updateContent({
+        content: {oncall : (sender,param, callback) -> cb() }
+        extension: '__exec'
+      })      
+      p.oncall(file, {}, (err) ->
+        if err?
+          cb(err)
+      )
+    )
   )
 )

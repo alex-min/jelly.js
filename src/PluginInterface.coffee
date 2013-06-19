@@ -100,6 +100,7 @@ class PluginInterface
     if typeof content.unload != 'function'
       @getLogger().warn('Unable to unload plugin: There is no unload function exported in the plugin file')
       cb(null); cb = ->
+      return
 
     # calling the unload method with this as content
     content.unload.call(this, () ->
@@ -141,6 +142,7 @@ class PluginInterface
     if typeof content.load != 'function'
       @getLogger().warn('Unable to load plugin: There is no unload function exported in the plugin file')
       cb(null); cb = ->
+      return
 
     # calling the unload method with this as content
     content.load.call(this, () ->
@@ -169,34 +171,44 @@ class PluginInterface
       cb(err)
     )
 
-
-  oncall: (object, params, cb) ->
+  ###*
+   * This method will trigger exports.oncall on the main plugin file.
+   *
+   * @for PluginInterface
+   * @method oncall
+   * @async
+   * @param {Object} senderClass The sender class which the plugin should apply.
+   * @param {Object} params Plugins parameters found in the configuration file
+   * @param {Function}[callback] callback function
+   * @param {Error} callback.err Error found during execution
+  ###
+  oncall: (senderClass, params, cb) ->
     cb = cb || ->
     self = @
 
     # get the last revision of the config file
     content = @getLastExecutableContent()
-
     # there is no content
     if content == null
-      # unload should not trigger any errors when there is no content
-      @getLogger().warn('Unable to oncall plugin : There is no content')
-      cb(null); cb = ->
+      cb(new Error('Unable to oncall plugin : There is no content')); cb = ->
       return
 
     # the content is strange
     if typeof content != 'object'
-      @getLogger().warn('Unable to oncall plugin : The content is not an object')
-      cb(null); cb = ->
+      cb(new Error('Unable to oncall plugin : The content is not an object')); cb = ->
       return
 
     # there is no unload function declared
     if typeof content.oncall != 'function'
-      @getLogger().warn('Unable to oncall plugin: There is no oncall function exported in the plugin file')
-      cb(null); cb = ->
+      cb('Unable to oncall plugin: There is no oncall function exported in the plugin file'); cb = ->
+      return
+
+    if senderClass == null || typeof senderClass == 'undefined'
+      cb(new Error('The senderClass to bind the oncall method is invalid (null)')); cb = ->
+      return
 
     # calling the unload method with this as content
-    content.oncall.call(this, object, params, (err) ->
+    content.oncall.call(this, senderClass, params, (err) ->
       self.setStatus(PluginInterface::STATUS.LOADED)
       cb(err)
     )

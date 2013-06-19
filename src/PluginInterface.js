@@ -125,6 +125,7 @@ PluginInterface = Tools.implementing(Logger, ReadableEntity, TreeElement, _Plugi
       this.getLogger().warn('Unable to unload plugin: There is no unload function exported in the plugin file');
       cb(null);
       cb = function() {};
+      return;
     }
     return content.unload.call(this, function() {
       self.setStatus(PluginInterface.prototype.STATUS.NOT_LOADED);
@@ -166,6 +167,7 @@ PluginInterface = Tools.implementing(Logger, ReadableEntity, TreeElement, _Plugi
       this.getLogger().warn('Unable to load plugin: There is no unload function exported in the plugin file');
       cb(null);
       cb = function() {};
+      return;
     }
     return content.load.call(this, function() {
       self.setStatus(PluginInterface.prototype.STATUS.LOADED);
@@ -201,30 +203,46 @@ PluginInterface = Tools.implementing(Logger, ReadableEntity, TreeElement, _Plugi
     });
   };
 
-  PluginInterface.prototype.oncall = function(object, params, cb) {
+  /**
+   * This method will trigger exports.oncall on the main plugin file.
+   *
+   * @for PluginInterface
+   * @method oncall
+   * @async
+   * @param {Object} senderClass The sender class which the plugin should apply.
+   * @param {Object} params Plugins parameters found in the configuration file
+   * @param {Function}[callback] callback function
+   * @param {Error} callback.err Error found during execution
+  */
+
+
+  PluginInterface.prototype.oncall = function(senderClass, params, cb) {
     var content, self;
 
     cb = cb || function() {};
     self = this;
     content = this.getLastExecutableContent();
     if (content === null) {
-      this.getLogger().warn('Unable to oncall plugin : There is no content');
-      cb(null);
+      cb(new Error('Unable to oncall plugin : There is no content'));
       cb = function() {};
       return;
     }
     if (typeof content !== 'object') {
-      this.getLogger().warn('Unable to oncall plugin : The content is not an object');
-      cb(null);
+      cb(new Error('Unable to oncall plugin : The content is not an object'));
       cb = function() {};
       return;
     }
     if (typeof content.oncall !== 'function') {
-      this.getLogger().warn('Unable to oncall plugin: There is no oncall function exported in the plugin file');
-      cb(null);
+      cb('Unable to oncall plugin: There is no oncall function exported in the plugin file');
       cb = function() {};
+      return;
     }
-    return content.oncall.call(this, object, params, function(err) {
+    if (senderClass === null || typeof senderClass === 'undefined') {
+      cb(new Error('The senderClass to bind the oncall method is invalid (null)'));
+      cb = function() {};
+      return;
+    }
+    return content.oncall.call(this, senderClass, params, function(err) {
       self.setStatus(PluginInterface.prototype.STATUS.LOADED);
       return cb(err);
     });
