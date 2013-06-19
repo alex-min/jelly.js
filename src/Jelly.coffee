@@ -7,6 +7,7 @@ Tools = require('./Tools')
 TreeElement = require('./TreeElement')
 ReadableEntity = require('./ReadableEntity')
 PluginWrapper = require('./PluginWrapper')
+PluginList = require('./PluginList')
 
 ###*
  * Jelly is the main class of the framework
@@ -23,6 +24,7 @@ class Jelly
     @_parentConstructor_()
     @getLogger().info('Creating a new instance.')
     @_rootDirectory = __dirname
+    @_pluginList = new PluginList()
 
   constructor: -> @_constructor_()
 
@@ -36,6 +38,16 @@ class Jelly
   ###    
   getLocalPath: (path) ->
     return @_rootDirectory + '/' + path.toString()
+
+  ###*
+   * Get the PluginList instance associated with the class.
+   * The PluginList instance is created in the constructor.
+   *
+   * @for Jelly
+   * @method getPluginList
+   * @return {PluginList} PluginList instance
+  ###
+  getPluginList: -> @_pluginList
 
 
   ###*
@@ -156,6 +168,7 @@ class Jelly
       )
     catch e
       cb(e, null); cb = ->
+
 
   readAllGeneralConfigurationFiles: (cb) ->
     self = @

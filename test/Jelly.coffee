@@ -218,5 +218,18 @@ describe('Jelly', ->
       j.setRootDirectory('/d/e/f/g/test')
       assert.equal(j.getPluginDirectory(), "#{j.getRootDirectory()}/plugins")
     )    
-  )  
+  )
+#------------------------------------------------------------------------------------------
+  describe('#getPluginList', ->
+    it('Should be a callable function', ->
+      assert.typeOf(Jelly.prototype.getPluginList, 'function')
+    )
+    it('The constructor should create a PluginList instance', ->
+      p = new Jelly().getPluginList()
+      assert.typeOf(p, 'object')
+      assert.equal(p.PluginList, true)
+      
+    ) 
+  )
+   
 )

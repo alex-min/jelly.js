@@ -291,7 +291,7 @@ describe('Jelly', function() {
       });
     });
   });
-  return describe('#getPluginDirectory', function() {
+  describe('#getPluginDirectory', function() {
     it('Should be a callable function', function() {
       return assert.typeOf(Jelly.prototype.getPluginDirectory, 'function');
     });
@@ -303,6 +303,18 @@ describe('Jelly', function() {
       assert.equal(j.getPluginDirectory(), "" + (j.getRootDirectory()) + "/plugins");
       j.setRootDirectory('/d/e/f/g/test');
       return assert.equal(j.getPluginDirectory(), "" + (j.getRootDirectory()) + "/plugins");
+    });
+  });
+  return describe('#getPluginList', function() {
+    it('Should be a callable function', function() {
+      return assert.typeOf(Jelly.prototype.getPluginList, 'function');
+    });
+    return it('The constructor should create a PluginList instance', function() {
+      var p;
+
+      p = new Jelly().getPluginList();
+      assert.typeOf(p, 'object');
+      return assert.equal(p.PluginList, true);
     });
   });
 });
