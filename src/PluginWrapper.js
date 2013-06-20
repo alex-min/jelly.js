@@ -116,6 +116,54 @@ PluginWrapper = (function() {
     }
   };
 
+  PluginWrapper.prototype.getPluginList = function(cb) {
+    var content, e, errormsg, object, parent;
+
+    cb = cb || function() {};
+    object = this;
+    errormsg = 'Unable to get the plugin list';
+    try {
+      if (typeof Object.getPrototypeOf(object).TreeElement === 'undefined') {
+        cb(new Error("" + errormsg + ": The object must extend from a TreeElement"), null);
+        return;
+      }
+      if (Object.getPrototypeOf(object).ReadableEntity !== true) {
+        cb(new Error("" + errormsg + ": The object must extend from a ReadableEntity"), null);
+        cb = function() {};
+        return;
+      }
+      content = object.getLastExecutableContent();
+      if (content === null && typeof object.File === 'undefined') {
+        cb(new Error("" + errormsg + " on " + (object.getId()) + ": There is no content loaded"), null);
+        cb = function() {};
+        return;
+      }
+      if (typeof Object.getPrototypeOf(object).File !== 'undefined') {
+        parent = object.getParent();
+        if (parent === null) {
+          cb(new Error("" + errormsg + " on File '" + (object.getId()) + "', There is no parent module bound to the class"), null);
+          cb = function() {};
+          return;
+        }
+        content = parent.getLastExecutableContent();
+        if (content === null) {
+          cb(new Error("" + errormsg + " on File '" + (object.getId()) + "', There is no content on the parent module."), null);
+          cb = function() {};
+          return;
+        }
+        cb(null, content.filePlugins || []);
+        return cb = function() {};
+      } else {
+        cb(null, content.plugins || []);
+        return cb = function() {};
+      }
+    } catch (_error) {
+      e = _error;
+      cb(e);
+      return cb = function() {};
+    }
+  };
+
   return PluginWrapper;
 
 })();

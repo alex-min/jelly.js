@@ -220,14 +220,14 @@ describe('Jelly', ->
     )    
   )
 #------------------------------------------------------------------------------------------
-  describe('#getPluginList', ->
+  describe('#getPluginDirectoryList', ->
     it('Should be a callable function', ->
-      assert.typeOf(Jelly.prototype.getPluginList, 'function')
+      assert.typeOf(Jelly.prototype.getPluginDirectoryList, 'function')
     )
-    it('The constructor should create a PluginList instance', ->
-      p = new Jelly().getPluginList()
+    it('The constructor should create a PluginDirectory instance', ->
+      p = new Jelly().getPluginDirectoryList()
       assert.typeOf(p, 'object')
-      assert.equal(p.PluginList, true)
+      assert.equal(p.PluginDirectory, true)
       
     ) 
   )

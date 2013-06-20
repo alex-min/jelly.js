@@ -101,7 +101,49 @@ class PluginWrapper
     else # for all the other types of classes (Module, Jelly, GeneralConfiguration)
       @_applyPluginOtherClass(pluginHandler, cb)
 
+  getPluginList: (cb) ->
+    cb = cb || ->
+    object = this
+    errormsg = 'Unable to get the plugin list'
 
+    try
+
+      ## ... a lot of checks ... 
+
+      # it must extend from a TreeElement
+      if typeof Object.getPrototypeOf(object).TreeElement == 'undefined'
+        cb(new Error("#{errormsg}: The object must extend from a TreeElement"), null)
+        return
+
+      # and also from a ReadableEntity
+      if Object.getPrototypeOf(object).ReadableEntity != true
+        cb(new Error("#{errormsg}: The object must extend from a ReadableEntity"), null); cb = ->
+        return
+
+      # check if the content is null exept for a File class which have a different treatment
+      content = object.getLastExecutableContent()
+      if content == null && typeof object.File == 'undefined'
+        cb(new Error("#{errormsg} on #{object.getId()}: There is no content loaded"), null); cb = ->
+        return
+
+      if typeof Object.getPrototypeOf(object).File != 'undefined'
+        parent = object.getParent()
+        # the file must have a parent module to apply plugins
+        if parent == null
+          cb(new Error("#{errormsg} on File '#{object.getId()}', There is no parent module bound to the class"), null); cb = ->
+          return
+        content = parent.getLastExecutableContent()
+        # the module must have a content loaded
+        if content == null
+          cb(new Error("#{errormsg} on File '#{object.getId()}', There is no content on the parent module."), null); cb = ->
+          return
+        # an empty array is the default for the plugin list
+        cb(null, content.filePlugins || []); cb = ->
+      else
+        # an empty array is the default for the plugin list
+        cb(null, content.plugins || []); cb = ->
+    catch e
+      cb(e); cb = ->
 
 module.exports = PluginWrapper # export the class
 

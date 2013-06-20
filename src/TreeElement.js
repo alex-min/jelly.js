@@ -108,6 +108,28 @@ TreeElement = (function() {
     return this._parent;
   };
 
+  TreeElement.prototype.getParentOfLevel = function(level) {
+    var currentObj, i, parent;
+
+    if (typeof level !== 'number') {
+      return null;
+    }
+    if (level === 0) {
+      return this;
+    }
+    i = 1;
+    currentObj = this;
+    parent = null;
+    while (i < level) {
+      parent = currentObj.getParent();
+      if (parent === null) {
+        return null;
+      }
+      i++;
+    }
+    return parent;
+  };
+
   /**
    * Set the parent of the element (there is only one parent per TreeElement)
    * This function should return null in its callback when everything is ok.

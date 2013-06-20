@@ -12,6 +12,7 @@ class TreeElement
     @_parent = null
     @_id = null
 
+
   ###*
    * This method will return set the Id returned by the method TreeElement::getId
    * The main goal is to provide an easy system to find node in TreeElements
@@ -74,6 +75,21 @@ class TreeElement
    * @return {TreeElement} Parent element
   ###   
   getParent: -> @_parent
+
+  getParentOfLevel: (level) ->
+    if typeof level != 'number'
+      return null
+    if level == 0
+      return this
+    i = 1
+    currentObj = this
+    parent = null
+    while i < level
+      parent = currentObj.getParent()
+      if parent == null
+        return null
+      i++
+    return parent
 
   ###*
    * Set the parent of the element (there is only one parent per TreeElement)

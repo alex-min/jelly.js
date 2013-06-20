@@ -41,7 +41,96 @@ PluginDirectory = Tools.implementing(Logger, ReadableEntity, TreeElement, _Plugi
   }
 
   PluginDirectory.prototype._constructor_ = function() {
-    return this._parentConstructor_();
+    this._parentConstructor_();
+    return this.setId('@PluginDirectory');
+  };
+
+  PluginDirectory.prototype.getPluginListFromIdList = function(idList, cb) {
+    var id, notFound, pluginHandler, results, _i, _len;
+
+    cb = cb || function() {};
+    results = [];
+    notFound = [];
+    if (typeof idList !== 'array') {
+      cb(new Error("Unable to parse the IDList : invalid array given as 'idList' parameter"));
+      return;
+    }
+    for (_i = 0, _len = idList.length; _i < _len; _i++) {
+      id = idList[_i];
+      pluginHandler = this.getChildById(id);
+      if (pluginHandler === null) {
+        notFound.push(id);
+      } else {
+        results.push(pluginHandler);
+      }
+    }
+    if (notFound.length !== 0) {
+      cb(new Error("Unable to find some plugins in the list : " + (notFound.join(','))), results);
+      return;
+    }
+    return cb(null, results);
+  };
+
+  PluginDirectory.prototype.applyPluginsToObject = function(object, cb) {};
+
+  PluginDirectory.prototype.applyPluginListFromArray = function(object, pluginArray, cb) {};
+
+  PluginDirectory.prototype.applyPluginToJelly = function(recursive, cb) {
+    var jelly, self;
+
+    if (typeof recursive === 'function') {
+      cb = recursive;
+      recursive = false;
+    }
+    if (typeof recursive !== 'boolean') {
+      cb(new Error("Invalid non-boolean parameter passed as 'recursive' : " + recursive));
+      cb = function() {};
+      return;
+    }
+    cb = cb || function() {};
+    self = this;
+    jelly = this.getParent();
+    if (jelly === null) {
+      this.getLogger().warn('Unable to apply plugin to the jelly class, there is no parent bound to the class');
+      cb();
+      cb = function() {};
+      return;
+    }
+    if (recursive === true) {
+      return this.applyPluginToModules(true, function(err) {
+        if (err != null) {
+          cb(err);
+          cb = function() {};
+          return;
+        }
+        return applyPluginListFromArray(jelly);
+      });
+    } else {
+      return cb();
+    }
+  };
+
+  PluginDirectory.prototype.applyPluginToModules = function(recursive, cb) {
+    var jelly, module;
+
+    if (typeof recursive === 'function') {
+      cb = recursive;
+      recursive = false;
+    }
+    if (typeof recursive !== 'boolean') {
+      cb(new Error("Invalid non-boolean parameter passed as 'recursive' : " + recursive));
+      cb = function() {};
+      return;
+    }
+    cb = cb || function() {};
+    jelly = getParent();
+    if (jelly === null) {
+      this.getLogger().warn('Unable to apply plugin to the jelly class, there is no parent bound to the class');
+      cb();
+      cb = function() {};
+      return;
+    }
+    return module = jelly.getChildList();
   };
 
   /**

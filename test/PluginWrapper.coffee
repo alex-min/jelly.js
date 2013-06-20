@@ -5,6 +5,9 @@ toType = (obj) -> ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase(
 File = require('../src/File')
 Module = require('../src/Module')
 PluginHandler = require('../src/PluginHandler')
+Tools = require('../src/Tools')
+ReadableEntity = require('../src/ReadableEntity')
+TreeElement = require('../src/TreeElement')
 
 
 describe('PluginWrapper', ->
@@ -23,6 +26,178 @@ describe('PluginWrapper', ->
     it('Should raise no error when creating a new instance', ->
       new PluginWrapper()
     )
+  )
+
+#------------------------------------------------------------------------------------------
+  describe('#getPluginList', ->
+    it('Should be a callable function', ->
+      assert.typeOf(PluginWrapper.prototype.getPluginList, 'function')
+    )
+    # -- #getPluginListFromObject
+    it('Should raise an error when the object is not inherited from a TreeElement', (cb) ->
+      A = Tools.implementing ReadableEntity, PluginWrapper, class _A
+      class A
+        _constructor_: ->  @_parentConstructor_();
+        constructor: -> @_constructor_();
+        ;
+      new PluginWrapper().getPluginList((err) ->
+        try
+          assert.equal(toType(err), 'error')
+          cb()
+        catch e
+          cb(e)
+      )
+    )
+    # -- #getPluginListFromObject
+    it('Should raise an error when the object is not inherited from a ReadableEntity', (cb) ->
+      A = Tools.implementing TreeElement, PluginWrapper, class _A
+      class A
+        _constructor_: ->  @_parentConstructor_();
+        constructor: -> @_constructor_();
+        ;
+      new PluginWrapper().getPluginList((err) ->
+        try
+          assert.equal(toType(err), 'error')
+          cb()
+        catch e
+          cb(e)
+      )
+    )
+    # -- #getPluginListFromObject    
+    it('Should raise an error when there is no content', (cb) ->
+      new PluginDirectory().getPluginListFromObject(new Module(), (err) ->
+        try
+          assert.equal(toType(err), 'error')
+          cb()
+        catch e
+          cb(e)
+      )
+    )
+    # -- #getPluginListFromObject
+    it('Should return an empty array when there is no plugins', (cb) ->
+      m = new Module()
+      m.updateContent({
+        content:{}
+        extension:'__exec'
+      })
+      new PluginDirectory().getPluginListFromObject(m, (err, list) ->
+        if err?
+          cb(err); cb = ->
+          return
+        try
+          assert.typeOf(list, 'array')
+          assert.equal(list.length, 0)
+          cb()
+        catch e
+          cb(e)
+      )
+    )
+    # -- #getPluginListFromObject
+    it('Should raise an error when the file has no parent', (cb) ->
+      f = new File()
+      f.updateContent({
+        content:{}
+        extension:'__exec'
+      })      
+      new PluginDirectory().getPluginListFromObject(f, (err) ->
+        try
+          assert.equal(toType(err), 'error')
+          cb()
+        catch e
+          cb(e)
+      )
+    )
+    # -- #getPluginListFromObject
+    it('Should raise an error when the file has a parent module with no content', (cb) ->
+      f = new File()
+      f.updateContent({
+        content:{}
+        extension:'__exec'
+      })
+      m = new Module()
+      m.addChild(f)
+      f.setParent(m)
+      new PluginDirectory().getPluginListFromObject(f, (err) ->
+        try
+          assert.equal(toType(err), 'error')
+          cb()
+        catch e
+          cb(e)
+      )
+    )
+    # -- #getPluginListFromObject
+    it('Should return an empty array when there is no plugins (on File objects)', (cb) ->
+      f = new File()
+      f.updateContent({
+        content:{}
+        extension:'__exec'
+      })
+      m = new Module()
+      m.addChild(f)
+      m.updateContent({
+        content:{}
+        extension:'__exec'
+      })
+      f.setParent(m)
+      new PluginDirectory().getPluginListFromObject(f, (err, list) ->
+        if err?
+          cb(err); cb = ->
+          return
+        try
+          assert.typeOf(list, 'array')
+          assert.equal(list.length, 0)
+          cb()
+        catch e
+          cb(e)
+      )
+    )
+    # -- #getPluginListFromObject
+    it('Should return the plugin list (on File objects)', (cb) ->
+      f = new File()
+      f.updateContent({
+        content:{}
+        extension:'__exec'
+      })
+      m = new Module()
+      m.addChild(f)
+      m.updateContent({
+        content:{plugins:['hello'], filePlugins:['world']}
+        extension:'__exec'
+      })
+      f.setParent(m)
+      new PluginDirectory().getPluginListFromObject(f, (err, list) ->
+        if err?
+          cb(err); cb = ->
+          return
+        try
+          assert.typeOf(list, 'array')
+          assert.equal(list.length, 1)
+          assert.equal(list[0], 'world')
+          cb()
+        catch e
+          cb(e)
+      )
+    )
+    # -- #getPluginListFromObject
+    it('Should return the plugin list (on File objects)', (cb) ->
+      m = new Module()
+      m.updateContent({
+        content:{plugins:['hello'], filePlugins:['world']}
+        extension:'__exec'
+      })
+      new PluginDirectory().getPluginListFromObject(m, (err, list) ->
+        if err?
+          cb(err); cb = ->
+          return
+        try
+          assert.typeOf(list, 'array')
+          assert.equal(list.length, 1)
+          assert.equal(list[0], 'hello')          
+          cb()
+        catch e
+          cb(e)
+      )
+    )    
   )
 #------------------------------------------------------------------------------------------
   describe('applyPlugin', ->

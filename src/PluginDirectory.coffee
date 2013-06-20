@@ -24,6 +24,84 @@ class PluginDirectory
   constructor: -> @_constructor_()
   _constructor_:->
     @_parentConstructor_()
+    @setId('@PluginDirectory')
+
+  getPluginListFromIdList: (idList, cb) ->
+    cb = cb || ->
+    results = []
+    notFound = []
+
+    # check if idList is a valid array
+    if typeof idList != 'array'
+      cb(new Error("Unable to parse the IDList : invalid array given as 'idList' parameter"))
+      return
+
+    for id in idList
+      pluginHandler = @getChildById(id)
+      if pluginHandler == null
+        notFound.push(id)
+      else
+        results.push(pluginHandler)
+    # if there is some plugins missing
+    if notFound.length != 0
+      cb(new Error("Unable to find some plugins in the list : #{notFound.join(',')}"), results);
+      return
+    cb(null, results)
+
+  ## not ready
+  applyPluginsToObject: (object, cb) ->
+    ;
+
+  ## not ready
+  applyPluginListFromArray: (object, pluginArray, cb) ->
+
+    return
+
+  applyPluginToJelly: (recursive, cb) ->
+    if typeof recursive == 'function'
+      cb = recursive
+      recursive = false
+    if typeof recursive != 'boolean'
+      cb(new Error("Invalid non-boolean parameter passed as 'recursive' : #{recursive}")); cb = ->
+      return
+    cb = cb || ->
+    self = @
+
+    jelly = @getParent()
+    if jelly == null
+      @getLogger().warn('Unable to apply plugin to the jelly class, there is no parent bound to the class');
+      cb(); cb = ->
+      return
+
+    if recursive == true
+      @applyPluginToModules(true, (err) ->
+        if err?
+          cb(err); cb = ->
+          return
+        applyPluginListFromArray(jelly)
+      )
+    else
+      cb()
+
+  
+  applyPluginToModules: (recursive, cb) ->
+    if typeof recursive == 'function'
+      cb = recursive
+      recursive = false
+    if typeof recursive != 'boolean'
+      cb(new Error("Invalid non-boolean parameter passed as 'recursive' : #{recursive}")); cb = ->
+      return
+    cb = cb || ->
+
+    jelly = getParent()    
+    if jelly == null
+      @getLogger().warn('Unable to apply plugin to the jelly class, there is no parent bound to the class');
+      cb(); cb = ->
+      return
+    module = jelly.getChildList()
+    
+
+
 
   ###*
    * Get the logger class for external usage

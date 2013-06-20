@@ -3,7 +3,12 @@ async = require('async')
 path = require('path')
 toType = (obj) -> ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase()  
 Jelly = require('../src/Jelly');
+Logger = require('../src/Logger');
+TreeElement = require('../src/TreeElement');
 GeneralConfiguration = require('../src/GeneralConfiguration');
+Module = require('../src/Module');
+File = require('../src/File');
+
 
 describe('PluginDirectory', ->
   PluginDirectory = require('../src/PluginDirectory')
@@ -145,4 +150,38 @@ describe('PluginDirectory', ->
     )
 
   )
+#------------------------------------------------------------------------------------------
+  describe('#applyPluginToJelly', ->
+    it('Should be a callable function', ->
+      assert.typeOf(PluginDirectory.prototype.applyPluginToJelly, 'function')
+    )
+    it('Should raise an error when the recursive parameter is invalid', (cb) ->
+      new PluginDirectory().applyPluginToJelly(null, (err) ->
+        try
+          assert.equal(toType(err), 'error')
+          cb(); cb = ->
+        catch e
+          cb(e)        
+      )
+    )
+    it('Should raise an error when the recursive parameter is invalid', (cb) ->
+      new PluginDirectory().applyPluginToJelly(null, (err) ->
+        try
+          assert.equal(toType(err), 'error')
+          cb(); cb = ->
+        catch e
+          cb(e)        
+      )
+    )
+    it('Should raise an error when the recursive parameter is invalid', (cb) ->
+      p = new PluginDirectory()
+      jelly = new Jelly()
+      p.setParent(jelly)
+      p.applyPluginToJelly((err) ->
+        cb()
+      )
+    )
+  )
+
+
 )

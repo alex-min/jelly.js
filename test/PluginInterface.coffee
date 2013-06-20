@@ -140,5 +140,6 @@ describe('PluginInterface', ->
           cb(err)
       )
     )
+
   )
 )

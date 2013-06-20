@@ -305,16 +305,16 @@ describe('Jelly', function() {
       return assert.equal(j.getPluginDirectory(), "" + (j.getRootDirectory()) + "/plugins");
     });
   });
-  return describe('#getPluginList', function() {
+  return describe('#getPluginDirectoryList', function() {
     it('Should be a callable function', function() {
-      return assert.typeOf(Jelly.prototype.getPluginList, 'function');
+      return assert.typeOf(Jelly.prototype.getPluginDirectoryList, 'function');
     });
-    return it('The constructor should create a PluginList instance', function() {
+    return it('The constructor should create a PluginDirectory instance', function() {
       var p;
 
-      p = new Jelly().getPluginList();
+      p = new Jelly().getPluginDirectoryList();
       assert.typeOf(p, 'object');
-      return assert.equal(p.PluginList, true);
+      return assert.equal(p.PluginDirectory, true);
     });
   });
 });
