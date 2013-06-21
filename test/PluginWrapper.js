@@ -109,7 +109,7 @@ describe('PluginWrapper', function() {
       });
     });
     it('Should raise an error when there is no content', function(cb) {
-      return new PluginDirectory().getPluginListFromObject(new Module(), function(err) {
+      return new Module().getPluginList(function(err) {
         var e;
 
         try {
@@ -129,7 +129,7 @@ describe('PluginWrapper', function() {
         content: {},
         extension: '__exec'
       });
-      return new PluginDirectory().getPluginListFromObject(m, function(err, list) {
+      return m.getPluginList(function(err, list) {
         var e;
 
         if (err != null) {
@@ -155,7 +155,7 @@ describe('PluginWrapper', function() {
         content: {},
         extension: '__exec'
       });
-      return new PluginDirectory().getPluginListFromObject(f, function(err) {
+      return f.getPluginList(function(err) {
         var e;
 
         try {
@@ -178,7 +178,7 @@ describe('PluginWrapper', function() {
       m = new Module();
       m.addChild(f);
       f.setParent(m);
-      return new PluginDirectory().getPluginListFromObject(f, function(err) {
+      return f.getPluginList(function(err) {
         var e;
 
         try {
@@ -205,7 +205,7 @@ describe('PluginWrapper', function() {
         extension: '__exec'
       });
       f.setParent(m);
-      return new PluginDirectory().getPluginListFromObject(f, function(err, list) {
+      return f.getPluginList(function(err, list) {
         var e;
 
         if (err != null) {
@@ -241,7 +241,7 @@ describe('PluginWrapper', function() {
         extension: '__exec'
       });
       f.setParent(m);
-      return new PluginDirectory().getPluginListFromObject(f, function(err, list) {
+      return f.getPluginList(function(err, list) {
         var e;
 
         if (err != null) {
@@ -271,7 +271,7 @@ describe('PluginWrapper', function() {
         },
         extension: '__exec'
       });
-      return new PluginDirectory().getPluginListFromObject(m, function(err, list) {
+      return m.getPluginList(function(err, list) {
         var e;
 
         if (err != null) {
