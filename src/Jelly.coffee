@@ -25,6 +25,7 @@ class Jelly
     @getLogger().info('Creating a new instance.')
     @_rootDirectory = __dirname
     @_pluginDirectoryList = new PluginDirectory()
+    @_pluginDirectoryList.setParent(this)
 
   constructor: -> @_constructor_()
 
@@ -44,7 +45,7 @@ class Jelly
    * The PluginDirectory instance is created in the constructor.
    *
    * @for Jelly
-   * @method getPluginList
+   * @method getPluginDirectoryList
    * @return {PluginDirectory} PluginList instance
   ###
   getPluginDirectoryList: -> @_pluginDirectoryList

@@ -108,6 +108,21 @@ TreeElement = (function() {
     return this._parent;
   };
 
+  TreeElement.prototype.getParentOfClass = function(className) {
+    var currentObj;
+
+    if (typeof className !== 'string') {
+      return null;
+    }
+    currentObj = this;
+    while (1) {
+      if (currentObj === null || Object.getPrototypeOf(currentObj)[className] === true) {
+        return currentObj;
+      }
+      currentObj = currentObj.getParent();
+    }
+  };
+
   TreeElement.prototype.getParentOfLevel = function(level) {
     var currentObj, i, parent;
 
@@ -173,10 +188,17 @@ TreeElement = (function() {
 
 
   TreeElement.prototype.addChild = function(child, cb) {
-    cb = cb || function() {};
+    var err;
+
     if (typeof child !== 'object' || Object.getPrototypeOf(child).TreeElement !== true) {
-      cb(new Error("The child class must inherits from a TreeElement"), null);
+      err = new Error("The child class must inherits from a TreeElement");
+      if (cb != null) {
+        return cb(err, null);
+      } else {
+        throw err;
+      }
     } else {
+      cb = cb || function() {};
       if (this.getChildById(child.getId()) !== null) {
         cb(null, child);
         cb = function() {};

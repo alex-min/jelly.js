@@ -26,13 +26,28 @@ class PluginDirectory
     @_parentConstructor_()
     @setId('@PluginDirectory')
 
+  ###*
+   * Get a list of {PluginHandler} from a list of plugin name (as Strings).
+   * This method will check for {PluginHandler}s contained in the {PluginDirectory} class matching the specified id.
+   * Example ['a', 'b'] will return two {PluginHandler} objects with 'a' and 'b' as id.  
+   * If the method does not find a particular id, an error will be raised.
+   * Even if a plugin is missing, the method should return the list of plugin found.
+   *
+   * @for PluginDirectory
+   * @method getPluginListFromIdList
+   * @async
+   * @param {String[]} idList List of plugin as a list containing string Ids.
+   * @param {Function}[callback] callback function
+   * @param {Error} callback.err Error found during execution
+   * @param {PluginHandler[]} callback.pluginList The pluginList matching the idList parameter.
+  ###
   getPluginListFromIdList: (idList, cb) ->
     cb = cb || ->
     results = []
     notFound = []
 
     # check if idList is a valid array
-    if typeof idList != 'array'
+    if Tools.toType(idList) != 'array'
       cb(new Error("Unable to parse the IDList : invalid array given as 'idList' parameter"))
       return
 
@@ -58,9 +73,12 @@ class PluginDirectory
     return
 
   applyPluginToJelly: (recursive, cb) ->
+    # recursive is optional
     if typeof recursive == 'function'
       cb = recursive
+      # false is the default value for the recursive mode      
       recursive = false
+    # recursive MUST be boolean
     if typeof recursive != 'boolean'
       cb(new Error("Invalid non-boolean parameter passed as 'recursive' : #{recursive}")); cb = ->
       return

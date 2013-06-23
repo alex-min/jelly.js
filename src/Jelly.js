@@ -39,7 +39,8 @@ Jelly = Tools.implementing(PluginWrapper, Logger, ReadableEntity, TreeElement, _
     this._parentConstructor_();
     this.getLogger().info('Creating a new instance.');
     this._rootDirectory = __dirname;
-    return this._pluginDirectoryList = new PluginDirectory();
+    this._pluginDirectoryList = new PluginDirectory();
+    return this._pluginDirectoryList.setParent(this);
   };
 
   function Jelly() {
@@ -65,7 +66,7 @@ Jelly = Tools.implementing(PluginWrapper, Logger, ReadableEntity, TreeElement, _
    * The PluginDirectory instance is created in the constructor.
    *
    * @for Jelly
-   * @method getPluginList
+   * @method getPluginDirectoryList
    * @return {PluginDirectory} PluginList instance
   */
 

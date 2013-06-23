@@ -79,6 +79,81 @@ PluginWrapper = (function() {
   };
 
   /**
+   * Find and apply all the plugins defined in the cofiguration file.
+   *
+   * @for PluginWrapper
+   * @method applyPluginsSpecified
+   * @aync
+   * @param {Boolean} [recursive] Applying plugins on all childs (Default : false).
+   * @param {Function}[callback] callback function
+   * @param {Error} callback.err Error found during execution
+  */
+
+
+  PluginWrapper.prototype.applyPluginsSpecified = function(recursive, cb) {
+    var jelly, pluginDirectory, self;
+
+    cb = cb || function() {};
+    self = this;
+    if (typeof recursive === 'function') {
+      cb = recursive;
+      recursive = false;
+    }
+    if (typeof recursive !== 'boolean') {
+      cb(new Error("Invalid non-boolean parameter passed as 'recursive' : " + recursive));
+      cb = function() {};
+      return;
+    }
+    if (Object.getPrototypeOf(this).TreeElement !== true) {
+      cb(new Error('The object must inherit from a TreeElement to use PluginWrapper::applyPluginsSpecified'));
+      cb = function() {};
+      return;
+    }
+    jelly = this.getParentOfClass('Jelly');
+    if (jelly === null) {
+      cb(new Error("There is no Jelly parent on Id '" + (this.getId()) + "'."));
+      cb = function() {};
+      return;
+    }
+    pluginDirectory = jelly.getPluginDirectoryList();
+    if (pluginDirectory === null || typeof pluginDirectory === 'undefined') {
+      cb(new Error('There is no pluginDirectory instance bound to the Jelly instance'));
+      cb = function() {};
+      return;
+    }
+    return async.waterfall([
+      function(cb) {
+        return self.getPluginList(cb);
+      }, function(list, cb) {
+        return pluginDirectory.getPluginListFromIdList(list, cb);
+      }, function(plugins, cb) {
+        return async.map(plugins, function(plugin, cb) {
+          return self.applyPlugin(plugin, cb);
+        }, function(err) {
+          return cb(err);
+        });
+      }
+    ], function(err) {
+      if (err != null) {
+        cb(err);
+        cb = function() {};
+        return;
+      }
+      if (recursive) {
+        return async.map(self.getChildList(), function(child, cb) {
+          return child.applyPluginsSpecified(true, cb);
+        }, function(err) {
+          cb(err);
+          return cb = function() {};
+        });
+      } else {
+        cb();
+        return cb = function() {};
+      }
+    });
+  };
+
+  /**
    * Apply a plugin to the current class (this). Only for class which extends from a PluginWrapper.
    *
    * @for PluginWrapper
@@ -86,7 +161,8 @@ PluginWrapper = (function() {
    * @aync
    * @param {PluginHandler} The plugin to apply to the class
    * @param {String} filename The location of the file
-   * @param {Function} callback : parameters (err : error occured)
+   * @param {Function}[callback] callback function
+   * @param {Error} callback.err Error found during execution
   */
 
 
@@ -115,6 +191,21 @@ PluginWrapper = (function() {
       return this._applyPluginOtherClass(pluginHandler, cb);
     }
   };
+
+  /**
+   * Get the list of plugins to apply to a particular class.
+   * This method will read the entry 'plugins' on the last executable content of the class.
+   * For a File instance, the parent module will be used instead.
+   * This method does not load anything.
+   *
+   * @for PluginWrapper
+   * @method getPluginList
+   * @aync
+   * @param {Function}[callback] callback function
+   * @param {Error} callback.err Error found during execution
+   * @param {String[]} callback.pluginList The plugin list (as an array of string)
+  */
+
 
   PluginWrapper.prototype.getPluginList = function(cb) {
     var content, e, errormsg, object, parent;

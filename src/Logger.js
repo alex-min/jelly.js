@@ -7,7 +7,8 @@ WinstonLoggerWrapper = (function() {
   WinstonLoggerWrapper.prototype._constructor_ = function() {
     this._logger = new winston.Logger();
     this._logger.add(winston.transports.Console);
-    return this._name = '';
+    this._name = '';
+    return this._object = null;
   };
 
   function WinstonLoggerWrapper() {
@@ -20,20 +21,34 @@ WinstonLoggerWrapper = (function() {
     return this._name = name;
   };
 
+  WinstonLoggerWrapper.prototype.setObject = function(obj) {
+    return this._object = obj;
+  };
+
+  WinstonLoggerWrapper.prototype.getPrintHeader = function() {
+    var id;
+
+    id = '';
+    if ((this._object != null) && typeof this._object.getId === 'function' && this._object.getId() !== null) {
+      id = '[' + this._object.getId() + ']';
+    }
+    return (this._name || '') + id + ': ';
+  };
+
   WinstonLoggerWrapper.prototype.info = function(s) {
-    return this._logger.info((this._name || '') + ': ' + s);
+    return this._logger.info(this.getPrintHeader() + s);
   };
 
   WinstonLoggerWrapper.prototype.log = function(type, s) {
-    return this._logger.log(type, (this._name || '') + ': ' + s);
+    return this._logger.log(type, this.getPrintHeader() + s);
   };
 
   WinstonLoggerWrapper.prototype.error = function(s) {
-    return this._logger.error((this._name || '') + ': ' + s);
+    return this._logger.error(this.getPrintHeader() + s);
   };
 
   WinstonLoggerWrapper.prototype.warn = function(s) {
-    return this._logger.warn((this._name || '') + ': ' + s);
+    return this._logger.warn(this.getPrintHeader() + s);
   };
 
   WinstonLoggerWrapper.prototype.off = function() {
@@ -63,7 +78,8 @@ Logger = (function() {
 
   Logger.prototype._constructor_ = function() {
     this._log = new WinstonLoggerWrapper();
-    return this._log.setClassName(this._selfClassName);
+    this._log.setClassName(this._selfClassName);
+    return this._log.setObject(this);
   };
 
   function Logger() {

@@ -2,12 +2,14 @@ assert = require('chai').assert
 async = require('async')
 path = require('path')
 toType = (obj) -> ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase()  
-Jelly = require('../src/Jelly');
-Logger = require('../src/Logger');
-TreeElement = require('../src/TreeElement');
-GeneralConfiguration = require('../src/GeneralConfiguration');
-Module = require('../src/Module');
-File = require('../src/File');
+
+Jelly = require('../src/Jelly')
+Logger = require('../src/Logger')
+TreeElement = require('../src/TreeElement')
+GeneralConfiguration = require('../src/GeneralConfiguration')
+Module = require('../src/Module')
+File = require('../src/File')
+PluginHandler = require('../src/PluginHandler')
 
 
 describe('PluginDirectory', ->
@@ -182,6 +184,59 @@ describe('PluginDirectory', ->
       )
     )
   )
-
-
+#------------------------------------------------------------------------------------------
+  describe('#getPluginListFromIdList' , ->
+    it('Should be a callable function', ->
+      assert.typeOf(PluginDirectory.prototype.getPluginListFromIdList, 'function')
+    )
+    it('Should raise an error if the idList is not ad array', (cb) ->
+      new PluginDirectory().getPluginListFromIdList('test', (err) ->
+        try
+          assert.equal(toType(err), 'error')
+          cb()
+        catch e
+          cb(e)        
+      )
+    )
+    it('Should raise an error if some plugins cannot be found', (cb) ->
+      dir = new PluginDirectory()
+      handler = new PluginHandler()
+      handler2 = new PluginHandler()
+      handler.setId('test1')
+      handler2.setId('test2')
+      handler.setParent(dir)
+      handler2.setParent(dir)
+      dir.addChild(handler)
+      dir.addChild(handler2)
+      dir.getPluginListFromIdList(['test1', 'unknown', 'test2'], (err, list) ->
+        try
+          assert.equal(toType(err), 'error')
+          assert.typeOf(list, 'array', 'it should return a list of working plugins even when there is an error')
+          assert.equal(list.length, 2, 'it should return a list of working plugins even when there is an error')
+          cb()
+        catch e
+          cb(e)        
+      )
+    )
+    it('Should not raise an error if all plugins are found', (cb) ->
+      dir = new PluginDirectory()
+      handler = new PluginHandler()
+      handler2 = new PluginHandler()
+      handler.setId('test1')
+      handler2.setId('test2')
+      handler.setParent(dir)
+      handler2.setParent(dir)
+      dir.addChild(handler)
+      dir.addChild(handler2)
+      dir.getPluginListFromIdList(['test1', 'test2'], (err, list) ->
+        try
+          assert.equal(err, null)
+          assert.typeOf(list, 'array', 'it should return a list of working plugins')
+          assert.equal(list.length, 2, 'it should return a list of working plugins')
+          cb()
+        catch e
+          cb(e)        
+      )
+    )   
+  )
 )

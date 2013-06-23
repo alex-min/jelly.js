@@ -102,6 +102,11 @@ class PluginInterface
       cb(null); cb = ->
       return
 
+    # there is no need to load multiple times the same module
+    if @getStatus() == PluginInterface::STATUS.NOT_LOADED
+      cb()
+      return
+
     # calling the unload method with this as content
     content.unload.call(this, () ->
       self.setStatus(PluginInterface::STATUS.NOT_LOADED)
@@ -142,6 +147,11 @@ class PluginInterface
     if typeof content.load != 'function'
       @getLogger().warn('Unable to load plugin: There is no unload function exported in the plugin file')
       cb(null); cb = ->
+      return
+
+    # there is no need to load multiple times the same module
+    if @getStatus() == PluginInterface::STATUS.LOADED
+      cb()
       return
 
     # calling the unload method with this as content
@@ -198,9 +208,18 @@ class PluginInterface
       cb(new Error('Unable to oncall plugin : The content is not an object')); cb = ->
       return
 
+    if @getParent() == null
+      cb(new Error('Unable to oncall plugin : There is no PluginHandler parent on the plugin')); cb = ->
+      return
+
+    # must have a TreeElement as parent
+    if Object.getPrototypeOf(@getParent()).TreeElement != true
+      cb(new Error('The PluginInterface must extend from a TreeElement')); cb = ->
+      return
+
     # there is no unload function declared
     if typeof content.oncall != 'function'
-      cb('Unable to oncall plugin: There is no oncall function exported in the plugin file'); cb = ->
+      cb(new Error("Unable to oncall plugin '#{@getParent().getId()}': There is no oncall function exported in the plugin file")); cb = ->
       return
 
     if senderClass == null || typeof senderClass == 'undefined'

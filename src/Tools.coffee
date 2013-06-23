@@ -1,3 +1,5 @@
+exports.toType = (obj) -> ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase()
+
 exports.implementing = (mixins..., classReference) ->
   classReference.__super__ ?= []
 

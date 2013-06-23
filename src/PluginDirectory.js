@@ -45,13 +45,30 @@ PluginDirectory = Tools.implementing(Logger, ReadableEntity, TreeElement, _Plugi
     return this.setId('@PluginDirectory');
   };
 
+  /**
+   * Get a list of {PluginHandler} from a list of plugin name (as Strings).
+   * This method will check for {PluginHandler}s contained in the {PluginDirectory} class matching the specified id.
+   * Example ['a', 'b'] will return two {PluginHandler} objects with 'a' and 'b' as id.  
+   * If the method does not find a particular id, an error will be raised.
+   * Even if a plugin is missing, the method should return the list of plugin found.
+   *
+   * @for PluginDirectory
+   * @method getPluginListFromIdList
+   * @async
+   * @param {String[]} idList List of plugin as a list containing string Ids.
+   * @param {Function}[callback] callback function
+   * @param {Error} callback.err Error found during execution
+   * @param {PluginHandler[]} callback.pluginList The pluginList matching the idList parameter.
+  */
+
+
   PluginDirectory.prototype.getPluginListFromIdList = function(idList, cb) {
     var id, notFound, pluginHandler, results, _i, _len;
 
     cb = cb || function() {};
     results = [];
     notFound = [];
-    if (typeof idList !== 'array') {
+    if (Tools.toType(idList) !== 'array') {
       cb(new Error("Unable to parse the IDList : invalid array given as 'idList' parameter"));
       return;
     }

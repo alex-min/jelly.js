@@ -2,9 +2,11 @@ assert = require('chai').assert
 async = require('async')
 path = require('path')
 toType = (obj) -> ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase()  
-Jelly = require('../src/Jelly');
+Jelly = require('../src/Jelly')
+
 GeneralConfiguration = require('../src/GeneralConfiguration');\
 File = require('../src/File')
+PluginHandler = require('../src/PluginHandler')
 
 describe('PluginInterface', ->
   PluginInterface = require('../src/PluginInterface')
@@ -129,7 +131,9 @@ describe('PluginInterface', ->
       )
     )
     it('Should call the oncall method on the plugin file', (cb) ->
-      p = new PluginInterface();
+      p = new PluginInterface()
+      h = new PluginHandler()
+      p.setParent(h)
       file = new File()
       p.updateContent({
         content: {oncall : (sender,param, callback) -> cb() }

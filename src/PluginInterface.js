@@ -127,6 +127,10 @@ PluginInterface = Tools.implementing(Logger, ReadableEntity, TreeElement, _Plugi
       cb = function() {};
       return;
     }
+    if (this.getStatus() === PluginInterface.prototype.STATUS.NOT_LOADED) {
+      cb();
+      return;
+    }
     return content.unload.call(this, function() {
       self.setStatus(PluginInterface.prototype.STATUS.NOT_LOADED);
       return cb();
@@ -167,6 +171,10 @@ PluginInterface = Tools.implementing(Logger, ReadableEntity, TreeElement, _Plugi
       this.getLogger().warn('Unable to load plugin: There is no unload function exported in the plugin file');
       cb(null);
       cb = function() {};
+      return;
+    }
+    if (this.getStatus() === PluginInterface.prototype.STATUS.LOADED) {
+      cb();
       return;
     }
     return content.load.call(this, function() {
@@ -232,8 +240,18 @@ PluginInterface = Tools.implementing(Logger, ReadableEntity, TreeElement, _Plugi
       cb = function() {};
       return;
     }
+    if (this.getParent() === null) {
+      cb(new Error('Unable to oncall plugin : There is no PluginHandler parent on the plugin'));
+      cb = function() {};
+      return;
+    }
+    if (Object.getPrototypeOf(this.getParent()).TreeElement !== true) {
+      cb(new Error('The PluginInterface must extend from a TreeElement'));
+      cb = function() {};
+      return;
+    }
     if (typeof content.oncall !== 'function') {
-      cb('Unable to oncall plugin: There is no oncall function exported in the plugin file');
+      cb(new Error("Unable to oncall plugin '" + (this.getParent().getId()) + "': There is no oncall function exported in the plugin file"));
       cb = function() {};
       return;
     }

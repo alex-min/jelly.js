@@ -76,6 +76,16 @@ class TreeElement
   ###   
   getParent: -> @_parent
 
+  getParentOfClass: (className) ->
+    if typeof className != 'string'
+      return null
+    currentObj = this
+    while 1
+      if currentObj == null || Object.getPrototypeOf(currentObj)[className] == true
+        return currentObj
+      currentObj = currentObj.getParent()
+    ;
+
   getParentOfLevel: (level) ->
     if typeof level != 'number'
       return null
@@ -130,13 +140,16 @@ class TreeElement
    * In the case of an error, null will be returned.
   ###      
   addChild: (child, cb) ->
-    cb = cb || ->
 
     # if it's not a TreeElement
     if typeof child != 'object' || Object.getPrototypeOf(child).TreeElement != true
-      cb(new Error("The child class must inherits from a TreeElement"), null)
-      return
+      err = new Error("The child class must inherits from a TreeElement")
+      if cb?
+        cb(err, null)
+      else
+        throw err
     else
+      cb = cb || ->
       # if the child is already pushed, we do not push it
       if @getChildById(child.getId()) != null
         cb(null, child); cb = ->

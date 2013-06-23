@@ -2,6 +2,10 @@
 var extend,
   __slice = [].slice;
 
+exports.toType = function(obj) {
+  return {}.toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase();
+};
+
 exports.implementing = function() {
   var classReference, func, key, mixin, mixins, value, _base, _base1, _i, _j, _k, _len, _len1, _ref, _ref1, _ref2, _ref3, _ref4;
 

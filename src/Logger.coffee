@@ -5,6 +5,7 @@ class WinstonLoggerWrapper
     @_logger = new (winston.Logger)() ## creating a logger instance
     @_logger.add(winston.transports.Console) ## adding console display  
     @_name = ''
+    @_object = null
 
   constructor: -> @_constructor_()
   
@@ -12,10 +13,20 @@ class WinstonLoggerWrapper
 
   setClassName: (name) -> @_name = name
 
-  info: (s) ->@_logger.info((@_name || '') + ': ' + s)
-  log: (type,s) -> @_logger.log(type, (@_name || '') + ': ' + s)
-  error: (s) -> @_logger.error((@_name || '') + ': ' + s)
-  warn: (s) -> @_logger.warn((@_name || '') + ': ' + s)
+  setObject: (obj) ->
+    @_object = obj
+
+
+  getPrintHeader: ->
+    id = ''
+    if @_object? and typeof @_object.getId == 'function' and @_object.getId() != null
+      id = '[' + @_object.getId() + ']'
+    return (@_name || '') + id + ': '
+
+  info: (s) ->@_logger.info(@getPrintHeader() + s)
+  log: (type,s) -> @_logger.log(type, @getPrintHeader() + s)
+  error: (s) -> @_logger.error(@getPrintHeader() + s)
+  warn: (s) -> @_logger.warn(@getPrintHeader() + s)
 
   off: -> @_logger.remove()
 
@@ -37,6 +48,7 @@ class Logger
   _constructor_: ->
     @_log = new WinstonLoggerWrapper()
     @_log.setClassName(@_selfClassName)
+    @_log.setObject(this)
 
   constructor: -> @_constructor_()
 

@@ -1,14 +1,16 @@
 assert = require('chai').assert
 async = require('async')
 path = require('path')
-toType = (obj) -> ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase()  
+toType = (obj) -> ({}).toString.call(obj).match(/\s([a-zA-Z]+)/)[1].toLowerCase()
+
 File = require('../src/File')
 Module = require('../src/Module')
 PluginHandler = require('../src/PluginHandler')
 Tools = require('../src/Tools')
 ReadableEntity = require('../src/ReadableEntity')
 TreeElement = require('../src/TreeElement')
-
+GeneralConfiguration = require('../src/GeneralConfiguration')
+Jelly = require('../src/Jelly')
 
 describe('PluginWrapper', ->
   PluginWrapper = require('../src/PluginWrapper')
@@ -394,5 +396,162 @@ describe('PluginWrapper', ->
         cb(err)
       )
     )    
+  )
+  describe('#applyPluginsSpecified', ->
+    it('Should be a callable function', ->
+      assert.typeOf(PluginWrapper.prototype.applyPluginsSpecified, 'function')
+    )
+    it('Should return an error if the recursive parameter is not boolean', (cb) ->
+      new PluginWrapper().applyPluginsSpecified('test', (err) ->
+        try
+          assert.equal(toType(err), 'error')
+          cb()
+        catch e
+          cb(e)        
+      )
+    )
+    it('The recursive param should be optional', (cb) ->
+      new PluginWrapper().applyPluginsSpecified((err) ->
+        try
+          assert.equal(toType(err), 'error','the class must extends from a TreeElement')
+          cb()
+        catch e
+          cb(e)
+      )
+    )
+    it('Should have a jelly parent', (cb) ->
+      new GeneralConfiguration().applyPluginsSpecified((err) ->
+        try
+          assert.equal(toType(err), 'error')
+          cb()
+        catch e
+          cb(e)
+      )
+    )
+    it('Should work on a non-recursive way', (cb) ->
+      g = new GeneralConfiguration()
+      jelly = new Jelly()
+      g.setParent(jelly)
+      jelly.addChild(g)
+      g.updateContent({
+        content:{
+          plugins:['testPlugin','testPlugin2']
+        }
+        extension:'__exec'
+      })
+      jelly.setRootDirectory("#{__dirname}/testFiles/pluginLoading")
+      jelly.getPluginDirectoryList().readAllPlugins((err) ->
+        if err?
+          cb(err); cb = ->
+          return
+        g.applyPluginsSpecified(false, (err) ->
+          cb(err)
+        )
+      )
+    )
+    it('Should raise an error if any plugin does not exist', (cb) ->
+      g = new GeneralConfiguration()
+      jelly = new Jelly()
+      g.setParent(jelly)
+      jelly.addChild(g)
+      g.updateContent({
+        content:{
+          plugins:['testPlugin','testPlugin2', 'DO_NOT_EXIST']
+        }
+        extension:'__exec'
+      })
+      jelly.setRootDirectory("#{__dirname}/testFiles/pluginLoading")
+      jelly.getPluginDirectoryList().readAllPlugins((err) ->
+        if err?
+          cb(err); cb = ->
+          return
+        g.applyPluginsSpecified(false, (err) ->
+          try
+            assert.equal(toType(err), 'error')
+            cb()
+          catch e
+            cb(e)
+        )
+      )
+    )
+
+    it('Should raise an error if any child plugin does not exist', (cb) ->
+      g = new GeneralConfiguration()
+      module = new Module()
+      file = new File()
+      jelly = new Jelly()
+
+      g.setParent(jelly)
+      jelly.addChild(g)
+      g.updateContent({
+        content:{
+          plugins:['testPlugin','testPlugin2']
+        }
+        extension:'__exec'
+      })
+      module.updateContent({
+        content: {
+          plugins:['testPlugin', 'testPlugin2', 'PLUGIN_DO_NOT_EXIST']
+        }
+        extension:'__exec'
+      })
+      module.addChild(file)
+      file.setParent(module)
+      g.addChild(module)
+      module.setParent(g)
+      jelly.setRootDirectory("#{__dirname}/testFiles/pluginLoading")
+      jelly.getPluginDirectoryList().readAllPlugins((err) ->
+        if err?
+          cb(err); cb = ->
+          return
+        g.applyPluginsSpecified(true, (err) ->
+          try
+            assert.equal(toType(err), 'error')
+            cb()
+          catch e
+            cb(e)
+        )
+      )
+    )
+    # ----
+    it('Should raise an error if any child plugin does not exist [File object]', (cb) ->
+      g = new GeneralConfiguration()
+      module = new Module()
+      file = new File()
+      jelly = new Jelly()
+
+      g.setParent(jelly)
+      jelly.addChild(g)
+      g.updateContent({
+        content:{
+          plugins:['testPlugin','testPlugin2']
+        }
+        extension:'__exec'
+      })
+      module.updateContent({
+        content: {
+          plugins:['testPlugin', 'testPlugin2']
+          filePlugins:['DO_NOT_EXIST']
+        }
+        extension:'__exec'
+      })
+      module.addChild(file)
+      file.setParent(module)
+      g.addChild(module)
+      module.setParent(g)
+      jelly.setRootDirectory("#{__dirname}/testFiles/pluginLoading")
+      jelly.getPluginDirectoryList().readAllPlugins((err) ->
+        if err?
+          cb(err); cb = ->
+          return
+        g.applyPluginsSpecified(true, (err) ->
+          try
+            assert.equal(toType(err), 'error')
+            cb()
+          catch e
+            cb(e)
+        )
+      )
+    )
   )
 )

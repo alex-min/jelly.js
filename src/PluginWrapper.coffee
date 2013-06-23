@@ -65,6 +65,79 @@ class PluginWrapper
       },cb)    
 
   ###*
+   * Find and apply all the plugins defined in the cofiguration file.
+   *
+   * @for PluginWrapper
+   * @method applyPluginsSpecified
+   * @aync
+   * @param {Boolean} [recursive] Applying plugins on all childs (Default : false).
+   * @param {Function}[callback] callback function
+   * @param {Error} callback.err Error found during execution
+  ###
+  applyPluginsSpecified: (recursive, cb) ->
+    cb = cb || ->
+    self = @
+
+    # recursive is an optional parameter
+    if typeof recursive == 'function'
+      cb = recursive
+      # false is the default value for the recursive mode      
+      recursive = false
+    # recursive MUST be boolean
+    if typeof recursive != 'boolean'
+      cb(new Error("Invalid non-boolean parameter passed as 'recursive' : #{recursive}")); cb = ->
+      return
+
+    # this should extends from a TreeElement
+    if Object.getPrototypeOf(this).TreeElement != true
+      cb(new Error('The object must inherit from a TreeElement to use PluginWrapper::applyPluginsSpecified')); cb = ->
+      return
+
+    # get the Jelly root parent class
+    jelly = @getParentOfClass('Jelly')
+    if jelly == null
+      cb(new Error("There is no Jelly parent on Id '#{@getId()}'.")); cb = ->
+      return
+
+    # retrive the plugin directory 
+    pluginDirectory = jelly.getPluginDirectoryList()
+    if pluginDirectory == null || typeof pluginDirectory == 'undefined'
+      cb(new Error('There is no pluginDirectory instance bound to the Jelly instance')); cb = ->
+      return
+
+    async.waterfall([
+      (cb) ->
+        # get the plugin list as string
+        self.getPluginList(cb)
+      (list, cb) ->
+        # get the plugin list as {PluginHandler}
+        pluginDirectory.getPluginListFromIdList(list, cb)
+      (plugins, cb) ->
+        # for each plugins
+        async.map(plugins, (plugin, cb) ->
+          # we apply each plugin to the current class
+          self.applyPlugin(plugin, cb)
+        , (err) ->
+          cb(err)
+        )
+    ], (err) ->
+      if err?
+        cb(err); cb = ->
+        return
+      # if its recursive, call the method again for all the childs
+      if recursive
+        # for each child
+        async.map(self.getChildList(), (child, cb) ->
+          # apply the plugins on each child
+          child.applyPluginsSpecified(true, cb)
+        , (err) ->
+          cb(err); cb = ->
+        )
+      else
+        cb(); cb = ->
+    )
+
+  ###*
    * Apply a plugin to the current class (this). Only for class which extends from a PluginWrapper.
    *
    * @for PluginWrapper
@@ -72,7 +145,8 @@ class PluginWrapper
    * @aync
    * @param {PluginHandler} The plugin to apply to the class
    * @param {String} filename The location of the file
-   * @param {Function} callback : parameters (err : error occured) 
+   * @param {Function}[callback] callback function
+   * @param {Error} callback.err Error found during execution
   ###
   applyPlugin: (pluginHandler, cb) ->
     cb = cb || ->
@@ -101,6 +175,19 @@ class PluginWrapper
     else # for all the other types of classes (Module, Jelly, GeneralConfiguration)
       @_applyPluginOtherClass(pluginHandler, cb)
 
+  ###*
+   * Get the list of plugins to apply to a particular class.
+   * This method will read the entry 'plugins' on the last executable content of the class.
+   * For a File instance, the parent module will be used instead.
+   * This method does not load anything.
+   *
+   * @for PluginWrapper
+   * @method getPluginList
+   * @aync
+   * @param {Function}[callback] callback function
+   * @param {Error} callback.err Error found during execution
+   * @param {String[]} callback.pluginList The plugin list (as an array of string)   
+  ###
   getPluginList: (cb) ->
     cb = cb || ->
     object = this
