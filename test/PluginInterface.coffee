@@ -7,6 +7,8 @@ Jelly = require('../src/Jelly')
 GeneralConfiguration = require('../src/GeneralConfiguration');\
 File = require('../src/File')
 PluginHandler = require('../src/PluginHandler')
+PluginDirectory = require('../src/PluginDirectory')
+
 
 describe('PluginInterface', ->
   PluginInterface = require('../src/PluginInterface')
@@ -145,5 +147,26 @@ describe('PluginInterface', ->
       )
     )
 
+  )
+#------------------------------------------------------------------------------------------
+  describe('#getSharedObjectManager', ->
+    it('Should be a callable function', ->
+      assert.typeOf(PluginInterface.prototype.getSharedObjectManager, 'function')
+    )
+    
+    it('Should return null if there is no jelly parent', ->
+      assert.equal(new PluginInterface().getSharedObjectManager(), null)
+    )
+
+    it('Should return a SharedObjectManager if there is a Jelly parent', ->
+      jelly = new Jelly()
+      pluginDirectory = jelly.getPluginDirectoryList()
+      pluginHandler = new PluginHandler()
+      pluginHandler.setParent(pluginDirectory)
+      pluginDirectory.addChild(pluginHandler)
+      sharedObjectManager = pluginHandler.getChildList()[0].getSharedObjectManager()
+      assert.equal(toType(sharedObjectManager), 'object')
+      assert.equal(sharedObjectManager.SharedObjectManager, true)
+    )
   )
 )

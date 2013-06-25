@@ -231,5 +231,15 @@ describe('Jelly', ->
       
     ) 
   )
-   
+#------------------------------------------------------------------------------------------ 
+  describe('#getSharedObjectManager', ->
+    it('Should be a callable function', ->
+      assert.typeOf(Jelly.prototype.getSharedObjectManager, 'function')
+    )
+    it('Should create a SharedObjectManager on the constructor', ->
+      sharedObjectManager = new Jelly().getSharedObjectManager()
+      assert.equal(toType(sharedObjectManager), 'object')
+      assert.equal(sharedObjectManager.SharedObjectManager, true)
+    )
+  )
 )

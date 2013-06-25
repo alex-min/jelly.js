@@ -305,7 +305,7 @@ describe('Jelly', function() {
       return assert.equal(j.getPluginDirectory(), "" + (j.getRootDirectory()) + "/plugins");
     });
   });
-  return describe('#getPluginDirectoryList', function() {
+  describe('#getPluginDirectoryList', function() {
     it('Should be a callable function', function() {
       return assert.typeOf(Jelly.prototype.getPluginDirectoryList, 'function');
     });
@@ -315,6 +315,18 @@ describe('Jelly', function() {
       p = new Jelly().getPluginDirectoryList();
       assert.typeOf(p, 'object');
       return assert.equal(p.PluginDirectory, true);
+    });
+  });
+  return describe('#getSharedObjectManager', function() {
+    it('Should be a callable function', function() {
+      return assert.typeOf(Jelly.prototype.getSharedObjectManager, 'function');
+    });
+    return it('Should create a SharedObjectManager on the constructor', function() {
+      var sharedObjectManager;
+
+      sharedObjectManager = new Jelly().getSharedObjectManager();
+      assert.equal(toType(sharedObjectManager), 'object');
+      return assert.equal(sharedObjectManager.SharedObjectManager, true);
     });
   });
 });

@@ -8,6 +8,7 @@ TreeElement = require('./TreeElement')
 ReadableEntity = require('./ReadableEntity')
 PluginWrapper = require('./PluginWrapper')
 PluginDirectory = require('./PluginDirectory')
+SharedObjectManager = require('./SharedObjectManager')
 
 ###*
  * Jelly is the main class of the framework
@@ -26,6 +27,7 @@ class Jelly
     @_rootDirectory = __dirname
     @_pluginDirectoryList = new PluginDirectory()
     @_pluginDirectoryList.setParent(this)
+    @_sharedObjectManager = new SharedObjectManager()
 
   constructor: -> @_constructor_()
 
@@ -39,6 +41,16 @@ class Jelly
   ###    
   getLocalPath: (path) ->
     return @_rootDirectory + '/' + path.toString()
+
+  ###*
+   * Get the {SharedObjectManager} instance associated with the class
+   *
+   * @for Jelly
+   * @method getSharedObjectManager
+   * @return {SharedObjectManager} The SharedObjectManager
+  ###
+  getSharedObjectManager: () ->
+    return @_sharedObjectManager
 
   ###*
    * Get the PluginDirectory instance associated with the class.

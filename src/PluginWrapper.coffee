@@ -39,8 +39,7 @@ class PluginWrapper
       pluginHandler.getPluginInterface().oncall(this,
       {
         pluginParameters:config.filePluginParameters[pluginHandler.getId()]
-      },cb)    
-
+      },cb)
 
   # applying a plugin for other type exept the File class.
   # Do NOT call this method from outside the class. 

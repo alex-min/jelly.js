@@ -36,6 +36,32 @@ class PluginInterface
   }
 
   ###*
+   * Get the {SharedObjectManager} instance associated with the Jelly parent class.
+   *
+   * @for PluginInterface
+   * @method getSharedObjectManager
+   * @return {SharedObjectManager} The SharedObjectManager
+  ###
+  getSharedObjectManager: () ->
+    jelly = @getParentOfClass('Jelly')
+    if jelly == null
+      return null
+    return jelly.getSharedObjectManager()
+
+  ###*
+   * Get the {SharedObjectManager} instance associated with the Jelly parent class.
+   *
+   * @for PluginWrapper
+   * @method getSharedObjectManager
+   * @return {SharedObjectManager} The SharedObjectManager
+  ###
+  getSharedObjectManager: () ->
+    jelly = @getParentOfClass('Jelly')
+    if jelly == null
+      return null
+    return jelly.getSharedObjectManager()
+
+  ###*
    * Get the current status of the plugin.
    * Currently, two values are possible : <ul>
    *  <li><strong> PluginInterface::STATUS.NOT_LOADED </strong> : The plugin is currently not loaded.</li>

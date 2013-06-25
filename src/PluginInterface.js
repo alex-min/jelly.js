@@ -56,6 +56,44 @@ PluginInterface = Tools.implementing(Logger, ReadableEntity, TreeElement, _Plugi
   };
 
   /**
+   * Get the {SharedObjectManager} instance associated with the Jelly parent class.
+   *
+   * @for PluginInterface
+   * @method getSharedObjectManager
+   * @return {SharedObjectManager} The SharedObjectManager
+  */
+
+
+  PluginInterface.prototype.getSharedObjectManager = function() {
+    var jelly;
+
+    jelly = this.getParentOfClass('Jelly');
+    if (jelly === null) {
+      return null;
+    }
+    return jelly.getSharedObjectManager();
+  };
+
+  /**
+   * Get the {SharedObjectManager} instance associated with the Jelly parent class.
+   *
+   * @for PluginWrapper
+   * @method getSharedObjectManager
+   * @return {SharedObjectManager} The SharedObjectManager
+  */
+
+
+  PluginInterface.prototype.getSharedObjectManager = function() {
+    var jelly;
+
+    jelly = this.getParentOfClass('Jelly');
+    if (jelly === null) {
+      return null;
+    }
+    return jelly.getSharedObjectManager();
+  };
+
+  /**
    * Get the current status of the plugin.
    * Currently, two values are possible : <ul>
    *  <li><strong> PluginInterface::STATUS.NOT_LOADED </strong> : The plugin is currently not loaded.</li>
