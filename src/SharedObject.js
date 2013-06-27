@@ -25,13 +25,15 @@ File = require('./File');
 */
 
 
-SharedObject = Tools.implementing(Logger, ReadableEntity, _SharedObject = (function() {
+SharedObject = Tools.implementing(Logger, ReadableEntity, TreeElement, _SharedObject = (function() {
   function _SharedObject() {}
 
   return _SharedObject;
 
 })(), SharedObject = (function() {
-  SharedObject.prototype._constructor_ = function() {};
+  SharedObject.prototype._constructor_ = function() {
+    return this._parentConstructor_();
+  };
 
   function SharedObject() {
     this._constructor_();
