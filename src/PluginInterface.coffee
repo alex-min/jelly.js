@@ -171,7 +171,7 @@ class PluginInterface
 
     # there is no unload function declared
     if typeof content.load != 'function'
-      @getLogger().warn('Unable to load plugin: There is no unload function exported in the plugin file')
+      @getLogger().warn('Unable to load plugin: There is no load function exported in the plugin file')
       cb(null); cb = ->
       return
 
@@ -179,7 +179,6 @@ class PluginInterface
     if @getStatus() == PluginInterface::STATUS.LOADED
       cb()
       return
-
     # calling the unload method with this as content
     content.load.call(this, () ->
       self.setStatus(PluginInterface::STATUS.LOADED)
@@ -242,7 +241,6 @@ class PluginInterface
     if Object.getPrototypeOf(@getParent()).TreeElement != true
       cb(new Error('The PluginInterface must extend from a TreeElement')); cb = ->
       return
-
     # there is no unload function declared
     if typeof content.oncall != 'function'
       cb(new Error("Unable to oncall plugin '#{@getParent().getId()}': There is no oncall function exported in the plugin file")); cb = ->

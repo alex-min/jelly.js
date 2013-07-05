@@ -4,7 +4,7 @@
   "description": "Jelly.js Framework",
   "main": "index.js",
   "scripts": {
-    "test": "mocha"
+    "test": "node test.js"
   },
   "repository": "",
   "keywords": [
@@ -17,7 +17,8 @@
     "chai": "~1.7.0",
     "mocha": "~1.11.0",
     "async": "~0.2.9",
-    "winston": "~0.7.1"
+    "winston": "~0.7.1",
+    "express": "~3.3.1"
   },
   "devDependencies": {}
 }

@@ -42,6 +42,19 @@ SharedObjectManager = Tools.implementing(Logger, ReadableEntity, TreeElement, _S
     this._constructor_();
   }
 
+  /**
+   * Register an object to the {SharedObjectManager}.
+   * Objects are stored internally as a {SharedObject} class.
+   *
+   * @for SharedObjectManager
+   * @method registerObject
+   * @param {String} PluginId The plugin id
+   * @param {String} ObjectId The {SharedObject} id
+   * @content {Object} Content The content to registed
+   * @return {SharedObject} The sharedObject associated with the ids (or null)
+  */
+
+
   SharedObjectManager.prototype.registerObject = function(pluginId, objectId, content) {
     var pluginTree, sharedObject;
 
@@ -64,6 +77,18 @@ SharedObjectManager = Tools.implementing(Logger, ReadableEntity, TreeElement, _S
     }
     return sharedObject.updateContent(content);
   };
+
+  /**
+   * Get an object registred with the 'registerObject' method.
+   * This method will return a {SharedObject} or null if nothing is found.
+   *
+   * @for SharedObjectManager
+   * @method getObject
+   * @param {String} PluginId The plugin id
+   * @param {String} ObjectId The {SharedObject} id
+   * @return {SharedObject} The sharedObject associated with the ids (or null)
+  */
+
 
   SharedObjectManager.prototype.getObject = function(pluginId, objectId) {
     var moduleSharedList, obj;

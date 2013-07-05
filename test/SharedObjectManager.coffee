@@ -41,9 +41,10 @@ describe('SharedObjectManager', ->
     it('Should be a callable function', ->
       assert.typeOf(SharedObjectManager.prototype.getObject, 'function')
     )
+    
     it('Should return null when there is no object bound', ->
       assert.equal(new SharedObjectManager().getObject(), null)
-    )    
+    )
     # there is enouth tests on the #registerObject function, no need to add more tests
   )
 )

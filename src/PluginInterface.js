@@ -206,7 +206,7 @@ PluginInterface = Tools.implementing(Logger, ReadableEntity, TreeElement, _Plugi
       return;
     }
     if (typeof content.load !== 'function') {
-      this.getLogger().warn('Unable to load plugin: There is no unload function exported in the plugin file');
+      this.getLogger().warn('Unable to load plugin: There is no load function exported in the plugin file');
       cb(null);
       cb = function() {};
       return;
