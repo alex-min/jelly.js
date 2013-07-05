@@ -11,6 +11,7 @@ module.exports = {
     return cb();
   },
   oncall: function(onj, params, cb) {
+    app.listen(params.port || 80);
     return cb();
   },
   unload: function(cb) {

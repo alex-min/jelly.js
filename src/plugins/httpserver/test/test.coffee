@@ -30,8 +30,11 @@ describe('#Plugin::httpserver', ->
         try
           server = dt.getPluginInterface().getSharedObjectManager().getObject('httpserver', 'server')
           assert.equal(toType(server), 'object')
-          assert.equal(server.constructor.name, 'SharedObject')           
-          cb()
+          assert.equal(server.constructor.name, 'SharedObject')
+          port = parseInt(Math.random() * 2000) + 1000
+          dt.getPluginInterface().oncall({}, {port:port}, (err) ->
+            cb(err)
+          )
         catch e
           cb(e)
       )

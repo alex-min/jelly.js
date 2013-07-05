@@ -37,7 +37,7 @@ describe('#Plugin::httpserver', function() {
         return;
       }
       return dt.getPluginInterface().load(function(err) {
-        var server;
+        var port, server;
 
         if (err != null) {
           cb(err);
@@ -48,7 +48,12 @@ describe('#Plugin::httpserver', function() {
           server = dt.getPluginInterface().getSharedObjectManager().getObject('httpserver', 'server');
           assert.equal(toType(server), 'object');
           assert.equal(server.constructor.name, 'SharedObject');
-          return cb();
+          port = parseInt(Math.random() * 2000) + 1000;
+          return dt.getPluginInterface().oncall({}, {
+            port: port
+          }, function(err) {
+            return cb(err);
+          });
         } catch (_error) {
           e = _error;
           return cb(e);
