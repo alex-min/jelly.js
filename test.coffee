@@ -1,4 +1,4 @@
-Mocha = require('Mocha')
+Mocha = require('mocha')
 fs = require('fs')
 async = require('async')
 
