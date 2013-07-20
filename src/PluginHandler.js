@@ -113,7 +113,7 @@ PluginHandler = Tools.implementing(Logger, ReadableEntity, TreeElement, _PluginH
 
 
   PluginHandler.prototype.readMainEntryFile = function(cb) {
-    var content, dir, self;
+    var content, dir, e, plugin, self;
 
     cb = cb || function() {};
     self = this;
@@ -130,13 +130,17 @@ PluginHandler = Tools.implementing(Logger, ReadableEntity, TreeElement, _PluginH
       return;
     }
     this._setDefaultContent(content);
-    return this._pluginInterface.readUpdateAndExecute("" + dir + "/" + content.mainFile, 'utf8', function(err, data) {
-      if (err != null) {
-        cb(new Error("Unable to process <" + dir + "/" + content.mainFile + "> : " + err.message));
-        return;
-      }
-      return cb(null, data);
-    });
+    try {
+      plugin = require("" + dir + "/" + content.mainFile);
+      this._pluginInterface.updateContent({
+        extension: '__exec',
+        content: plugin
+      });
+      return cb();
+    } catch (_error) {
+      e = _error;
+      return cb(e);
+    }
   };
 
   /**

@@ -88,10 +88,6 @@ PluginDirectory = Tools.implementing(Logger, ReadableEntity, TreeElement, _Plugi
     return cb(null, results);
   };
 
-  PluginDirectory.prototype.applyPluginsToObject = function(object, cb) {};
-
-  PluginDirectory.prototype.applyPluginListFromArray = function(object, pluginArray, cb) {};
-
   PluginDirectory.prototype.applyPluginToJelly = function(recursive, cb) {
     var jelly, self;
 

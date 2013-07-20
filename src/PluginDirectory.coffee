@@ -63,15 +63,6 @@ class PluginDirectory
       return
     cb(null, results)
 
-  ## not ready
-  applyPluginsToObject: (object, cb) ->
-    ;
-
-  ## not ready
-  applyPluginListFromArray: (object, pluginArray, cb) ->
-
-    return
-
   applyPluginToJelly: (recursive, cb) ->
     # recursive is optional
     if typeof recursive == 'function'

@@ -98,14 +98,12 @@ class PluginHandler
     # reset default values (just in case)
     @_setDefaultContent(content)
 
-    # read the mainFile
-    @_pluginInterface.readUpdateAndExecute("#{dir}/#{content.mainFile}", 'utf8', (err, data) ->
-      if err?
-        cb(new Error("Unable to process <#{dir}/#{content.mainFile}> : #{err.message}"))
-        return
-      cb(null, data)
-    )
-
+    try
+      plugin =  require("#{dir}/#{content.mainFile}")
+      @_pluginInterface.updateContent({extension:'__exec',content:plugin})
+      cb()
+    catch e
+      cb(e)
 
   ###*
    * Get the PluginInterface instance associated with the class.
