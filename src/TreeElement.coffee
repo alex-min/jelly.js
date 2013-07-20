@@ -77,7 +77,7 @@ class TreeElement
       if child.getId() == id
         return child
       else
-        c = child.getChildById(id)
+        c = child.getChildByIdRec(id)
         if c != null
           return c
     return null # we found nothing    

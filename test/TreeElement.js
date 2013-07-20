@@ -44,7 +44,7 @@ describe('TreeElement', function() {
       return assert.equal(toType(t3.getChildByIdRec('c')), 'object');
     });
     return it('Should return a child of child', function() {
-      var t1, t2, t3;
+      var t1, t2, t3, t4;
 
       t1 = new TreeElement();
       t1.setId('a');
@@ -52,12 +52,15 @@ describe('TreeElement', function() {
       t2.setId('b');
       t3 = new TreeElement();
       t3.setId('c');
+      t4 = new TreeElement();
+      t4.setId('d');
       t3.addChild(t2);
       t2.addChild(t1);
-      assert.equal(toType(t3.getChildByIdRec('a')), 'object');
+      t2.addChild(t4);
+      assert.equal(toType(t3.getChildByIdRec('d')), 'object');
       assert.equal(toType(t3.getChildByIdRec('b')), 'object');
       assert.equal(toType(t3.getChildByIdRec('c')), 'object');
-      return assert.equal(toType(t3.getChildById('a')), 'null');
+      return assert.equal(toType(t3.getChildById('d')), 'null');
     });
   });
   describe('#getChildList', function() {
