@@ -14,7 +14,42 @@ describe('TreeElement', ->
       assert.typeOf(TreeElement.prototype._constructor_, 'function');
     )
   )
-
+#------------------------------------------------------------------------------------------
+  describe('#getChildByIdRec', ->
+    it('Should be callable function', ->
+      assert.typeOf(TreeElement.prototype.getChildByIdRec, 'function')
+    )
+    it('Should null when nothing set', ->
+      assert.equal(new TreeElement().getChildByIdRec(), null)
+    )
+    it('Should return a child id or itself if the Id match', ->
+      t1 = new TreeElement()
+      t1.setId('a')
+      t2 = new TreeElement()
+      t2.setId('b')
+      t3 = new TreeElement()
+      t3.setId('c')
+      t3.addChild(t2)
+      t3.addChild(t1)
+      assert.equal(toType(t3.getChildByIdRec('a')), 'object')
+      assert.equal(toType(t3.getChildByIdRec('b')), 'object')
+      assert.equal(toType(t3.getChildByIdRec('c')), 'object')
+    )
+    it('Should return a child of child', ->
+      t1 = new TreeElement()
+      t1.setId('a')
+      t2 = new TreeElement()
+      t2.setId('b')
+      t3 = new TreeElement()
+      t3.setId('c')
+      t3.addChild(t2)
+      t2.addChild(t1)
+      assert.equal(toType(t3.getChildByIdRec('a')), 'object')
+      assert.equal(toType(t3.getChildByIdRec('b')), 'object')
+      assert.equal(toType(t3.getChildByIdRec('c')), 'object')
+      assert.equal(toType(t3.getChildById('a')), 'null')
+    )    
+  )
 #------------------------------------------------------------------------------------------
   describe('#getChildList', ->
     it('Should be callable function', ->

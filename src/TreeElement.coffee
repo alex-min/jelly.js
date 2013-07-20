@@ -57,6 +57,32 @@ class TreeElement
     return null # we found nothing
 
   ###*
+   * This method will find a child by its Id in a recursive way.<br>
+   * If nothing is found, the method will return null.<br>
+   * Any null id passed to the method will result in a null return without any further research.<br>
+   * This method (unlike getChildById) can also return <code>this</code> if the ID is matching.
+   *
+   * @for TreeElement
+   * @method getChildByIdRec
+   * @param {Any Type} Searched id
+   * @param {TreeElement} Child found by the id (or null)
+  ### 
+  getChildByIdRec: (id) ->
+    # if the key is invalid, return null
+    return null if typeof id == 'undefined' || id == null
+    return this if @getId() == id && @getId() != null
+
+    for child in @_childList
+      # if the child has the right key
+      if child.getId() == id
+        return child
+      else
+        c = child.getChildById(id)
+        if c != null
+          return c
+    return null # we found nothing    
+
+  ###*
    * Get the list of children (the list should consist of TreeElement classes).
    * This function should return an empty array when nothing is set.
    *
@@ -155,6 +181,7 @@ class TreeElement
         cb(null, child); cb = ->
         return
       @_childList.push(child)
+      child.setParent(this)
       cb(null, child)
       return
 

@@ -21,6 +21,45 @@ describe('TreeElement', function() {
       return assert.typeOf(TreeElement.prototype._constructor_, 'function');
     });
   });
+  describe('#getChildByIdRec', function() {
+    it('Should be callable function', function() {
+      return assert.typeOf(TreeElement.prototype.getChildByIdRec, 'function');
+    });
+    it('Should null when nothing set', function() {
+      return assert.equal(new TreeElement().getChildByIdRec(), null);
+    });
+    it('Should return a child id or itself if the Id match', function() {
+      var t1, t2, t3;
+
+      t1 = new TreeElement();
+      t1.setId('a');
+      t2 = new TreeElement();
+      t2.setId('b');
+      t3 = new TreeElement();
+      t3.setId('c');
+      t3.addChild(t2);
+      t3.addChild(t1);
+      assert.equal(toType(t3.getChildByIdRec('a')), 'object');
+      assert.equal(toType(t3.getChildByIdRec('b')), 'object');
+      return assert.equal(toType(t3.getChildByIdRec('c')), 'object');
+    });
+    return it('Should return a child of child', function() {
+      var t1, t2, t3;
+
+      t1 = new TreeElement();
+      t1.setId('a');
+      t2 = new TreeElement();
+      t2.setId('b');
+      t3 = new TreeElement();
+      t3.setId('c');
+      t3.addChild(t2);
+      t2.addChild(t1);
+      assert.equal(toType(t3.getChildByIdRec('a')), 'object');
+      assert.equal(toType(t3.getChildByIdRec('b')), 'object');
+      assert.equal(toType(t3.getChildByIdRec('c')), 'object');
+      return assert.equal(toType(t3.getChildById('a')), 'null');
+    });
+  });
   describe('#getChildList', function() {
     it('Should be callable function', function() {
       return assert.typeOf(TreeElement.prototype.getChildList, 'function');

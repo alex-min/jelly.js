@@ -81,6 +81,43 @@ TreeElement = (function() {
   };
 
   /**
+   * This method will find a child by its Id in a recursive way.<br>
+   * If nothing is found, the method will return null.<br>
+   * Any null id passed to the method will result in a null return without any further research.<br>
+   * This method (unlike getChildById) can also return <code>this</code> if the ID is matching.
+   *
+   * @for TreeElement
+   * @method getChildByIdRec
+   * @param {Any Type} Searched id
+   * @param {TreeElement} Child found by the id (or null)
+  */
+
+
+  TreeElement.prototype.getChildByIdRec = function(id) {
+    var c, child, _i, _len, _ref;
+
+    if (typeof id === 'undefined' || id === null) {
+      return null;
+    }
+    if (this.getId() === id && this.getId() !== null) {
+      return this;
+    }
+    _ref = this._childList;
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      child = _ref[_i];
+      if (child.getId() === id) {
+        return child;
+      } else {
+        c = child.getChildById(id);
+        if (c !== null) {
+          return c;
+        }
+      }
+    }
+    return null;
+  };
+
+  /**
    * Get the list of children (the list should consist of TreeElement classes).
    * This function should return an empty array when nothing is set.
    *
@@ -205,6 +242,7 @@ TreeElement = (function() {
         return;
       }
       this._childList.push(child);
+      child.setParent(this);
       cb(null, child);
     }
   };
