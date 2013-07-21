@@ -202,7 +202,7 @@ describe('PluginWrapper', ->
     )    
   )
 #------------------------------------------------------------------------------------------
-  describe('applyPlugin', ->
+  describe('#applyPlugin', ->
     it('Should be a callable function', ->
       assert.typeOf(PluginWrapper.prototype.applyPlugin, 'function')
     )
@@ -354,7 +354,8 @@ describe('PluginWrapper', ->
             try
               assert.typeOf(param, 'object')
               assert.equal(toType(param.pluginParameters), 'object')
-              assert.equal(JSON.stringify(param.pluginParameters), '{}')
+              assert.equal(toType(param.pluginParameters.plugin), 'object')
+              assert.equal(JSON.stringify(param.pluginParameters.plugin), '{}')
               cb()
             catch e
               cb(e)
@@ -385,7 +386,8 @@ describe('PluginWrapper', ->
             try
               assert.typeOf(param, 'object')
               assert.equal(toType(param.pluginParameters), 'object')
-              assert.equal(JSON.stringify(param.pluginParameters), '{}')
+              assert.equal(toType(param.pluginParameters.plugin), 'object')
+              assert.equal(JSON.stringify(param.pluginParameters.plugin), '{}')
               cb()
             catch e
               cb(e)
@@ -449,6 +451,28 @@ describe('PluginWrapper', ->
         )
       )
     )
+    it('Should get the plugins paramets', (cb) ->
+      g = new GeneralConfiguration()
+      jelly = new Jelly()
+      g.setParent(jelly)
+      jelly.addChild(g)
+      g.updateContent({
+        content:{
+          plugins:['paramPlugin']
+          pluginParameters:{'paramPlugin':{'TEST':1}}
+        }
+        extension:'__exec'
+      })
+      jelly.setRootDirectory("#{__dirname}/testFiles/pluginParametersLoading")
+      jelly.getPluginDirectoryList().readAllPlugins((err) ->
+        if err?
+          cb(err); cb = ->
+          return
+        g.applyPluginsSpecified(false, (err) ->
+          cb(err)
+        )
+      )
+    )    
     it('Should raise an error if any plugin does not exist', (cb) ->
       g = new GeneralConfiguration()
       jelly = new Jelly()

@@ -33,12 +33,14 @@ class PluginWrapper
       if config == null
         cb(new Error("There is no config file read on the parent module of the File '#{@getId()}'")); cb = ->
         return
-      config.filePluginParameters ?= []
-      config.filePluginParameters[pluginHandler.getId()] = {}
+      config.filePluginParameters ?= {}
+      config.filePluginParameters[pluginHandler.getId()] ?= {}
+
       # calling the plugin with the pluginParameters
       pluginHandler.getPluginInterface().oncall(this,
       {
-        pluginParameters:config.filePluginParameters[pluginHandler.getId()]
+        plugins:config.plugins
+        pluginParameters:config.filePluginParameters
       },cb)
 
   # applying a plugin for other type exept the File class.
@@ -54,14 +56,13 @@ class PluginWrapper
         cb(new Error("There is no config file loaded for the Id '#{self.getId()}' on a #{self.constructor.name} object")); cb = ->
         return
 
-      config.filePluginParameters ?= []
-      config.filePluginParameters[pluginHandler.getId()] = {}
+      config.pluginParameters ?= {}
+      config.pluginParameters[pluginHandler.getId()] ?= {}
       # calling the plugin with the plugin parameters
-      pluginHandler.getPluginInterface().oncall(self,
-      {
-        plugins:config.plugins
-        pluginParameters:config.filePluginParameters[pluginHandler.getId()]
-      },cb)    
+      try
+        pluginHandler.getPluginInterface().oncall(self, config, cb)
+      catch e
+        cb(e)
 
   ###*
    * Find and apply all the plugins defined in the cofiguration file.

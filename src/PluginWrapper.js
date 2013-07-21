@@ -35,7 +35,7 @@ PluginWrapper = (function() {
   }
 
   PluginWrapper.prototype._applyPluginFile = function(pluginHandler, cb) {
-    var config, module, _ref;
+    var config, module, _base, _name, _ref, _ref1;
 
     module = this.getParent();
     if (module === null || typeof module === 'undefined') {
@@ -50,16 +50,19 @@ PluginWrapper = (function() {
       return;
     }
     if ((_ref = config.filePluginParameters) == null) {
-      config.filePluginParameters = [];
+      config.filePluginParameters = {};
     }
-    config.filePluginParameters[pluginHandler.getId()] = {};
+    if ((_ref1 = (_base = config.filePluginParameters)[_name = pluginHandler.getId()]) == null) {
+      _base[_name] = {};
+    }
     return pluginHandler.getPluginInterface().oncall(this, {
-      pluginParameters: config.filePluginParameters[pluginHandler.getId()]
+      plugins: config.plugins,
+      pluginParameters: config.filePluginParameters
     }, cb);
   };
 
   PluginWrapper.prototype._applyPluginOtherClass = function(pluginHandler, cb) {
-    var config, self, _ref;
+    var config, e, self, _base, _name, _ref, _ref1;
 
     self = this;
     config = self.getLastExecutableContent();
@@ -68,14 +71,18 @@ PluginWrapper = (function() {
       cb = function() {};
       return;
     }
-    if ((_ref = config.filePluginParameters) == null) {
-      config.filePluginParameters = [];
+    if ((_ref = config.pluginParameters) == null) {
+      config.pluginParameters = {};
     }
-    config.filePluginParameters[pluginHandler.getId()] = {};
-    return pluginHandler.getPluginInterface().oncall(self, {
-      plugins: config.plugins,
-      pluginParameters: config.filePluginParameters[pluginHandler.getId()]
-    }, cb);
+    if ((_ref1 = (_base = config.pluginParameters)[_name = pluginHandler.getId()]) == null) {
+      _base[_name] = {};
+    }
+    try {
+      return pluginHandler.getPluginInterface().oncall(self, config, cb);
+    } catch (_error) {
+      e = _error;
+      return cb(e);
+    }
   };
 
   /**

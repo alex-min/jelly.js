@@ -295,7 +295,7 @@ describe('PluginWrapper', function() {
       });
     });
   });
-  describe('applyPlugin', function() {
+  describe('#applyPlugin', function() {
     it('Should be a callable function', function() {
       return assert.typeOf(PluginWrapper.prototype.applyPlugin, 'function');
     });
@@ -480,7 +480,8 @@ describe('PluginWrapper', function() {
             try {
               assert.typeOf(param, 'object');
               assert.equal(toType(param.pluginParameters), 'object');
-              assert.equal(JSON.stringify(param.pluginParameters), '{}');
+              assert.equal(toType(param.pluginParameters.plugin), 'object');
+              assert.equal(JSON.stringify(param.pluginParameters.plugin), '{}');
               return cb();
             } catch (_error) {
               e = _error;
@@ -515,7 +516,8 @@ describe('PluginWrapper', function() {
             try {
               assert.typeOf(param, 'object');
               assert.equal(toType(param.pluginParameters), 'object');
-              assert.equal(JSON.stringify(param.pluginParameters), '{}');
+              assert.equal(toType(param.pluginParameters.plugin), 'object');
+              assert.equal(JSON.stringify(param.pluginParameters.plugin), '{}');
               return cb();
             } catch (_error) {
               e = _error;
@@ -587,6 +589,36 @@ describe('PluginWrapper', function() {
         extension: '__exec'
       });
       jelly.setRootDirectory("" + __dirname + "/testFiles/pluginLoading");
+      return jelly.getPluginDirectoryList().readAllPlugins(function(err) {
+        if (err != null) {
+          cb(err);
+          cb = function() {};
+          return;
+        }
+        return g.applyPluginsSpecified(false, function(err) {
+          return cb(err);
+        });
+      });
+    });
+    it('Should get the plugins paramets', function(cb) {
+      var g, jelly;
+
+      g = new GeneralConfiguration();
+      jelly = new Jelly();
+      g.setParent(jelly);
+      jelly.addChild(g);
+      g.updateContent({
+        content: {
+          plugins: ['paramPlugin'],
+          pluginParameters: {
+            'paramPlugin': {
+              'TEST': 1
+            }
+          }
+        },
+        extension: '__exec'
+      });
+      jelly.setRootDirectory("" + __dirname + "/testFiles/pluginParametersLoading");
       return jelly.getPluginDirectoryList().readAllPlugins(function(err) {
         if (err != null) {
           cb(err);

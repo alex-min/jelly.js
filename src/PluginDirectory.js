@@ -218,11 +218,24 @@ PluginDirectory = Tools.implementing(Logger, ReadableEntity, TreeElement, _Plugi
           return;
         }
         return async.map(files, function(file, cb) {
-          return self.readPluginFromPath("" + dir + "/" + file, file, function(err) {
+          return fs.stat("" + dir + "/" + file, function(err, stats) {
             if (err != null) {
               self.getLogger().error("Unable to load plugin " + file + " " + err);
+              cb();
+              return;
             }
-            return cb();
+            if (stats.isDirectory()) {
+              return self.readPluginFromPath("" + dir + "/" + file, file, function(err) {
+                self.getLogger().error("Unable to load plugin " + file + " " + err);
+                if (err != null) {
+                  return cb(new Error("" + err.message + " on " + dir + "/" + file));
+                } else {
+                  return cb();
+                }
+              });
+            } else {
+              return cb();
+            }
           });
         }, function(err) {
           return cb(err);

@@ -167,11 +167,21 @@ class PluginDirectory
           cb(err); cb = ->
           return
         async.map(files, (file, cb) ->
-          # we load it
-          self.readPluginFromPath("#{dir}/#{file}", file, (err) ->
+          fs.stat("#{dir}/#{file}", (err, stats) ->
             if err?
               self.getLogger().error("Unable to load plugin #{file} #{err}")
-            cb()
+              cb()
+              return
+            if stats.isDirectory()
+              self.readPluginFromPath("#{dir}/#{file}", file, (err) ->
+                self.getLogger().error("Unable to load plugin #{file} #{err}")
+                if err?
+                  cb(new Error("#{err.message} on #{dir}/#{file}"))
+                else
+                  cb()
+              )
+            else
+              cb()
           )
         , (err) -> cb(err))
       )
