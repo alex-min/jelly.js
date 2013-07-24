@@ -242,4 +242,69 @@ describe('Jelly', ->
       assert.equal(sharedObjectManager.SharedObjectManager, true)
     )
   )
+#------------------------------------------------------------------------------------------ 
+  describe('#boot', ->
+    it('Should be a callable function', ->
+      assert.typeOf(Jelly.prototype.boot, 'function')
+    )
+    it('Should boot on a working folder', (cb) ->
+      new Jelly().boot({
+        directory:"#{__dirname}/testFiles/validJellyConfFile"
+      }, (err) ->
+        cb(err)
+      )
+    )
+    it('Should throw an error if there any packagePlugin missing', (cb) ->
+      new Jelly().boot({
+        directory:"#{__dirname}/testFiles/validJellyConfFile"
+        packagePlugins:['-invalid-']
+      }, (err) ->
+        if err
+          cb(); cb = ->
+        else
+        cb(new Error("No errors encountered during the test"))
+      )
+    )
+    it('Should throw an error if there the packageFolder name is missing', (cb) ->
+      new Jelly().boot({
+        directory:"#{__dirname}/testFiles/validJellyConfFile"
+        folderPlugins:[{directory:"ff"}]
+      }, (err) ->
+        if err
+          cb(); cb = ->
+        else
+        cb(new Error("No errors encountered during the test"))
+      )
+    )
+    it('Should throw an error if there the packageFolder name is missing', (cb) ->
+      new Jelly().boot({
+        directory:"#{__dirname}/testFiles/validJellyConfFile"
+        folderPlugins:[{name:"ff"}]
+      }, (err) ->
+        if err
+          cb(); cb = ->
+        else
+        cb(new Error("No errors encountered during the test"))
+      )
+    )
+    it('Should throw an error if there the folder is invalid', (cb) ->
+      new Jelly().boot({
+        directory:"#{__dirname}/testFiles/validJellyConfFile"
+        folderPlugins:[{directory:"ff", name:"ff"}]
+      }, (err) ->
+        if err
+          cb(); cb = ->
+        else
+        cb(new Error("No errors encountered during the test"))
+      )
+    )
+    it('Should throw an error if there the folder is invalid', (cb) ->
+      new Jelly().boot({
+        directory:"#{__dirname}/testFiles/validJellyConfFile"
+        folderPlugins:[{directory:"#{__dirname}/testFiles/pluginLoading/plugins/testPlugin", name:"ff"}]
+      }, (err) ->
+        cb(err)
+      )
+    )   
+  )
 )

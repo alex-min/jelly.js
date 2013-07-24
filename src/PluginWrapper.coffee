@@ -107,6 +107,18 @@ class PluginWrapper
 
     async.waterfall([
       (cb) ->
+        # if its recursive, call the method again for all the childs
+        if recursive
+          # for each child
+          async.map(self.getChildList(), (child, cb) ->
+            # apply the plugins on each child
+            child.applyPluginsSpecified(true, cb)
+          , (err) ->
+            cb(err); cb = ->
+          )
+        else
+          cb(); cb = ->        
+      (cb) ->
         # get the plugin list as string
         self.getPluginList(cb)
       (list, cb) ->
@@ -121,20 +133,7 @@ class PluginWrapper
           cb(err)
         )
     ], (err) ->
-      if err?
-        cb(err); cb = ->
-        return
-      # if its recursive, call the method again for all the childs
-      if recursive
-        # for each child
-        async.map(self.getChildList(), (child, cb) ->
-          # apply the plugins on each child
-          child.applyPluginsSpecified(true, cb)
-        , (err) ->
-          cb(err); cb = ->
-        )
-      else
-        cb(); cb = ->
+      cb(err)
     )
 
   ###*

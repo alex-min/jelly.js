@@ -317,7 +317,7 @@ describe('Jelly', function() {
       return assert.equal(p.PluginDirectory, true);
     });
   });
-  return describe('#getSharedObjectManager', function() {
+  describe('#getSharedObjectManager', function() {
     it('Should be a callable function', function() {
       return assert.typeOf(Jelly.prototype.getSharedObjectManager, 'function');
     });
@@ -327,6 +327,100 @@ describe('Jelly', function() {
       sharedObjectManager = new Jelly().getSharedObjectManager();
       assert.equal(toType(sharedObjectManager), 'object');
       return assert.equal(sharedObjectManager.SharedObjectManager, true);
+    });
+  });
+  return describe('#boot', function() {
+    it('Should be a callable function', function() {
+      return assert.typeOf(Jelly.prototype.boot, 'function');
+    });
+    it('Should boot on a working folder', function(cb) {
+      return new Jelly().boot({
+        directory: "" + __dirname + "/testFiles/validJellyConfFile"
+      }, function(err) {
+        return cb(err);
+      });
+    });
+    it('Should throw an error if there any packagePlugin missing', function(cb) {
+      return new Jelly().boot({
+        directory: "" + __dirname + "/testFiles/validJellyConfFile",
+        packagePlugins: ['-invalid-']
+      }, function(err) {
+        if (err) {
+          cb();
+          cb = function() {};
+        } else {
+
+        }
+        return cb(new Error("No errors encountered during the test"));
+      });
+    });
+    it('Should throw an error if there the packageFolder name is missing', function(cb) {
+      return new Jelly().boot({
+        directory: "" + __dirname + "/testFiles/validJellyConfFile",
+        folderPlugins: [
+          {
+            directory: "ff"
+          }
+        ]
+      }, function(err) {
+        if (err) {
+          cb();
+          cb = function() {};
+        } else {
+
+        }
+        return cb(new Error("No errors encountered during the test"));
+      });
+    });
+    it('Should throw an error if there the packageFolder name is missing', function(cb) {
+      return new Jelly().boot({
+        directory: "" + __dirname + "/testFiles/validJellyConfFile",
+        folderPlugins: [
+          {
+            name: "ff"
+          }
+        ]
+      }, function(err) {
+        if (err) {
+          cb();
+          cb = function() {};
+        } else {
+
+        }
+        return cb(new Error("No errors encountered during the test"));
+      });
+    });
+    it('Should throw an error if there the folder is invalid', function(cb) {
+      return new Jelly().boot({
+        directory: "" + __dirname + "/testFiles/validJellyConfFile",
+        folderPlugins: [
+          {
+            directory: "ff",
+            name: "ff"
+          }
+        ]
+      }, function(err) {
+        if (err) {
+          cb();
+          cb = function() {};
+        } else {
+
+        }
+        return cb(new Error("No errors encountered during the test"));
+      });
+    });
+    return it('Should throw an error if there the folder is invalid', function(cb) {
+      return new Jelly().boot({
+        directory: "" + __dirname + "/testFiles/validJellyConfFile",
+        folderPlugins: [
+          {
+            directory: "" + __dirname + "/testFiles/pluginLoading/plugins/testPlugin",
+            name: "ff"
+          }
+        ]
+      }, function(err) {
+        return cb(err);
+      });
     });
   });
 });

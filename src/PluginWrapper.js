@@ -130,6 +130,18 @@ PluginWrapper = (function() {
     }
     return async.waterfall([
       function(cb) {
+        if (recursive) {
+          return async.map(self.getChildList(), function(child, cb) {
+            return child.applyPluginsSpecified(true, cb);
+          }, function(err) {
+            cb(err);
+            return cb = function() {};
+          });
+        } else {
+          cb();
+          return cb = function() {};
+        }
+      }, function(cb) {
         return self.getPluginList(cb);
       }, function(list, cb) {
         return pluginDirectory.getPluginListFromIdList(list, cb);
@@ -141,22 +153,7 @@ PluginWrapper = (function() {
         });
       }
     ], function(err) {
-      if (err != null) {
-        cb(err);
-        cb = function() {};
-        return;
-      }
-      if (recursive) {
-        return async.map(self.getChildList(), function(child, cb) {
-          return child.applyPluginsSpecified(true, cb);
-        }, function(err) {
-          cb(err);
-          return cb = function() {};
-        });
-      } else {
-        cb();
-        return cb = function() {};
-      }
+      return cb(err);
     });
   };
 

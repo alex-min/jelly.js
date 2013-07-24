@@ -1,5 +1,6 @@
 fs = require('fs')
 async = require('async')
+path = require('path')
 
 GeneralConfiguration = require('./GeneralConfiguration')
 Logger = require('./Logger')
@@ -28,8 +29,45 @@ class Jelly
     @_pluginDirectoryList = new PluginDirectory()
     @_pluginDirectoryList.setParent(this)
     @_sharedObjectManager = new SharedObjectManager()
+    @setId('Jelly')
 
   constructor: -> @_constructor_()
+
+
+  boot: (options={}, cb) ->
+    self = @
+    options.packagePlugins ?= []
+    options.folderPlugins ?= []
+
+    if typeof options.directory == 'string'
+      @setRootDirectory(options.directory)
+    async.series([
+      (cb) -> self.readJellyConfigurationFile( (err) -> cb(err,null)),
+      (cb) -> self.readAllGeneralConfigurationFiles( (err) -> cb(err,null))
+      (cb) ->
+        async.each(options.packagePlugins, (plugin, cb) ->
+          try
+            pluginDir = path.dirname(require.resolve("jellyjs-plugin-#{plugin}"))
+            self.getPluginDirectoryList().readPluginFromPath(pluginDir, plugin, cb)
+          catch e
+            cb(new Error("Unable to boot project on Jelly::boot : #{e.message}"))
+        cb)
+      (cb) ->
+        async.each(options.folderPlugins, (plugin, cb) ->
+          try
+            if typeof plugin.name != 'string' || typeof plugin.directory != 'string'
+              cb(new Error("Unable to boot project on Jelly::boot : The plugin #{JSON.stringify(plugin)} should register a name and a directory")); cb = ->
+              return
+            self.getPluginDirectoryList().readPluginFromPath(plugin.directory, plugin.name, cb)
+          catch e
+            cb(new Error("Unable to boot project on Jelly::boot : #{e.message}"))
+        cb)
+      (cb) ->
+        if options.applyPluginsSpecified == false
+          cb()
+        else
+          self.applyPluginsSpecified(true, (err) -> cb(err))
+    ], cb)
 
   ###*
    * Get the path relatiive to the root directory
