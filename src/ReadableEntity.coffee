@@ -203,7 +203,7 @@ class ReadableEntity
           when 'json' then execContent = JSON.parse(curContent.content)
           when 'js' then execContent = eval(curContent.content)
       catch e
-        cb(new Error("Unable to parse content #{curContent.content}, #{e} on file #{curContent.filename}"), null); cb = ->
+        cb(new Error("Unable to parse content #{curContent.content}\n\n #{e} on file #{curContent.filename}"), null); cb = ->
         return
 
       # the executable extension is __exec

@@ -33,11 +33,23 @@ class Jelly
 
   constructor: -> @_constructor_()
 
+  ## TODO: TESTS + DOC
+  getEntityListFromIdList: (idlist) ->
+    if typeof idlist == 'undefined' || idlist == null || Tools.toType(idlist) != 'array'
+      return []
+    ret = []
+    for id in idlist
+      child = @getChildByIdRec(id)
+      continue if child == null || typeof child == 'undefined'
+      ret.push(child)
+    return ret
 
+  ## TODO : DOC
   boot: (options={}, cb) ->
     self = @
     options.packagePlugins ?= []
     options.folderPlugins ?= []
+    options.onBeforeApplyPlugins = options.onBeforeApplyPlugins || ((cb) -> cb())
 
     if typeof options.directory == 'string'
       @setRootDirectory(options.directory)
@@ -47,8 +59,19 @@ class Jelly
       (cb) ->
         async.each(options.packagePlugins, (plugin, cb) ->
           try
-            pluginDir = path.dirname(require.resolve("jellyjs-plugin-#{plugin}"))
-            self.getPluginDirectoryList().readPluginFromPath(pluginDir, plugin, cb)
+            if options.localRequire? && typeof options.localRequire != 'undefined'
+              options.localRequire("jellyjs-plugin-#{plugin}", (err, pluginDir) ->
+                try
+                  if err?
+                    cb(err); cb = ->
+                    return
+                  self.getPluginDirectoryList().readPluginFromPath(path.dirname(pluginDir), plugin, cb)
+                catch e
+                  cb(e)
+              )
+            else
+              pluginDir = path.dirname(require.resolve("jellyjs-plugin-#{plugin}"))
+              self.getPluginDirectoryList().readPluginFromPath(pluginDir, plugin, cb)
           catch e
             cb(new Error("Unable to boot project on Jelly::boot : #{e.message}"))
         cb)
@@ -62,6 +85,13 @@ class Jelly
           catch e
             cb(new Error("Unable to boot project on Jelly::boot : #{e.message}"))
         cb)
+      (cb) ->
+        try
+          options.onBeforeApplyPlugins((err) ->
+            cb(err); cb = ->
+          )
+        catch e
+          cb(new Error("Jelly::boot(onBeforeApplyPlugins): #{e.message}")) 
       (cb) ->
         if options.applyPluginsSpecified == false
           cb()

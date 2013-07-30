@@ -53,6 +53,24 @@ Jelly = Tools.implementing(PluginWrapper, Logger, ReadableEntity, TreeElement, _
     this._constructor_();
   }
 
+  Jelly.prototype.getEntityListFromIdList = function(idlist) {
+    var child, id, ret, _i, _len;
+
+    if (typeof idlist === 'undefined' || idlist === null || Tools.toType(idlist) !== 'array') {
+      return [];
+    }
+    ret = [];
+    for (_i = 0, _len = idlist.length; _i < _len; _i++) {
+      id = idlist[_i];
+      child = this.getChildByIdRec(id);
+      if (child === null || typeof child === 'undefined') {
+        continue;
+      }
+      ret.push(child);
+    }
+    return ret;
+  };
+
   Jelly.prototype.boot = function(options, cb) {
     var self, _ref, _ref1;
 
@@ -66,6 +84,9 @@ Jelly = Tools.implementing(PluginWrapper, Logger, ReadableEntity, TreeElement, _
     if ((_ref1 = options.folderPlugins) == null) {
       options.folderPlugins = [];
     }
+    options.onBeforeApplyPlugins = options.onBeforeApplyPlugins || (function(cb) {
+      return cb();
+    });
     if (typeof options.directory === 'string') {
       this.setRootDirectory(options.directory);
     }
@@ -83,8 +104,26 @@ Jelly = Tools.implementing(PluginWrapper, Logger, ReadableEntity, TreeElement, _
           var e, pluginDir;
 
           try {
-            pluginDir = path.dirname(require.resolve("jellyjs-plugin-" + plugin));
-            return self.getPluginDirectoryList().readPluginFromPath(pluginDir, plugin, cb);
+            if ((options.localRequire != null) && typeof options.localRequire !== 'undefined') {
+              return options.localRequire("jellyjs-plugin-" + plugin, function(err, pluginDir) {
+                var e;
+
+                try {
+                  if (err != null) {
+                    cb(err);
+                    cb = function() {};
+                    return;
+                  }
+                  return self.getPluginDirectoryList().readPluginFromPath(path.dirname(pluginDir), plugin, cb);
+                } catch (_error) {
+                  e = _error;
+                  return cb(e);
+                }
+              });
+            } else {
+              pluginDir = path.dirname(require.resolve("jellyjs-plugin-" + plugin));
+              return self.getPluginDirectoryList().readPluginFromPath(pluginDir, plugin, cb);
+            }
           } catch (_error) {
             e = _error;
             return cb(new Error("Unable to boot project on Jelly::boot : " + e.message));
@@ -106,6 +145,18 @@ Jelly = Tools.implementing(PluginWrapper, Logger, ReadableEntity, TreeElement, _
             return cb(new Error("Unable to boot project on Jelly::boot : " + e.message));
           }
         }, cb);
+      }, function(cb) {
+        var e;
+
+        try {
+          return options.onBeforeApplyPlugins(function(err) {
+            cb(err);
+            return cb = function() {};
+          });
+        } catch (_error) {
+          e = _error;
+          return cb(new Error("Jelly::boot(onBeforeApplyPlugins): " + e.message));
+        }
       }, function(cb) {
         if (options.applyPluginsSpecified === false) {
           return cb();

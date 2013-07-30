@@ -262,7 +262,7 @@ ReadableEntity = Tools.implementing(Events, _ReadableEntity = (function() {
         }
       } catch (_error) {
         e = _error;
-        cb(new Error("Unable to parse content " + curContent.content + ", " + e + " on file " + curContent.filename), null);
+        cb(new Error("Unable to parse content " + curContent.content + "\n\n " + e + " on file " + curContent.filename), null);
         cb = function() {};
         return;
       }
