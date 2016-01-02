@@ -1,4 +1,5 @@
-# jelly.js
+# THIS PROJECT IS OLD AND UNRELATED TO WHAT I'M DOING NOW, PLEASE CONTACT ME DIRECTLY AT minettealexandre@fastmail.se, THANKS
+
 [![Build Status](https://travis-ci.org/alex-min/jelly.js.png?branch=master)](https://travis-ci.org/alex-min/jelly.js) [![Dependencies](https://david-dm.org/alex-min/jelly.js.png)](https://david-dm.org/alex-min/jelly.js)
 ========
 Jelly.js will be a modular node.js web framework to design web application.
